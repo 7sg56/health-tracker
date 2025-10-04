@@ -1,0 +1,365 @@
+# GitLab CI/CD Pipeline for Connectivity Tests
+
+stages:
+  - build
+  - test
+  - report
+  - deploy-validation
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
+  MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version"
+  NODE_VERSION: "18"
+  JAVA_VERSION: "17"
+  
+  # Test configuration
+  EXECUTION_MODE: "PARALLEL"
+  TEST_SUITES: "all"
+  BACKEND_URL: "http://localhost:8080"
+  FRONTEND_URL: "http://localhost:3000"
+  DATABASE_URL: "jdbc:postgresql://postgres:5432/healthtracker_test"
+  POSTGRES_DB: "healthtracker_test"
+  POSTGRES_USER: "testuser"
+  POSTGRES_PASSWORD: "testpass"
+
+# Cache configuration
+cache:
+  paths:
+    - .m2/repository/
+    - ht-frontend/node_modules/
+
+# Services
+services:
+  - name: postgres:13
+    alias: postgres
+    variables:
+      POSTGRES_DB: $POSTGRES_DB
+      POSTGRES_USER: $POSTGRES_USER
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+
+# Build stage
+build-backend:
+  stage: build
+  image: maven:3.8.6-openjdk-17
+  script:
+    - echo "🏗️ Building backend..."
+    - cd ht-backend
+    - mvn $MAVEN_CLI_OPTS clean compile -DskipTests
+  artifacts:
+    paths:
+      - ht-backend/target/
+    expire_in: 1 hour
+  only:
+    - main
+    - develop
+    - merge_requests
+
+build-frontend:
+  stage: build
+  image: node:18-alpine
+  script:
+    - echo "🏗️ Building frontend..."
+    - cd ht-frontend
+    - npm ci --silent
+    - npm run build
+  artifacts:
+    paths:
+      - ht-frontend/.next/
+      - ht-frontend/node_modules/
+    expire_in: 1 hour
+  only:
+    - main
+    - develop
+    - merge_requests
+
+build-shared-testing:
+  stage: build
+  image: maven:3.8.6-openjdk-17
+  script:
+    - echo "🏗️ Building shared testing module..."
+    - cd shared-testing
+    - mvn $MAVEN_CLI_OPTS clean compile -DskipTests
+  artifacts:
+    paths:
+      - shared-testing/target/
+    expire_in: 1 hour
+  only:
+    - main
+    - develop
+    - merge_requests
+
+# Test stage
+connectivity-tests:
+  stage: test
+  image: maven:3.8.6-openjdk-17
+  dependencies:
+    - build-backend
+    - build-frontend
+    - build-shared-testing
+  
+  variables:
+    CI: "true"
+    BUILD_NUMBER: $CI_PIPELINE_ID
+    GIT_COMMIT: $CI_COMMIT_SHA
+    GIT_BRANCH: $CI_COMMIT_REF_NAME
+  
+  before_script:
+    - echo "🔧 Setting up test environment..."
+    - apt-get update -qq && apt-get install -y -qq curl nodejs npm bc jq
+    - mkdir -p shared-testing/test-reports
+    - mkdir -p shared-testing/test-reports/junit
+    
+    # Start backend service
+    - echo "🚀 Starting backend service..."
+    - cd ht-backend
+    - nohup mvn spring-boot:run -Dspring-boot.run.profiles=test > ../backend.log 2>&1 &
+    - echo $! > ../backend.pid
+    - cd ..
+    
+    # Start frontend service
+    - echo "🚀 Starting frontend service..."
+    - cd ht-frontend
+    - nohup npm run start > ../frontend.log 2>&1 &
+    - echo $! > ../frontend.pid
+    - cd ..
+    
+    # Wait for services to start
+    - echo "⏳ Waiting for services to start..."
+    - for i in {1..30}; do if curl -s $BACKEND_URL/actuator/health > /dev/null; then echo "✅ Backend ready"; break; fi; sleep 2; done
+    - for i in {1..30}; do if curl -s $FRONTEND_URL > /dev/null; then echo "✅ Frontend ready"; break; fi; sleep 2; done
+  
+  script:
+    - echo "🧪 Running connectivity tests..."
+    - echo "Mode: $EXECUTION_MODE, Suites: $TEST_SUITES"
+    - chmod +x shared-testing/scripts/run-connectivity-tests.sh
+    - |
+      shared-testing/scripts/run-connectivity-tests.sh \
+        --mode "$EXECUTION_MODE" \
+        --suites "$TEST_SUITES" \
+        --backend-url "$BACKEND_URL" \
+        --frontend-url "$FRONTEND_URL" \
+        --database-url "$DATABASE_URL" \
+        --report-format "html,json,junit" \
+        --timeout 300 \
+        --skip-backend-start \
+        --skip-frontend-start
+  
+  after_script:
+    - echo "🧹 Cleaning up services..."
+    - if [ -f "backend.pid" ]; then kill $(cat backend.pid) || true; fi
+    - if [ -f "frontend.pid" ]; then kill $(cat frontend.pid) || true; fi
+    - pkill -f "spring-boot:run" || true
+    - pkill -f "npm run start" || true
+  
+  artifacts:
+    when: always
+    paths:
+      - shared-testing/test-reports/
+      - backend.log
+      - frontend.log
+    reports:
+      junit: shared-testing/test-reports/junit/*.xml
+    expire_in: 1 week
+  
+  coverage: '/Coverage: \d+\.\d+%/'
+  
+  only:
+    - main
+    - develop
+    - merge_requests
+
+# Parallel test execution for different modes
+connectivity-tests-sequential:
+  extends: connectivity-tests
+  variables:
+    EXECUTION_MODE: "SEQUENTIAL"
+  only:
+    - schedules
+    - web
+
+connectivity-tests-mixed:
+  extends: connectivity-tests
+  variables:
+    EXECUTION_MODE: "MIXED"
+  only:
+    - schedules
+    - web
+
+# Report generation stage
+generate-reports:
+  stage: report
+  image: alpine:latest
+  dependencies:
+    - connectivity-tests
+  
+  before_script:
+    - apk add --no-cache jq curl
+  
+  script:
+    - echo "📊 Generating comprehensive reports..."
+    
+    # Generate test summary for GitLab
+    - |
+      if [ -f "shared-testing/test-reports/build-summary.json" ]; then
+        echo "## 🧪 Connectivity Test Results" > test-summary.md
+        echo "" >> test-summary.md
+        
+        TOTAL_TESTS=$(jq -r '.testResults.totalTests' shared-testing/test-reports/build-summary.json)
+        PASSED_TESTS=$(jq -r '.testResults.passedTests' shared-testing/test-reports/build-summary.json)
+        FAILED_TESTS=$(jq -r '.testResults.failedTests' shared-testing/test-reports/build-summary.json)
+        SUCCESS_RATE=$(jq -r '.testResults.successRate' shared-testing/test-reports/build-summary.json)
+        STATUS=$(jq -r '.status' shared-testing/test-reports/build-summary.json)
+        
+        echo "| Metric | Value |" >> test-summary.md
+        echo "|--------|-------|" >> test-summary.md
+        echo "| Status | $STATUS |" >> test-summary.md
+        echo "| Total Tests | $TOTAL_TESTS |" >> test-summary.md
+        echo "| Passed | $PASSED_TESTS |" >> test-summary.md
+        echo "| Failed | $FAILED_TESTS |" >> test-summary.md
+        echo "| Success Rate | $SUCCESS_RATE% |" >> test-summary.md
+        echo "" >> test-summary.md
+        
+        if [ "$STATUS" = "SUCCESS" ]; then
+          echo "✅ All connectivity tests passed!" >> test-summary.md
+        else
+          echo "❌ Some connectivity tests failed. Check the detailed reports." >> test-summary.md
+        fi
+        
+        echo "**Execution Details:**" >> test-summary.md
+        echo "- Mode: $(jq -r '.buildInfo.executionMode' shared-testing/test-reports/build-summary.json)" >> test-summary.md
+        echo "- Test Suites: $(jq -r '.buildInfo.testSuites' shared-testing/test-reports/build-summary.json)" >> test-summary.md
+        echo "- Backend URL: $(jq -r '.environment.backendUrl' shared-testing/test-reports/build-summary.json)" >> test-summary.md
+        echo "- Frontend URL: $(jq -r '.environment.frontendUrl' shared-testing/test-reports/build-summary.json)" >> test-summary.md
+      fi
+  
+  artifacts:
+    when: always
+    paths:
+      - test-summary.md
+    expire_in: 1 week
+  
+  only:
+    - main
+    - develop
+    - merge_requests
+
+# Pages deployment for test reports
+pages:
+  stage: report
+  image: alpine:latest
+  dependencies:
+    - connectivity-tests
+    - generate-reports
+  
+  script:
+    - echo "📄 Preparing GitLab Pages..."
+    - mkdir public
+    - cp -r shared-testing/test-reports/* public/ || true
+    - |
+      cat > public/index.html << EOF
+      <!DOCTYPE html>
+      <html>
+      <head>
+          <title>Connectivity Test Reports</title>
+          <style>
+              body { font-family: Arial, sans-serif; margin: 40px; }
+              .header { background: #1f77b4; color: white; padding: 20px; border-radius: 5px; }
+              .report-list { margin: 20px 0; }
+              .report-item { margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 3px; }
+              .report-item a { text-decoration: none; color: #1f77b4; font-weight: bold; }
+          </style>
+      </head>
+      <body>
+          <div class="header">
+              <h1>Health Tracker - Connectivity Test Reports</h1>
+              <p>Pipeline: $CI_PIPELINE_ID | Commit: $CI_COMMIT_SHORT_SHA | Branch: $CI_COMMIT_REF_NAME</p>
+          </div>
+          <div class="report-list">
+              <div class="report-item">
+                  <a href="test-execution-*.html">📊 HTML Test Report</a>
+                  <p>Comprehensive test results with detailed analysis</p>
+              </div>
+              <div class="report-item">
+                  <a href="build-summary.json">📋 JSON Summary</a>
+                  <p>Machine-readable test execution summary</p>
+              </div>
+          </div>
+      </body>
+      </html>
+      EOF
+  
+  artifacts:
+    paths:
+      - public
+    expire_in: 1 week
+  
+  only:
+    - main
+
+# Deployment validation stage
+deployment-validation:
+  stage: deploy-validation
+  image: alpine:latest
+  dependencies:
+    - connectivity-tests
+  
+  before_script:
+    - apk add --no-cache jq curl
+  
+  script:
+    - echo "🚀 Validating deployment readiness..."
+    
+    # Check if tests passed
+    - |
+      if [ -f "shared-testing/test-reports/build-summary.json" ]; then
+        STATUS=$(jq -r '.status' shared-testing/test-reports/build-summary.json)
+        if [ "$STATUS" = "SUCCESS" ]; then
+          echo "✅ All connectivity tests passed"
+          echo "🎯 Application is ready for deployment"
+        else
+          echo "❌ Connectivity tests failed - deployment blocked"
+          exit 1
+        fi
+      else
+        echo "❌ No test results found - deployment blocked"
+        exit 1
+      fi
+    
+    # In a real scenario, you would run additional validation tests
+    # against staging or production-like environments
+    
+    - echo "🔍 Running deployment validation checks..."
+    - echo "✅ Deployment validation successful"
+  
+  only:
+    - main
+  
+  when: on_success
+
+# Manual deployment trigger
+deploy-to-production:
+  stage: deploy-validation
+  image: alpine:latest
+  
+  script:
+    - echo "🚀 Triggering production deployment..."
+    - echo "This would trigger your actual deployment pipeline"
+    # Example: curl -X POST $DEPLOYMENT_WEBHOOK_URL
+  
+  when: manual
+  only:
+    - main
+  
+  environment:
+    name: production
+    url: https://healthtracker.example.com
+
+# Scheduled pipeline for regular testing
+scheduled-full-test:
+  extends: connectivity-tests
+  variables:
+    EXECUTION_MODE: "MIXED"
+    TEST_SUITES: "all"
+  
+  only:
+    - schedules

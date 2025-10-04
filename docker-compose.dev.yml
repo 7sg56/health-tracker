@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./ht-backend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    volumes:
+      - ./ht-backend:/app
+      - ~/.m2:/root/.m2
+    networks:
+      - healthtracker-network
+
+  frontend:
+    build:
+      context: ./ht-frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3002:3000"
+    environment:
+      - NEXT_PUBLIC_API_BASE_URL=http://localhost:8080
+    volumes:
+      - ./ht-frontend:/app
+      - /app/node_modules
+    networks:
+      - healthtracker-network
+    depends_on:
+      - backend
+
+networks:
+  healthtracker-network:
+    driver: bridge
