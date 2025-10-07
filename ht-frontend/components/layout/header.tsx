@@ -64,7 +64,7 @@ export function Header({
 
         {/* Logo */}
         <Link 
-          href="/home" 
+          href="/dashboard" 
           className="flex items-center space-x-2"
           aria-label="HealthTracker home"
         >
@@ -114,7 +114,7 @@ export function Header({
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
               <Link 
-                href="/home/profile" 
+                href="/dashboard/profile" 
                 className="cursor-pointer"
                 role="menuitem"
               >

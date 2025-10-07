@@ -13,7 +13,7 @@ jest.mock('next/navigation', () => ({
     }
   },
   usePathname() {
-    return '/home'
+    return '/dashboard'
   },
   useSearchParams() {
     return new URLSearchParams()

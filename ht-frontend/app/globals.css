@@ -125,5 +125,102 @@
   }
   body {
     @apply bg-background text-foreground;
+    transition: background-color var(--animation-duration, 0.2s) ease-in-out,
+                color var(--animation-duration, 0.2s) ease-in-out;
+  }
+}
+
+/* Enhanced theme system styles */
+@layer utilities {
+  /* High contrast mode adjustments */
+  .high-contrast {
+    --border: oklch(0.3 0 0);
+    --ring: oklch(0.2 0 0);
+    --muted: oklch(0.95 0 0);
+    --muted-foreground: oklch(0.2 0 0);
+  }
+
+  .dark.high-contrast {
+    --border: oklch(0.7 0 0);
+    --ring: oklch(0.8 0 0);
+    --muted: oklch(0.15 0 0);
+    --muted-foreground: oklch(0.8 0 0);
+  }
+
+  /* Reduced motion preferences */
+  .reduce-motion,
+  .reduce-motion *,
+  .reduce-motion *::before,
+  .reduce-motion *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Theme transition animations */
+  .theme-transition {
+    transition: background-color var(--animation-duration, 0.2s) ease-in-out,
+                color var(--animation-duration, 0.2s) ease-in-out,
+                border-color var(--animation-duration, 0.2s) ease-in-out;
+  }
+
+  /* Health status colors */
+  .health-status-excellent {
+    background-color: rgb(var(--health-success));
+    color: white;
+  }
+  
+  .health-status-good {
+    background-color: rgb(var(--health-primary));
+    color: white;
+  }
+  
+  .health-status-fair {
+    background-color: rgb(var(--health-warning));
+    color: white;
+  }
+  
+  .health-status-poor {
+    background-color: rgb(var(--health-danger));
+    color: white;
+  }
+
+  /* Theme-aware focus styles */
+  .focus-visible {
+    @apply outline-2 outline-offset-2 outline-ring;
+  }
+
+  /* Enhanced accessibility for high contrast */
+  .high-contrast .focus-visible {
+    outline-width: 3px;
+    outline-offset: 3px;
+  }
+}
+
+/* System preference detection */
+@media (prefers-reduced-motion: reduce) {
+  :root:not(.reduce-motion-override) {
+    --animation-duration: 0.01ms;
+  }
+  
+  :root:not(.reduce-motion-override) *,
+  :root:not(.reduce-motion-override) *::before,
+  :root:not(.reduce-motion-override) *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (prefers-contrast: high) {
+  :root:not(.high-contrast-override) {
+    --border: oklch(0.3 0 0);
+    --ring: oklch(0.2 0 0);
+  }
+  
+  .dark:root:not(.high-contrast-override) {
+    --border: oklch(0.7 0 0);
+    --ring: oklch(0.8 0 0);
   }
 }

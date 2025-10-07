@@ -7,6 +7,7 @@ import { VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/lib/utils/responsive";
 import { InlineSpinner } from "./loading-spinner";
+import { createInteractiveElement } from "@/lib/utils/animations";
 
 interface LoadingButtonProps extends 
   React.ComponentProps<"button">,
@@ -50,10 +51,16 @@ export function LoadingButton({
   return (
     <Button
       className={cn(
-        // Enhanced loading state styles
+        // Enhanced loading state styles with animations
         loading && "cursor-not-allowed",
         // Touch-friendly spacing on mobile
         touchFriendly && isMobile && "min-h-[44px]",
+        // Interactive animations when not loading
+        !loading && createInteractiveElement("", {
+          hover: "scale",
+          focus: "ring",
+          transition: "normal"
+        }),
         className
       )}
       disabled={disabled || loading}
@@ -63,22 +70,26 @@ export function LoadingButton({
       <div className="flex items-center justify-center relative w-full">
         {loading ? (
           <>
-            <span className="mr-2">
+            <span className="mr-2 animate-fade-in">
               {defaultLoadingIcon}
             </span>
             <span className={cn(
-              "transition-opacity duration-200",
-              loading ? "opacity-100" : "opacity-0"
+              "transition-all duration-300 ease-out",
+              loading ? "opacity-100 translate-x-0" : "opacity-0 translate-x-2"
             )}>
               {loadingText || children}
             </span>
           </>
         ) : (
           <>
-            {icon && <span className="mr-2">{icon}</span>}
+            {icon && (
+              <span className="mr-2 transition-transform duration-200 group-hover:scale-110">
+                {icon}
+              </span>
+            )}
             <span className={cn(
-              "transition-opacity duration-200",
-              loading ? "opacity-0" : "opacity-100"
+              "transition-all duration-300 ease-out",
+              loading ? "opacity-0 -translate-x-2" : "opacity-100 translate-x-0"
             )}>
               {children}
             </span>

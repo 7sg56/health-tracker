@@ -159,8 +159,10 @@ public class SessionConfig {
                     sessionId, attributeName);
             }
             
-            // Update last accessed time
-            se.getSession().setAttribute("lastAccessedAt", LocalDateTime.now());
+            // Update last accessed time only if we're not already updating it (prevent infinite recursion)
+            if (!"lastAccessedAt".equals(attributeName)) {
+                se.getSession().setAttribute("lastAccessedAt", LocalDateTime.now());
+            }
         }
         
         @Override
@@ -184,8 +186,10 @@ public class SessionConfig {
                     sessionId, attributeName);
             }
             
-            // Update last accessed time
-            se.getSession().setAttribute("lastAccessedAt", LocalDateTime.now());
+            // Update last accessed time only if we're not already updating it (prevent infinite recursion)
+            if (!"lastAccessedAt".equals(attributeName)) {
+                se.getSession().setAttribute("lastAccessedAt", LocalDateTime.now());
+            }
         }
         
         /**

@@ -80,7 +80,7 @@ export function ProgressComparisonChart({
 
   const comparisonData = React.useMemo(() => {
     const now = new Date();
-    let periods: PeriodData[] = [];
+    const periods: PeriodData[] = [];
 
     if (comparisonType === 'weekly') {
       // Last 4 weeks

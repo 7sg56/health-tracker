@@ -29,7 +29,8 @@ public class SecurityConfig {
                 // CSRF Protection with secure cookie settings
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                        .ignoringRequestMatchers("/api/auth/register", "/api/auth/login", "/api/auth/logout"))
+                        .ignoringRequestMatchers("/api/auth/register", "/api/auth/login", "/api/auth/logout", 
+                                               "/api/water", "/api/food", "/api/workouts", "/api/health-score"))
                 // Session Management Configuration
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)

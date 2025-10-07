@@ -3,18 +3,35 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Utensils, Plus, Edit3, Search } from 'lucide-react';
+import { Utensils, Plus, Edit3, Search, Calculator, Clock } from 'lucide-react';
 
 import { LoadingButton } from '@/components/ui/loading-button';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
+import { 
+  Form, 
+  FormControl, 
+  FormDescription, 
+  FormField, 
+  FormItem, 
+  FormLabel, 
+  FormMessage 
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
 
 import { foodIntakeSchema, type FoodIntakeFormData } from '@/lib/validations/health';
 import { FoodIntakeRequest, FoodIntake } from '@/lib/types/health';
+import { z } from 'zod';
 
 interface FoodIntakeFormProps {
   onSubmit: (data: FoodIntakeRequest) => Promise<void>;
@@ -25,20 +42,52 @@ interface FoodIntakeFormProps {
   onCancel?: () => void;
 }
 
-// Common food suggestions with estimated calories
+// Common food suggestions with estimated calories and categories
 const FOOD_SUGGESTIONS = [
-  { name: 'Apple', calories: 95 },
-  { name: 'Banana', calories: 105 },
-  { name: 'Chicken Breast (100g)', calories: 165 },
-  { name: 'Rice (1 cup)', calories: 205 },
-  { name: 'Bread Slice', calories: 80 },
-  { name: 'Egg', calories: 70 },
-  { name: 'Yogurt (1 cup)', calories: 150 },
-  { name: 'Oatmeal (1 cup)', calories: 150 },
-  { name: 'Salmon (100g)', calories: 208 },
-  { name: 'Broccoli (1 cup)', calories: 25 },
-  { name: 'Pasta (1 cup)', calories: 220 },
-  { name: 'Almonds (28g)', calories: 164 },
+  // Fruits
+  { name: 'Apple', calories: 95, category: 'Fruits' },
+  { name: 'Banana', calories: 105, category: 'Fruits' },
+  { name: 'Orange', calories: 62, category: 'Fruits' },
+  { name: 'Grapes (1 cup)', calories: 104, category: 'Fruits' },
+  
+  // Proteins
+  { name: 'Chicken Breast (100g)', calories: 165, category: 'Proteins' },
+  { name: 'Salmon (100g)', calories: 208, category: 'Proteins' },
+  { name: 'Egg', calories: 70, category: 'Proteins' },
+  { name: 'Greek Yogurt (1 cup)', calories: 150, category: 'Proteins' },
+  { name: 'Tuna (100g)', calories: 132, category: 'Proteins' },
+  
+  // Grains & Carbs
+  { name: 'Rice (1 cup)', calories: 205, category: 'Grains' },
+  { name: 'Bread Slice', calories: 80, category: 'Grains' },
+  { name: 'Oatmeal (1 cup)', calories: 150, category: 'Grains' },
+  { name: 'Pasta (1 cup)', calories: 220, category: 'Grains' },
+  { name: 'Quinoa (1 cup)', calories: 222, category: 'Grains' },
+  
+  // Vegetables
+  { name: 'Broccoli (1 cup)', calories: 25, category: 'Vegetables' },
+  { name: 'Spinach (1 cup)', calories: 7, category: 'Vegetables' },
+  { name: 'Carrots (1 cup)', calories: 52, category: 'Vegetables' },
+  { name: 'Bell Pepper (1 cup)', calories: 30, category: 'Vegetables' },
+  
+  // Nuts & Seeds
+  { name: 'Almonds (28g)', calories: 164, category: 'Nuts & Seeds' },
+  { name: 'Walnuts (28g)', calories: 185, category: 'Nuts & Seeds' },
+  { name: 'Peanut Butter (2 tbsp)', calories: 188, category: 'Nuts & Seeds' },
+  
+  // Dairy
+  { name: 'Milk (1 cup)', calories: 149, category: 'Dairy' },
+  { name: 'Cheese Slice', calories: 113, category: 'Dairy' },
+  { name: 'Yogurt (1 cup)', calories: 150, category: 'Dairy' },
+];
+
+// Meal type options
+const MEAL_TYPES = [
+  { value: 'breakfast', label: 'Breakfast' },
+  { value: 'lunch', label: 'Lunch' },
+  { value: 'dinner', label: 'Dinner' },
+  { value: 'snack', label: 'Snack' },
+  { value: 'other', label: 'Other' },
 ];
 
 export function FoodIntakeForm({ 
@@ -51,36 +100,40 @@ export function FoodIntakeForm({
 }: FoodIntakeFormProps) {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [filteredSuggestions, setFilteredSuggestions] = useState(FOOD_SUGGESTIONS);
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    watch,
-    reset,
-    formState: { errors, isSubmitting }
-  } = useForm<FoodIntakeFormData>({
-    resolver: zodResolver(foodIntakeSchema),
+  const form = useForm<FoodIntakeFormData & { mealType?: string }>({
+    resolver: zodResolver(foodIntakeSchema.extend({
+      mealType: z.string().optional()
+    })),
     defaultValues: {
       foodItem: initialData?.foodItem || '',
-      calories: initialData?.calories || 0
+      calories: initialData?.calories || 0,
+      mealType: 'other'
     }
   });
 
+  const { control, handleSubmit, setValue, watch, reset, formState: { errors, isSubmitting, isValid } } = form;
   const watchedFoodItem = watch('foodItem');
   const watchedCalories = watch('calories');
+  const watchedMealType = watch('mealType');
 
-  // Filter suggestions based on food item input
+  // Filter suggestions based on food item input and category
   useEffect(() => {
+    let filtered = FOOD_SUGGESTIONS;
+    
+    if (selectedCategory && selectedCategory !== 'all') {
+      filtered = filtered.filter(suggestion => suggestion.category === selectedCategory);
+    }
+    
     if (watchedFoodItem) {
-      const filtered = FOOD_SUGGESTIONS.filter(suggestion =>
+      filtered = filtered.filter(suggestion =>
         suggestion.name.toLowerCase().includes(watchedFoodItem.toLowerCase())
       );
-      setFilteredSuggestions(filtered);
-    } else {
-      setFilteredSuggestions(FOOD_SUGGESTIONS);
     }
-  }, [watchedFoodItem]);
+    
+    setFilteredSuggestions(filtered);
+  }, [watchedFoodItem, selectedCategory]);
 
   const handleSuggestionClick = (suggestion: typeof FOOD_SUGGESTIONS[0]) => {
     setValue('foodItem', suggestion.name);
@@ -88,11 +141,14 @@ export function FoodIntakeForm({
     setShowSuggestions(false);
   };
 
-  const onFormSubmit = async (data: FoodIntakeFormData) => {
+  const onFormSubmit = async (data: FoodIntakeFormData & { mealType?: string }) => {
     try {
-      await onSubmit(data);
+      // Extract only the required fields for the API
+      const { foodItem, calories } = data;
+      await onSubmit({ foodItem, calories });
       if (mode === 'create') {
         reset();
+        setSelectedCategory('all');
       }
     } catch (err) {
       // Error handling is managed by parent component
@@ -110,141 +166,234 @@ export function FoodIntakeForm({
   const isFormLoading = isLoading || isSubmitting;
   const isEditMode = mode === 'edit';
 
+  const categories = [...new Set(FOOD_SUGGESTIONS.map(s => s.category))];
+
   return (
-    <Card>
+    <Card className="w-full">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Utensils className="h-5 w-5 text-orange-500" />
-          {isEditMode ? 'Edit Food Intake' : 'Add Food Intake'}
+          {isEditMode ? 'Edit Food Intake' : 'Log Food Intake'}
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4">
-          {error && (
-            <Alert variant="destructive">
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
+        {error && (
+          <Alert variant="destructive" className="mb-6">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
 
-          {/* Food Item Input with Suggestions */}
-          <div className="space-y-2">
-            <Label htmlFor="foodItem" className="text-sm font-medium">
-              Food Item
-            </Label>
-            <div className="relative">
-              <div className="relative">
-                <Input
-                  id="foodItem"
-                  type="text"
-                  placeholder="Enter food item (e.g., Apple, Chicken Breast)"
-                  {...register('foodItem')}
-                  disabled={isFormLoading}
-                  onFocus={() => setShowSuggestions(true)}
-                  onBlur={() => {
-                    // Delay hiding suggestions to allow clicks
-                    setTimeout(() => setShowSuggestions(false), 200);
-                  }}
-                  className="pr-10 h-11 sm:h-10 text-base sm:text-sm"
-                  aria-describedby={errors.foodItem ? "food-item-error" : undefined}
-                />
-                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                  <Search className="h-4 w-4 text-muted-foreground" />
+        <Form {...form}>
+          <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6">
+            {/* Meal Type Selection */}
+            <FormField
+              control={control}
+              name="mealType"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Meal Type</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select meal type" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {MEAL_TYPES.map((type) => (
+                        <SelectItem key={type.value} value={type.value}>
+                          {type.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormDescription>
+                    Choose the type of meal for better tracking
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <Separator />
+
+            {/* Food Category Filter */}
+            <div className="space-y-2">
+              <FormLabel>Food Category (Optional)</FormLabel>
+              <Select value={selectedCategory || undefined} onValueChange={setSelectedCategory}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Filter by category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Categories</SelectItem>
+                  {categories.map((category) => (
+                    <SelectItem key={category} value={category}>
+                      {category}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Food Item Input with Enhanced Suggestions */}
+            <FormField
+              control={control}
+              name="foodItem"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Food Item *</FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Input
+                        placeholder="Enter food item (e.g., Apple, Chicken Breast)"
+                        {...field}
+                        disabled={isFormLoading}
+                        onFocus={() => setShowSuggestions(true)}
+                        onBlur={() => {
+                          // Delay hiding suggestions to allow clicks
+                          setTimeout(() => setShowSuggestions(false), 200);
+                        }}
+                        className="pr-10"
+                      />
+                      <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                        <Search className="h-4 w-4 text-muted-foreground" />
+                      </div>
+                      
+                      {/* Enhanced Suggestions Dropdown */}
+                      {showSuggestions && filteredSuggestions.length > 0 && (
+                        <div className="absolute z-50 w-full mt-1 bg-popover border rounded-md shadow-lg max-h-64 overflow-y-auto">
+                          <div className="p-2">
+                            <p className="text-xs text-muted-foreground mb-2">
+                              Suggestions ({filteredSuggestions.length})
+                            </p>
+                            {filteredSuggestions.slice(0, 12).map((suggestion, index) => (
+                              <button
+                                key={index}
+                                type="button"
+                                className="w-full px-3 py-2 text-left hover:bg-muted transition-colors rounded-sm flex items-center justify-between group"
+                                onClick={() => handleSuggestionClick(suggestion)}
+                              >
+                                <div className="flex-1 min-w-0">
+                                  <span className="text-sm font-medium truncate block">
+                                    {suggestion.name}
+                                  </span>
+                                  <span className="text-xs text-muted-foreground">
+                                    {suggestion.category}
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-2 ml-2">
+                                  <Badge variant="secondary" className="text-xs">
+                                    {suggestion.calories} cal
+                                  </Badge>
+                                  <Calculator className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                                </div>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </FormControl>
+                  <FormDescription>
+                    Start typing to see suggestions or enter your own food item
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Calories Input with Enhanced Validation */}
+            <FormField
+              control={control}
+              name="calories"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Calories *</FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Input
+                        type="number"
+                        min="1"
+                        max="5000"
+                        placeholder="Enter calories (1-5000)"
+                        {...field}
+                        onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                        disabled={isFormLoading}
+                        className="pr-16"
+                      />
+                      <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                        <span className="text-sm text-muted-foreground">cal</span>
+                      </div>
+                    </div>
+                  </FormControl>
+                  <FormDescription>
+                    Enter the total calories for this food item
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Current Selection Preview */}
+            {watchedFoodItem && watchedCalories > 0 && (
+              <div className="p-4 bg-muted/50 rounded-lg border border-dashed">
+                <div className="flex items-center gap-2 mb-2">
+                  <Clock className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm font-medium">Preview</span>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm">
+                    <span className="font-medium">{watchedFoodItem}</span>
+                    {watchedMealType && watchedMealType !== 'other' && (
+                      <Badge variant="outline" className="ml-2 text-xs">
+                        {MEAL_TYPES.find(t => t.value === watchedMealType)?.label}
+                      </Badge>
+                    )}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    <span className="font-medium text-orange-600">{watchedCalories} calories</span>
+                  </p>
                 </div>
               </div>
+            )}
+
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-3 pt-2">
+              <LoadingButton
+                type="submit"
+                loading={isFormLoading}
+                loadingText={isEditMode ? 'Updating...' : 'Adding...'}
+                disabled={!isValid || !watchedFoodItem || !watchedCalories || watchedCalories <= 0}
+                className="flex-1"
+                size="lg"
+              >
+                {isEditMode ? (
+                  <>
+                    <Edit3 className="h-4 w-4 mr-2" />
+                    Update Food Intake
+                  </>
+                ) : (
+                  <>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Food Intake
+                  </>
+                )}
+              </LoadingButton>
               
-              {/* Suggestions Dropdown */}
-              {showSuggestions && filteredSuggestions.length > 0 && (
-                <div className="absolute z-10 w-full mt-1 bg-popover border rounded-md shadow-lg max-h-48 overflow-y-auto">
-                  {filteredSuggestions.slice(0, 8).map((suggestion, index) => (
-                    <button
-                      key={index}
-                      type="button"
-                      className="w-full px-3 py-3 sm:py-2 text-left hover:bg-muted transition-colors flex items-center justify-between min-h-[48px] sm:min-h-0"
-                      onClick={() => handleSuggestionClick(suggestion)}
-                    >
-                      <span className="text-sm truncate flex-1 mr-2">{suggestion.name}</span>
-                      <Badge variant="secondary" className="text-xs flex-shrink-0">
-                        {suggestion.calories} cal
-                      </Badge>
-                    </button>
-                  ))}
-                </div>
+              {(isEditMode || onCancel) && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleCancel}
+                  disabled={isFormLoading}
+                  size="lg"
+                  className="sm:w-auto"
+                >
+                  Cancel
+                </Button>
               )}
             </div>
-            {errors.foodItem && (
-              <p id="food-item-error" className="text-sm text-destructive">
-                {errors.foodItem.message}
-              </p>
-            )}
-          </div>
-
-          {/* Calories Input */}
-          <div className="space-y-2">
-            <Label htmlFor="calories" className="text-sm font-medium">
-              Calories
-            </Label>
-            <div className="relative">
-              <Input
-                id="calories"
-                type="number"
-                min="1"
-                max="5000"
-                placeholder="Enter calories (1-5000)"
-                {...register('calories', { valueAsNumber: true })}
-                disabled={isFormLoading}
-                className="pr-16 h-11 sm:h-10 text-base sm:text-sm"
-                aria-describedby={errors.calories ? "calories-error" : undefined}
-              />
-              <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                <span className="text-sm text-muted-foreground">cal</span>
-              </div>
-            </div>
-            {errors.calories && (
-              <p id="calories-error" className="text-sm text-destructive">
-                {errors.calories.message}
-              </p>
-            )}
-          </div>
-
-          {/* Current Selection Display */}
-          {watchedFoodItem && watchedCalories > 0 && (
-            <div className="p-3 bg-muted/50 rounded-md">
-              <p className="text-sm text-muted-foreground">
-                <span className="font-medium text-foreground">{watchedFoodItem}</span>
-                {' - '}
-                <span className="font-medium text-foreground">{watchedCalories} calories</span>
-              </p>
-            </div>
-          )}
-
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-2">
-            <LoadingButton
-              type="submit"
-              loading={isFormLoading}
-              loadingText={isEditMode ? 'Updating...' : 'Adding...'}
-              disabled={!watchedFoodItem || !watchedCalories || watchedCalories <= 0}
-              className="flex-1"
-              icon={isEditMode ? <Edit3 className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
-              touchFriendly
-            >
-              <span className="hidden sm:inline">{isEditMode ? 'Update Food Intake' : 'Add Food Intake'}</span>
-              <span className="sm:hidden">{isEditMode ? 'Update' : 'Add Food'}</span>
-            </LoadingButton>
-            
-            {(isEditMode || onCancel) && (
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleCancel}
-                disabled={isFormLoading}
-                className="sm:w-auto"
-              >
-                Cancel
-              </Button>
-            )}
-          </div>
-        </form>
+          </form>
+        </Form>
       </CardContent>
     </Card>
   );

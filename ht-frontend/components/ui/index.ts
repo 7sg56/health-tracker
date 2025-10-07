@@ -76,6 +76,36 @@ export {
   ValidationError, 
   useErrorComponent 
 } from "./error-messages";
+export {
+  FormErrorDisplay,
+  FieldError,
+  FormSuccessDisplay,
+  ValidationSummary,
+  ApiErrorDisplay,
+  FieldValidationStatus,
+  FormSubmissionStatus,
+  useFormErrorDisplay
+} from "./form-error-display";
+export {
+  NetworkErrorHandler,
+  useNetworkRetry,
+  NetworkStatus,
+  OfflineFallback
+} from "./network-error-handler";
+export {
+  LoadingErrorState,
+  DataLoader,
+  ImageWithFallback,
+  SuspenseFallback,
+  useLoadingErrorState
+} from "./loading-error-states";
+export {
+  withComprehensiveErrorHandling,
+  useComprehensiveErrorHandling,
+  ErrorBoundaryProvider,
+  AsyncOperationWrapper,
+  FormWrapper
+} from "./error-handling";
 
 // Enhanced form components
 export { 
@@ -92,3 +122,17 @@ export { InfiniteScroll, LoadMoreButton, useInfiniteScroll } from "./infinite-sc
 // Search and filter components
 export { SearchFilter } from "./search-filter";
 export { Popover, PopoverTrigger, PopoverContent } from "./popover";
+
+// Breadcrumb and theme components
+export { 
+  Breadcrumb, 
+  BreadcrumbList, 
+  BreadcrumbItem, 
+  BreadcrumbLink, 
+  BreadcrumbPage, 
+  BreadcrumbSeparator, 
+  BreadcrumbEllipsis 
+} from "./breadcrumb";
+export { ThemeToggle } from "./theme-toggle";
+export { ThemeSettings } from "./theme-settings";
+export { Slider } from "./slider";

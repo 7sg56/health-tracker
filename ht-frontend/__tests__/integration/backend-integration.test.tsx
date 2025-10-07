@@ -28,7 +28,7 @@ const TEST_USER = {
 };
 
 describe('Backend Integration Tests', () => {
-  let authToken: string | null = null;
+  const authToken: string | null = null;
   let userId: number | null = null;
 
   beforeAll(async () => {

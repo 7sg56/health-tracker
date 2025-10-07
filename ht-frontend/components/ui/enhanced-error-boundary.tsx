@@ -9,7 +9,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './car
 import { Badge } from './badge';
 import { Separator } from './separator';
 import { GlobalErrorHandler } from '@/lib/utils/global-error-handler';
-import { useToast } from '@/lib/utils/toast';
+import { Alert, AlertDescription, AlertTitle } from './alert';
+import { FormErrorDisplay } from './form-error-display';
+import { NetworkErrorHandler } from './network-error-handler';
+import { LoadingErrorState } from './loading-error-states';
 
 interface ErrorInfo {
   componentStack: string;
@@ -148,69 +151,66 @@ export class EnhancedErrorBoundary extends Component<
     const { level = 'component', showDetails = false, maxRetries = 3 } = this.props;
     const { error, errorId, retryCount } = this.state;
 
-    // Different UI based on error level
+    // Check if it's a network error
+    const isNetworkError = error && (
+      error.message?.includes('fetch') || 
+      error.message?.includes('network') ||
+      error.message?.includes('connection')
+    );
+
+    // Use specialized network error handler for network errors
+    if (isNetworkError && level !== 'component') {
+      return (
+        <NetworkErrorHandler
+          error={error}
+          onRetry={retryCount < maxRetries ? this.handleRetry : undefined}
+          onCancel={this.handleGoHome}
+          maxRetries={maxRetries}
+          variant={level === 'page' ? 'card' : 'alert'}
+        />
+      );
+    }
+
+    // Different UI based on error level using shadcn Alert components
     if (level === 'component') {
       return (
-        <div className="flex flex-col items-center justify-center p-4 text-center border border-destructive/20 rounded-lg bg-destructive/5">
-          <AlertTriangle className="h-6 w-6 text-destructive mb-2" />
-          <p className="text-sm font-medium mb-2">Component Error</p>
-          <p className="text-xs text-muted-foreground mb-3">
-            This component encountered an error
-          </p>
-          {retryCount < maxRetries && (
-            <Button onClick={this.handleRetry} size="sm" variant="outline">
-              <RefreshCw className="mr-1 h-3 w-3" />
-              Retry
-            </Button>
-          )}
-        </div>
+        <Alert variant="destructive" className="border-destructive/50">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle>Component Error</AlertTitle>
+          <AlertDescription>
+            <div className="space-y-3">
+              <p className="text-sm">This component encountered an error and couldn't render properly.</p>
+              {showDetails && error && (
+                <div className="rounded-md bg-muted p-2">
+                  <p className="text-xs font-mono break-all">{error.message}</p>
+                </div>
+              )}
+              {retryCount < maxRetries && (
+                <Button onClick={this.handleRetry} size="sm" variant="outline">
+                  <RefreshCw className="mr-1 h-3 w-3" />
+                  Retry
+                </Button>
+              )}
+            </div>
+          </AlertDescription>
+        </Alert>
       );
     }
 
     if (level === 'section') {
       return (
-        <Card className="w-full max-w-lg mx-auto">
-          <CardHeader className="text-center">
-            <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-destructive/10">
-              <AlertTriangle className="h-5 w-5 text-destructive" />
-            </div>
-            <CardTitle className="text-lg">Section Unavailable</CardTitle>
-            <CardDescription>
-              This section encountered an error and couldn&apos;t load properly.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {showDetails && error && (
-              <div className="rounded-md bg-muted p-3">
-                <p className="text-xs font-mono text-muted-foreground break-all">
-                  {error.message}
-                </p>
-              </div>
-            )}
-            
-            <div className="flex gap-2">
-              {retryCount < maxRetries && (
-                <Button onClick={this.handleRetry} size="sm" className="flex-1">
-                  <RefreshCw className="mr-2 h-4 w-4" />
-                  Try Again
-                </Button>
-              )}
-              <Button 
-                variant="outline" 
-                onClick={this.handleGoHome}
-                size="sm"
-                className="flex-1"
-              >
-                <Home className="mr-2 h-4 w-4" />
-                Go Home
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        <LoadingErrorState
+          error={error?.message || 'Section failed to load'}
+          errorTitle="Section Unavailable"
+          onRetry={retryCount < maxRetries ? this.handleRetry : undefined}
+          onCancel={this.handleGoHome}
+          variant="card"
+          size="md"
+        />
       );
     }
 
-    // Page level error
+    // Page level error - use comprehensive error display
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-background">
         <Card className="w-full max-w-md">
@@ -232,16 +232,14 @@ export class EnhancedErrorBoundary extends Component<
               </div>
             )}
 
-            {showDetails && error && (
-              <div className="rounded-md bg-muted p-3">
-                <p className="text-sm font-medium text-muted-foreground mb-2">
-                  Error Details:
-                </p>
-                <p className="text-xs font-mono text-muted-foreground break-all">
-                  {error.message}
-                </p>
-              </div>
-            )}
+            {/* Use FormErrorDisplay for consistent error messaging */}
+            <FormErrorDisplay
+              errors={error?.message || 'An unexpected error occurred'}
+              variant="destructive"
+              showRetry={retryCount < maxRetries}
+              onRetry={this.handleRetry}
+              className="border-none bg-transparent p-0"
+            />
 
             {retryCount > 0 && (
               <div className="text-center">
@@ -252,13 +250,6 @@ export class EnhancedErrorBoundary extends Component<
             )}
             
             <div className="flex flex-col gap-2">
-              {retryCount < maxRetries && (
-                <Button onClick={this.handleRetry} className="w-full">
-                  <RefreshCw className="mr-2 h-4 w-4" />
-                  Try Again
-                </Button>
-              )}
-              
               <div className="flex gap-2">
                 <Button 
                   variant="outline" 
@@ -316,14 +307,12 @@ export class EnhancedErrorBoundary extends Component<
  * Hook-based error handler for functional components
  */
 export function useErrorHandler() {
-  const toast = useToast();
-
   return React.useCallback((error: Error, context?: string) => {
     GlobalErrorHandler.handleComponentError(error, context || 'Component', {
       showToast: true,
       logError: true,
     });
-  }, [toast]);
+  }, []);
 }
 
 /**

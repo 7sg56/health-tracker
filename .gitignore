@@ -255,6 +255,9 @@ cookies.txt
 backend.log
 frontend.log
 
+# Kiro AI Assistant
+.kiro/
+
 # Build artifacts
 build/
 dist/

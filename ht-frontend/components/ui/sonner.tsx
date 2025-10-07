@@ -2,14 +2,17 @@
 
 import { useTheme } from "next-themes"
 import { Toaster as Sonner, ToasterProps } from "sonner"
+import { useEnhancedTheme } from "@/lib/theme"
 
 const Toaster = ({ ...props }: ToasterProps) => {
   const { theme = "system" } = useTheme()
+  const { isReducedMotion } = useEnhancedTheme()
 
   return (
     <Sonner
       theme={theme as ToasterProps["theme"]}
       className="toaster group"
+      duration={isReducedMotion ? 2000 : 4000}
       style={
         {
           "--normal-bg": "var(--popover)",

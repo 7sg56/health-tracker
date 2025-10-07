@@ -8,7 +8,7 @@ import { Dumbbell, Plus, Edit3, Clock, Flame } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 
@@ -152,15 +152,23 @@ export function WorkoutForm({
   const isEditMode = mode === 'edit';
 
   return (
-    <Card>
-      <CardHeader>
+    <Card className="shadow-sm hover:shadow-md transition-shadow">
+      <CardHeader className="pb-4">
         <CardTitle className="flex items-center gap-2">
-          <Dumbbell className="h-5 w-5 text-purple-500" />
-          {isEditMode ? 'Edit Workout' : 'Add Workout'}
+          <div className="flex items-center justify-center w-8 h-8 bg-purple-100 dark:bg-purple-900/20 rounded-lg">
+            <Dumbbell className="h-4 w-4 text-purple-600" />
+          </div>
+          {isEditMode ? 'Edit Workout' : 'Log New Workout'}
         </CardTitle>
+        <CardDescription>
+          {isEditMode 
+            ? 'Update your workout details' 
+            : 'Track your exercise session and calories burned'
+          }
+        </CardDescription>
       </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4">
+      <CardContent className="space-y-6">
+        <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6">
           {error && (
             <Alert variant="destructive">
               <AlertDescription>{error}</AlertDescription>
@@ -214,13 +222,13 @@ export function WorkoutForm({
           </div>
 
           {/* Duration Input with Presets */}
-          <div className="space-y-2">
+          <div className="space-y-3">
             <Label htmlFor="durationMin" className="text-sm font-medium">
               Duration (Minutes)
             </Label>
             
             {/* Duration Preset Buttons */}
-            <div className="flex flex-wrap gap-2 mb-2">
+            <div className="flex flex-wrap gap-2 mb-3">
               {DURATION_PRESETS.map((duration) => (
                 <Button
                   key={duration}
@@ -229,7 +237,7 @@ export function WorkoutForm({
                   size="sm"
                   onClick={() => handleDurationPresetClick(duration)}
                   disabled={isFormLoading}
-                  className="flex items-center gap-1"
+                  className="flex items-center gap-1 transition-all hover:scale-105"
                 >
                   <Clock className="h-3 w-3" />
                   {duration}min
@@ -293,34 +301,47 @@ export function WorkoutForm({
             )}
           </div>
 
-          {/* Current Selection Display */}
+          {/* Enhanced Current Selection Display */}
           {watchedActivity && watchedDuration > 0 && (
-            <div className="p-3 bg-muted/50 rounded-md">
-              <div className="flex items-center gap-4 text-sm">
-                <div className="flex items-center gap-1">
-                  <Dumbbell className="h-4 w-4 text-purple-500" />
-                  <span className="font-medium text-foreground">{watchedActivity}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Clock className="h-4 w-4 text-blue-500" />
-                  <span className="font-medium text-foreground">{watchedDuration} min</span>
-                </div>
-                {watchedCalories && (
-                  <div className="flex items-center gap-1">
-                    <Flame className="h-4 w-4 text-orange-500" />
-                    <span className="font-medium text-foreground">{watchedCalories} cal</span>
+            <Card className="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-950/20 dark:to-blue-950/20 border-purple-200 dark:border-purple-800">
+              <CardContent className="p-4">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center justify-center w-8 h-8 bg-purple-100 dark:bg-purple-900/20 rounded-lg">
+                      <Dumbbell className="h-4 w-4 text-purple-600" />
+                    </div>
+                    <span className="font-semibold text-foreground">{watchedActivity}</span>
                   </div>
-                )}
-              </div>
-            </div>
+                  
+                  <div className="flex items-center gap-4 text-sm">
+                    <div className="flex items-center gap-1">
+                      <Clock className="h-4 w-4 text-blue-500" />
+                      <span className="font-medium text-foreground">{watchedDuration} min</span>
+                    </div>
+                    {watchedCalories && (
+                      <div className="flex items-center gap-1">
+                        <Flame className="h-4 w-4 text-orange-500" />
+                        <span className="font-medium text-foreground">{watchedCalories} cal</span>
+                      </div>
+                    )}
+                    {estimatedCalories && watchedCalories !== estimatedCalories && (
+                      <Badge variant="outline" className="text-xs">
+                        Est: {estimatedCalories} cal
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           )}
 
-          {/* Action Buttons */}
-          <div className="flex gap-2">
+          {/* Enhanced Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-3 pt-2">
             <Button
               type="submit"
               disabled={isFormLoading || !watchedActivity || !watchedDuration || watchedDuration <= 0}
-              className="flex-1"
+              className="flex-1 h-11 font-medium transition-all hover:scale-[1.02] active:scale-[0.98]"
+              size="lg"
             >
               {isFormLoading ? (
                 <>
@@ -345,6 +366,8 @@ export function WorkoutForm({
                 variant="outline"
                 onClick={handleCancel}
                 disabled={isFormLoading}
+                className="h-11 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                size="lg"
               >
                 Cancel
               </Button>

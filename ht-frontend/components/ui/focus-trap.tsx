@@ -5,42 +5,89 @@
 
 import * as React from "react";
 import { useFocusTrap } from "@/hooks/use-keyboard-navigation";
+import { FocusManager, announceToScreenReader } from "@/lib/utils/accessibility";
 
 interface FocusTrapProps {
   children: React.ReactNode;
   isActive?: boolean;
   restoreFocus?: boolean;
+  autoFocus?: boolean;
   className?: string;
+  onActivate?: () => void;
+  onDeactivate?: () => void;
+  'aria-label'?: string;
+  'aria-describedby'?: string;
 }
 
 export function FocusTrap({ 
   children, 
   isActive = true, 
   restoreFocus = true,
-  className 
+  autoFocus = true,
+  className,
+  onActivate,
+  onDeactivate,
+  'aria-label': ariaLabel,
+  'aria-describedby': ariaDescribedBy
 }: FocusTrapProps) {
   const previousActiveElement = React.useRef<HTMLElement | null>(null);
+  const containerRef = React.useRef<HTMLDivElement>(null);
   const setContainerRef = useFocusTrap(isActive);
 
   React.useEffect(() => {
-    if (isActive && restoreFocus) {
+    if (isActive) {
       // Store the currently focused element
-      previousActiveElement.current = document.activeElement as HTMLElement;
-    }
-
-    return () => {
+      if (restoreFocus) {
+        previousActiveElement.current = document.activeElement as HTMLElement;
+      }
+      
+      // Focus the first focusable element in the trap
+      if (autoFocus && containerRef.current) {
+        const focusableElements = containerRef.current.querySelectorAll(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        const firstElement = focusableElements[0] as HTMLElement;
+        if (firstElement) {
+          firstElement.focus();
+        }
+      }
+      
+      onActivate?.();
+      
+      // Announce to screen readers
+      if (ariaLabel) {
+        announceToScreenReader(`${ariaLabel} opened`, 'polite');
+      }
+    } else {
       // Restore focus when the trap is deactivated
       if (restoreFocus && previousActiveElement.current) {
         previousActiveElement.current.focus();
       }
-    };
-  }, [isActive, restoreFocus]);
+      
+      onDeactivate?.();
+      
+      // Announce to screen readers
+      if (ariaLabel) {
+        announceToScreenReader(`${ariaLabel} closed`, 'polite');
+      }
+    }
+  }, [isActive, restoreFocus, autoFocus, onActivate, onDeactivate, ariaLabel]);
+
+  // Combine refs
+  const combinedRef = React.useCallback((node: HTMLDivElement) => {
+    containerRef.current = node;
+    setContainerRef(node);
+  }, [setContainerRef]);
 
   return (
     <div
-      ref={setContainerRef}
+      ref={combinedRef}
       className={className}
       data-focus-trap={isActive}
+      aria-label={ariaLabel}
+      aria-describedby={ariaDescribedBy}
+      role={ariaLabel ? "dialog" : undefined}
+      aria-modal={isActive}
     >
       {children}
     </div>

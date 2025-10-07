@@ -82,11 +82,44 @@ const nextConfig: NextConfig = {
   // Redirects for SEO
   async redirects() {
     return [
+      // Prefer /dashboard over legacy /home
       {
-        source: '/dashboard',
-        destination: '/home',
+        source: '/home',
+        destination: '/dashboard',
         permanent: true,
       },
+      // Map old section names to new paths
+      {
+        source: '/home/waterIntake',
+        destination: '/dashboard/water',
+        permanent: true,
+      },
+      {
+        source: '/home/foodIntake',
+        destination: '/dashboard/food',
+        permanent: true,
+      },
+      {
+        source: '/home/workout',
+        destination: '/dashboard/workout',
+        permanent: true,
+      },
+      {
+        source: '/home/profile',
+        destination: '/dashboard/profile',
+        permanent: true,
+      },
+      {
+        source: '/home/health-score',
+        destination: '/dashboard/health-score',
+        permanent: true,
+      },
+      {
+        source: '/home/:path*',
+        destination: '/dashboard/:path*',
+        permanent: true,
+      },
+      // Auth shortcuts
       {
         source: '/login',
         destination: '/auth/login',

@@ -10,6 +10,14 @@ import { useRouter, usePathname } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 
 import { useAuth } from '../../contexts/AuthContext';
+import { 
+  isProtectedRoute, 
+  isPublicRoute, 
+  shouldRedirectRoute,
+  buildReturnUrl,
+  parseReturnUrl,
+  isValidReturnUrl 
+} from '../../lib/utils/route-guards';
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -58,10 +66,17 @@ export function AuthGuard({
     // Don't redirect while loading
     if (state.isLoading) return;
 
+    // Check if current route needs to be redirected (e.g., /home -> /dashboard)
+    const routeRedirect = shouldRedirectRoute(pathname);
+    if (routeRedirect) {
+      router.replace(routeRedirect);
+      return;
+    }
+
     // If authentication is required but user is not authenticated
     if (requireAuth && !state.isAuthenticated) {
-      // Store the current path to redirect back after login
-      const returnUrl = encodeURIComponent(pathname);
+      // Use enhanced route utilities for return URL
+      const returnUrl = buildReturnUrl(pathname);
       router.push(`${redirectTo}?returnUrl=${returnUrl}`);
       return;
     }
@@ -71,12 +86,13 @@ export function AuthGuard({
     if (!requireAuth && state.isAuthenticated) {
       // Check if there's a return URL in the query params
       const urlParams = new URLSearchParams(window.location.search);
-      const returnUrl = urlParams.get('returnUrl');
+      const returnPath = parseReturnUrl(urlParams);
       
-      if (returnUrl) {
-        router.push(decodeURIComponent(returnUrl));
+      // Validate and use the return URL
+      if (returnPath && isValidReturnUrl(returnPath)) {
+        router.push(returnPath);
       } else {
-        router.push('/home'); // Default authenticated redirect
+        router.push('/dashboard'); // Default authenticated redirect
       }
       return;
     }
@@ -127,7 +143,7 @@ export function ProtectedRoute({
 export function PublicRoute({ 
   children, 
   fallback,
-  redirectTo = '/home',
+  redirectTo = '/dashboard',
 }: {
   children: React.ReactNode;
   fallback?: React.ReactNode;

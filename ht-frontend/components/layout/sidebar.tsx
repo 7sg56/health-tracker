@@ -33,31 +33,31 @@ interface NavItem {
 const navItems: NavItem[] = [
   {
     title: "Dashboard",
-    href: "/home",
+    href: "/dashboard",
     icon: Home,
     description: "Overview of your health metrics",
   },
   {
     title: "Water Intake",
-    href: "/home/waterIntake",
+    href: "/dashboard/water",
     icon: Droplets,
     description: "Track your daily hydration",
   },
   {
     title: "Food Intake",
-    href: "/home/foodIntake",
+    href: "/dashboard/food",
     icon: Utensils,
     description: "Log your meals and calories",
   },
   {
     title: "Workouts",
-    href: "/home/workout",
+    href: "/dashboard/workout",
     icon: Dumbbell,
     description: "Record your exercise activities",
   },
   {
     title: "Health Score",
-    href: "/home/health-score",
+    href: "/dashboard/health-score",
     icon: TrendingUp,
     description: "View your health trends",
   },
@@ -94,7 +94,7 @@ export function Sidebar({ isOpen, onClose, className }: SidebarProps) {
         {/* Mobile header */}
         <div className="flex h-14 sm:h-16 items-center justify-between px-4 border-b border-border">
           <Link 
-            href="/home" 
+            href="/dashboard" 
             className="flex items-center space-x-2" 
             onClick={onClose}
             aria-label="HealthTracker home"

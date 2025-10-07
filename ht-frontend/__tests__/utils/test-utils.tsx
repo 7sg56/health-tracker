@@ -4,7 +4,7 @@
 
 import React, { ReactElement } from 'react'
 import { render, RenderOptions } from '@testing-library/react'
-import { ThemeProvider } from 'next-themes'
+import { EnhancedThemeProvider } from '@/lib/theme'
 import { AuthProvider } from '@/contexts/AuthContext'
 
 // Mock auth context for testing
@@ -32,11 +32,11 @@ const MockAuthProvider = ({ children }: { children: React.ReactNode }) => {
 // Custom render function that includes providers
 const AllTheProviders = ({ children }: { children: React.ReactNode }) => {
   return (
-    <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+    <EnhancedThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
       <MockAuthProvider>
         {children}
       </MockAuthProvider>
-    </ThemeProvider>
+    </EnhancedThemeProvider>
   )
 }
 

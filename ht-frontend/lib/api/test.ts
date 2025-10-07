@@ -37,7 +37,8 @@ export class TestService {
     } catch (error) {
       console.error('Connectivity test failed:', error);
       return {
-        error: error instanceof Error ? error.message : 'Connectivity test failed',
+        error:
+          error instanceof Error ? error.message : 'Connectivity test failed',
         status: 0,
       };
     }
@@ -49,15 +50,18 @@ export class TestService {
   static async testCORS(): Promise<boolean> {
     try {
       // Make an OPTIONS request to test CORS preflight
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'}/api/auth/login`, {
-        method: 'OPTIONS',
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Request-Method': 'POST',
-          'Access-Control-Request-Headers': 'Content-Type',
-        },
-        credentials: 'include',
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'}/api/auth/login`,
+        {
+          method: 'OPTIONS',
+          headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Request-Method': 'POST',
+            'Access-Control-Request-Headers': 'Content-Type',
+          },
+          credentials: 'include',
+        }
+      );
 
       return response.ok;
     } catch (error) {
@@ -100,7 +104,10 @@ export class TestService {
   static async testHealth(): Promise<boolean> {
     try {
       // Test getting health data (might fail with 401 but endpoint should be reachable)
-      const response = await HealthService.getWaterIntakes({ page: 0, size: 1 });
+      const response = await HealthService.getWaterIntakes({
+        page: 0,
+        size: 1,
+      });
       return response.status !== 0; // Any response means the endpoint is reachable
     } catch (error) {
       console.error('Health test failed:', error);
@@ -133,7 +140,7 @@ export class TestService {
       auth: false,
       health: false,
       healthScore: false,
-      errors: []
+      errors: [],
     };
 
     try {
@@ -141,7 +148,9 @@ export class TestService {
       const connectivityResult = await this.testConnectivity();
       results.connectivity = connectivityResult.status !== 0;
       if (!results.connectivity) {
-        results.errors.push(`Connectivity: ${connectivityResult.error || 'Failed'}`);
+        results.errors.push(
+          `Connectivity: ${connectivityResult.error || 'Failed'}`
+        );
       }
 
       // Test CORS
@@ -173,9 +182,10 @@ export class TestService {
       if (!results.healthScore) {
         results.errors.push('Health Score: Health score endpoints unreachable');
       }
-
     } catch (error) {
-      results.errors.push(`Test suite error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      results.errors.push(
+        `Test suite error: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
 
     return results;
@@ -192,7 +202,7 @@ export class TestService {
     return {
       baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080',
       environment: process.env.NODE_ENV || 'development',
-      sessionInfo: apiClient.getSessionInfo()
+      sessionInfo: apiClient.getSessionInfo(),
     };
   }
 }

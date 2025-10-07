@@ -3,41 +3,41 @@ import { cn } from "@/lib/utils";
 import { Skeleton } from "./skeleton";
 import { Card, CardContent, CardHeader } from "./card";
 
-// Dashboard skeleton components
+// Dashboard skeleton components with staggered animations
 export function DashboardSkeleton() {
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="space-y-4 sm:space-y-6 animate-fade-in">
       {/* Header skeleton */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="space-y-2">
-          <Skeleton className="h-8 w-32 sm:w-40" />
-          <Skeleton className="h-4 w-48 sm:w-64" />
+          <Skeleton className="h-8 w-32 sm:w-40" variant="shimmer" />
+          <Skeleton className="h-4 w-48 sm:w-64" variant="shimmer" style={{ animationDelay: '0.1s' }} />
         </div>
-        <Skeleton className="h-9 w-20 sm:w-24" />
+        <Skeleton className="h-9 w-20 sm:w-24" variant="shimmer" style={{ animationDelay: '0.2s' }} />
       </div>
 
       {/* Main content grid skeleton */}
       <div className="grid gap-4 sm:gap-6 lg:grid-cols-3">
         {/* Health score card skeleton */}
         <div className="lg:col-span-1 order-2 lg:order-1">
-          <Card>
+          <Card className="transition-all duration-300 hover:shadow-sm">
             <CardHeader>
-              <Skeleton className="h-6 w-40" />
-              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-6 w-40" variant="shimmer" style={{ animationDelay: '0.3s' }} />
+              <Skeleton className="h-4 w-32" variant="shimmer" style={{ animationDelay: '0.4s' }} />
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="text-center space-y-2">
-                <Skeleton className="h-16 w-16 rounded-full mx-auto" />
-                <Skeleton className="h-4 w-20 mx-auto" />
-                <Skeleton className="h-6 w-24 mx-auto" />
+                <Skeleton className="h-16 w-16 rounded-full mx-auto" variant="wave" style={{ animationDelay: '0.5s' }} />
+                <Skeleton className="h-4 w-20 mx-auto" variant="shimmer" style={{ animationDelay: '0.6s' }} />
+                <Skeleton className="h-6 w-24 mx-auto" variant="shimmer" style={{ animationDelay: '0.7s' }} />
               </div>
               <div className="space-y-3">
                 {[1, 2, 3].map((i) => (
                   <div key={i} className="flex items-center justify-between">
-                    <Skeleton className="h-4 w-16" />
+                    <Skeleton className="h-4 w-16" variant="shimmer" style={{ animationDelay: `${0.7 + i * 0.1}s` }} />
                     <div className="flex items-center gap-2">
-                      <Skeleton className="h-4 w-8" />
-                      <Skeleton className="h-2 w-20" />
+                      <Skeleton className="h-4 w-8" variant="shimmer" style={{ animationDelay: `${0.8 + i * 0.1}s` }} />
+                      <Skeleton className="h-2 w-20" variant="wave" style={{ animationDelay: `${0.9 + i * 0.1}s` }} />
                     </div>
                   </div>
                 ))}
@@ -60,16 +60,16 @@ export function DashboardSkeleton() {
             </div>
             <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
               {[1, 2, 3].map((i) => (
-                <Card key={i}>
+                <Card key={i} className="transition-all duration-300 hover:shadow-sm">
                   <CardContent className="p-4 sm:p-6">
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <Skeleton className="h-5 w-20" />
-                        <Skeleton className="h-6 w-6 rounded" />
+                        <Skeleton className="h-5 w-20" variant="shimmer" style={{ animationDelay: `${1.2 + i * 0.1}s` }} />
+                        <Skeleton className="h-6 w-6 rounded" variant="wave" style={{ animationDelay: `${1.3 + i * 0.1}s` }} />
                       </div>
-                      <Skeleton className="h-8 w-16" />
-                      <Skeleton className="h-4 w-24" />
-                      <Skeleton className="h-2 w-full" />
+                      <Skeleton className="h-8 w-16" variant="shimmer" style={{ animationDelay: `${1.4 + i * 0.1}s` }} />
+                      <Skeleton className="h-4 w-24" variant="shimmer" style={{ animationDelay: `${1.5 + i * 0.1}s` }} />
+                      <Skeleton className="h-2 w-full" variant="wave" style={{ animationDelay: `${1.6 + i * 0.1}s` }} />
                     </div>
                   </CardContent>
                 </Card>

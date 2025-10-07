@@ -97,75 +97,96 @@ function WorkoutItem({ workout, onEdit, onDelete, isDeleting = false }: WorkoutI
     }
   };
 
+  // Check if workout is from today
+  const isToday = workout.date === new Date().toISOString().split('T')[0];
+
   return (
     <>
-      <Card className="transition-all hover:shadow-md">
+      <Card className={`transition-all hover:shadow-md hover:scale-[1.01] ${isToday ? 'ring-2 ring-green-200 dark:ring-green-800 bg-green-50/50 dark:bg-green-950/10' : ''}`}>
         <CardContent className="p-4">
           <div className="flex items-start justify-between">
-            <div className="flex-1 space-y-2">
-              {/* Activity and Duration */}
+            <div className="flex-1 space-y-3">
+              {/* Header with Activity Icon */}
               <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2">
-                  <Dumbbell className="h-4 w-4 text-purple-500" />
-                  <span className="font-medium text-foreground">{workout.activity}</span>
+                <div className="flex items-center justify-center w-10 h-10 bg-purple-100 dark:bg-purple-900/20 rounded-xl">
+                  <Dumbbell className="h-5 w-5 text-purple-600" />
                 </div>
-                <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                  <Clock className="h-3 w-3" />
-                  <span>{workout.durationMin} min</span>
-                </div>
-                {workout.caloriesBurned && (
-                  <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                    <Flame className="h-3 w-3" />
-                    <span>{workout.caloriesBurned} cal</span>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="font-semibold text-foreground text-lg">{workout.activity}</span>
+                    {isToday && (
+                      <Badge variant="default" className="text-xs">
+                        Today
+                      </Badge>
+                    )}
                   </div>
-                )}
+                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-1">
+                      <Clock className="h-3 w-3" />
+                      <span className="font-medium">{workout.durationMin} min</span>
+                    </div>
+                    {workout.caloriesBurned && (
+                      <div className="flex items-center gap-1">
+                        <Flame className="h-3 w-3" />
+                        <span className="font-medium">{workout.caloriesBurned} cal</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
 
               {/* Date and Time */}
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground pl-13">
                 <Calendar className="h-3 w-3" />
                 <span>{formatDate(workout.date)}</span>
                 <span>•</span>
                 <span>{formatTime(workout.createdAt)}</span>
               </div>
 
-              {/* Workout Summary Badge */}
-              <div className="flex items-center gap-2">
-                <Badge variant="secondary" className="text-xs">
-                  {workout.durationMin} minutes
+              {/* Enhanced Progress Indicators */}
+              <div className="flex items-center gap-2 pl-13">
+                <Badge variant="secondary" className="text-xs font-medium">
+                  <Clock className="w-3 h-3 mr-1" />
+                  {workout.durationMin}min
                 </Badge>
                 {workout.caloriesBurned && (
-                  <Badge variant="outline" className="text-xs">
-                    {workout.caloriesBurned} calories
+                  <Badge variant="outline" className="text-xs font-medium">
+                    <Flame className="w-3 h-3 mr-1" />
+                    {workout.caloriesBurned}cal
+                  </Badge>
+                )}
+                {workout.durationMin >= 30 && (
+                  <Badge variant="default" className="text-xs">
+                    🎯 Goal Met
                   </Badge>
                 )}
               </div>
             </div>
 
-            {/* Actions Menu */}
+            {/* Enhanced Actions Menu */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-8 w-8 p-0"
+                  className="h-8 w-8 p-0 hover:bg-muted/80 transition-colors"
                   disabled={isDeleting || isDeleteLoading}
                 >
                   <MoreVertical className="h-4 w-4" />
                   <span className="sr-only">Open menu</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+              <DropdownMenuContent align="end" className="w-40">
                 <DropdownMenuItem
                   onClick={() => onEdit(workout)}
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-2 cursor-pointer"
                 >
                   <Edit3 className="h-4 w-4" />
                   Edit
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => setShowDeleteDialog(true)}
-                  className="flex items-center gap-2 text-destructive focus:text-destructive"
+                  className="flex items-center gap-2 text-destructive focus:text-destructive cursor-pointer"
                 >
                   <Trash2 className="h-4 w-4" />
                   Delete
@@ -314,29 +335,29 @@ export function WorkoutList({
   const totalCalories = workouts.reduce((sum, workout) => sum + (workout.caloriesBurned || 0), 0);
 
   return (
-    <Card>
-      <CardHeader>
+    <Card className="shadow-sm hover:shadow-md transition-shadow">
+      <CardHeader className="pb-4">
         <CardTitle className="flex items-center gap-2">
-          <Dumbbell className="h-5 w-5 text-purple-500" />
-          Workout History
+          <div className="flex items-center justify-center w-8 h-8 bg-purple-100 dark:bg-purple-900/20 rounded-lg">
+            <Dumbbell className="h-4 w-4 text-purple-600" />
+          </div>
+          Recent Workouts
         </CardTitle>
         
-        {/* Summary Stats */}
-        <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-          <div className="flex items-center gap-1">
-            <span className="font-medium text-foreground">{totalWorkouts}</span>
-            <span>workout{totalWorkouts !== 1 ? 's' : ''}</span>
+        {/* Enhanced Summary Stats */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-4">
+          <div className="text-center p-3 bg-muted/50 rounded-lg">
+            <div className="text-lg font-bold text-foreground">{totalWorkouts}</div>
+            <div className="text-xs text-muted-foreground">Total Workouts</div>
           </div>
-          <div className="flex items-center gap-1">
-            <Clock className="h-3 w-3" />
-            <span className="font-medium text-foreground">{totalMinutes}</span>
-            <span>minutes total</span>
+          <div className="text-center p-3 bg-muted/50 rounded-lg">
+            <div className="text-lg font-bold text-foreground">{totalMinutes}</div>
+            <div className="text-xs text-muted-foreground">Minutes</div>
           </div>
           {totalCalories > 0 && (
-            <div className="flex items-center gap-1">
-              <Flame className="h-3 w-3" />
-              <span className="font-medium text-foreground">{totalCalories}</span>
-              <span>calories burned</span>
+            <div className="text-center p-3 bg-muted/50 rounded-lg">
+              <div className="text-lg font-bold text-foreground">{totalCalories}</div>
+              <div className="text-xs text-muted-foreground">Calories</div>
             </div>
           )}
         </div>

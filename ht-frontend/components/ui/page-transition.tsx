@@ -1,41 +1,98 @@
 "use client";
 
 import * as React from "react";
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 interface PageTransitionProps {
   children: React.ReactNode;
   className?: string;
   delay?: number;
+  variant?: "fade" | "slide-up" | "slide-down" | "slide-left" | "slide-right" | "scale";
 }
 
 export function PageTransition({ 
   children, 
   className,
-  delay = 0 
+  delay = 0,
+  variant = "slide-up"
 }: PageTransitionProps) {
   const [isVisible, setIsVisible] = React.useState(false);
+  const pathname = usePathname();
 
   React.useEffect(() => {
+    // Reset animation on route change
+    setIsVisible(false);
+    
     const timer = setTimeout(() => {
       setIsVisible(true);
-    }, delay);
+    }, delay + 50); // Small delay to ensure reset
 
     return () => clearTimeout(timer);
-  }, [delay]);
+  }, [delay, pathname]);
+
+  const variantClasses = {
+    fade: isVisible 
+      ? "opacity-100" 
+      : "opacity-0",
+    "slide-up": isVisible 
+      ? "opacity-100 translate-y-0" 
+      : "opacity-0 translate-y-4",
+    "slide-down": isVisible 
+      ? "opacity-100 translate-y-0" 
+      : "opacity-0 -translate-y-4",
+    "slide-left": isVisible 
+      ? "opacity-100 translate-x-0" 
+      : "opacity-0 translate-x-4",
+    "slide-right": isVisible 
+      ? "opacity-100 translate-x-0" 
+      : "opacity-0 -translate-x-4",
+    scale: isVisible 
+      ? "opacity-100 scale-100" 
+      : "opacity-0 scale-95"
+  };
 
   return (
     <div
       className={cn(
-        "transition-all duration-500 ease-out",
-        isVisible 
-          ? "opacity-100 translate-y-0" 
-          : "opacity-0 translate-y-4",
+        "transition-all duration-500 ease-out will-change-transform",
+        variantClasses[variant],
         className
       )}
     >
       {children}
     </div>
+  );
+}
+
+// Enhanced page transition with route-specific animations
+export function RoutePageTransition({ 
+  children, 
+  className 
+}: { 
+  children: React.ReactNode; 
+  className?: string;
+}) {
+  const pathname = usePathname();
+  
+  // Different animations for different routes
+  const getVariantForRoute = (path: string): PageTransitionProps["variant"] => {
+    if (path.includes("/dashboard") && path !== "/dashboard") {
+      return "slide-left"; // Sub-pages slide from right
+    }
+    if (path === "/dashboard") {
+      return "fade"; // Main dashboard fades in
+    }
+    return "slide-up"; // Default animation
+  };
+
+  return (
+    <PageTransition 
+      variant={getVariantForRoute(pathname)}
+      className={className}
+    >
+      {children}
+    </PageTransition>
   );
 }
 

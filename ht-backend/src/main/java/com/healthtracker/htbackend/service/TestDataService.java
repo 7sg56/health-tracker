@@ -127,9 +127,9 @@ public class TestDataService {
                 for (int j = 0; j < mealsPerDay; j++) {
                     FoodIntake food = new FoodIntake();
                     food.setUser(user);
-                    food.setFoodName("Test Food " + (j + 1));
+                    food.setFoodItem("Test Food " + (j + 1));
                     food.setCalories(200 + random.nextInt(400));
-                    food.setConsumedAt(currentDate.atTime(8 + j * 4, 0));
+                    food.setDate(currentDate);
                     foodIntakeRepository.save(food);
                     foodRecords++;
                 }
@@ -139,8 +139,8 @@ public class TestDataService {
                 for (int j = 0; j < waterIntakesPerDay; j++) {
                     WaterIntake water = new WaterIntake();
                     water.setUser(user);
-                    water.setAmount(250 + random.nextInt(250));
-                    water.setConsumedAt(currentDate.atTime(8 + j * 2, 0));
+                    water.setAmountLtr((250 + random.nextInt(250)) / 1000.0f); // Convert ml to liters
+                    water.setDate(currentDate);
                     waterIntakeRepository.save(water);
                     waterRecords++;
                 }
@@ -149,10 +149,10 @@ public class TestDataService {
                 if (random.nextBoolean()) {
                     Workout workout = new Workout();
                     workout.setUser(user);
-                    workout.setType("Test Workout");
-                    workout.setDuration(30 + random.nextInt(60));
+                    workout.setActivity("Test Workout");
+                    workout.setDurationMin(30 + random.nextInt(60));
                     workout.setCaloriesBurned(100 + random.nextInt(300));
-                    workout.setWorkoutDate(currentDate.atTime(18, 0));
+                    workout.setDate(currentDate);
                     workoutRepository.save(workout);
                     workoutRecords++;
                 }

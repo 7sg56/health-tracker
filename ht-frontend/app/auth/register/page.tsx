@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { RegisterForm } from '@/components/auth/RegisterForm';
+import { PublicRoute } from '@/components/auth/AuthGuard';
 import { useAuth } from '@/contexts/AuthContext';
 import { Activity, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -16,13 +17,13 @@ export default function RegisterPage() {
   // Redirect if already authenticated
   useEffect(() => {
     if (state.isAuthenticated && !state.isLoading) {
-      router.push('/home');
+      router.push('/dashboard');
     }
   }, [state.isAuthenticated, state.isLoading, router]);
 
   const handleRegisterSuccess = () => {
     toast.success('Account created successfully! Welcome to HealthTracker!');
-    router.push('/home');
+    router.push('/dashboard');
   };
 
   const handleRegisterError = (error: string) => {
@@ -44,7 +45,8 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <PublicRoute>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       {/* Header */}
       <header className="container mx-auto px-4 py-6">
         <nav className="flex items-center justify-between">
@@ -115,6 +117,7 @@ export default function RegisterPage() {
           </div>
         </div>
       </footer>
-    </div>
+      </div>
+    </PublicRoute>
   );
 }
