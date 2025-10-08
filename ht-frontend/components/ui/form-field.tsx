@@ -38,7 +38,7 @@ export function FormField({
         {React.cloneElement(children as React.ReactElement<any>, {
           id: fieldId,
           "aria-describedby": description ? `${fieldId}-description` : undefined,
-          "aria-invalid": error ? "true" : "false",
+          "aria-invalid": !!error,
           className: cn(
             (children as React.ReactElement<any>).props?.className,
             error && "border-destructive focus-visible:ring-destructive"

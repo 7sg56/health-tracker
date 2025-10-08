@@ -34,34 +34,13 @@ const DefaultPageSkeleton = () => (
   </div>
 );
 
-// Default error fallback
-const DefaultErrorFallback = ({ error, resetError }: { error: Error; resetError: () => void }) => (
-  <div className="container mx-auto px-4 py-8">
-    <div className="text-center space-y-4">
-      <h2 className="text-2xl font-bold text-destructive">Something went wrong</h2>
-      <p className="text-muted-foreground">
-        We encountered an error while loading this page.
-      </p>
-      <div className="bg-muted p-4 rounded-lg text-sm text-left max-w-md mx-auto">
-        <code>{error.message}</code>
-      </div>
-      <button
-        onClick={resetError}
-        className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
-      >
-        Try Again
-      </button>
-    </div>
-  </div>
-);
-
 export function LazyPageWrapper({ 
   children, 
   fallback = <DefaultPageSkeleton />,
   errorFallback 
 }: LazyPageWrapperProps) {
   return (
-    <ErrorBoundary fallback={errorFallback || DefaultErrorFallback}>
+    <ErrorBoundary fallback={errorFallback}>
       <Suspense fallback={fallback}>
         {children}
       </Suspense>

@@ -65,7 +65,7 @@ export function LoadingButton({
       )}
       disabled={disabled || loading}
       size={finalSize}
-      {...props}
+      {...({ ...props, 'aria-expanded': typeof props["aria-expanded"] === 'string' ? props["aria-expanded"] === 'true' : props["aria-expanded"] } as any)}
     >
       <div className="flex items-center justify-center relative w-full">
         {loading ? (

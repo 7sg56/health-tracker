@@ -296,7 +296,7 @@ export function FormWrapper({ children, onSubmit, className }: FormWrapperProps)
       {submitSuccess && (
         <FormErrorDisplay
           errors="Form submitted successfully!"
-          variant="info"
+          variant="default"
           showDismiss={true}
           onDismiss={() => setSubmitSuccess(false)}
           className="mb-4"
