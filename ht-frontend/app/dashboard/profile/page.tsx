@@ -5,16 +5,87 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Separator } from '@/components/ui/separator';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { User as UserIcon, Mail, Settings as SettingsIcon, Camera, Target, Upload, Save, Bell, Lock, Globe, Shield, Sun, Moon, Calendar, Palette, CheckCircle2, AlertCircle } from 'lucide-react';
+
+// Profile form schema and types
+const profileFormSchema = z.object({
+  username: z.string().min(2, 'Username must be at least 2 characters').max(50),
+  email: z.string().email('Invalid email address').optional().or(z.literal('')),
+  bio: z.string().max(500, 'Bio must be at most 500 characters').optional().or(z.literal('')),
+  healthGoal: z.enum(['maintain', 'lose', 'gain', 'performance']),
+});
+
+type ProfileFormData = z.infer<typeof profileFormSchema>;
+
+// Settings form schema and types
+const settingsFormSchema = z.object({
+  notifications: z.object({
+    email: z.boolean(),
+    push: z.boolean(),
+    reminders: z.boolean(),
+  }),
+  privacy: z.object({
+    profileVisibility: z.enum(['public', 'private']),
+    dataSharing: z.boolean(),
+  }),
+  preferences: z.object({
+    theme: z.enum(['light', 'dark', 'system']),
+    language: z.enum(['en', 'es', 'fr']),
+    timezone: z.string(),
+  }),
+});
+
+type SettingsFormData = z.infer<typeof settingsFormSchema>;
+
+const healthGoalOptions = [
+  { value: 'maintain', label: 'Maintain Health' },
+  { value: 'lose', label: 'Lose Weight' },
+  { value: 'gain', label: 'Gain Muscle' },
+  { value: 'performance', label: 'Improve Performance' },
+];
+
+const languageOptions = [
+  { value: 'en', label: 'English' },
+  { value: 'es', label: 'Spanish' },
+  { value: 'fr', label: 'French' },
+];
+
+const timezoneOptions = [
+  { value: 'UTC', label: 'UTC' },
+  { value: 'America/New_York', label: 'America/New_York' },
+  { value: 'Asia/Kolkata', label: 'Asia/Kolkata' },
+];
 
 export default function ProfilePage() {
-  const [name, setName] = useState('Guest');
+  const [name, setName] = useState('Sourish Ghosh');
   const [goal, setGoal] = useState('Stay Healthy');
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
+  const [isEditing, setIsEditing] = useState(false);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+
+  const user = {
+    username: name,
+    email: 'sourish@example.com',
+    createdAt: new Date().toISOString(),
+  };
 
   // Profile form
   const profileForm = useForm<ProfileFormData>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
-      username: '',
+      username: 'Sourish Ghosh',
       email: '',
       bio: '',
       healthGoal: 'maintain',
@@ -130,8 +201,8 @@ export default function ProfilePage() {
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-12 h-12 bg-purple-100 dark:bg-purple-900/20 rounded-xl">
-              <User className="w-6 h-6 text-purple-600" />
+<div className="flex items-center justify-center w-12 h-12 bg-purple-100 rounded-xl">
+<UserIcon className="w-6 h-6 text-purple-600" />
             </div>
             <div>
               <h1 className="text-3xl font-bold tracking-tight">Profile</h1>
@@ -141,17 +212,17 @@ export default function ProfilePage() {
             </div>
           </div>
           {saveStatus === 'success' && (
-            <Alert className="w-auto border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950">
+<Alert className="w-auto border-green-200 bg-green-50">
               <CheckCircle2 className="h-4 w-4 text-green-600" />
-              <AlertDescription className="text-green-800 dark:text-green-200">
+<AlertDescription className="text-green-800">
                 Changes saved successfully!
               </AlertDescription>
             </Alert>
           )}
           {saveStatus === 'error' && (
-            <Alert className="w-auto border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950">
+<Alert className="w-auto border-red-200 bg-red-50">
               <AlertCircle className="h-4 w-4 text-red-600" />
-              <AlertDescription className="text-red-800 dark:text-red-200">
+<AlertDescription className="text-red-800">
                 Failed to save changes. Please try again.
               </AlertDescription>
             </Alert>
@@ -168,10 +239,10 @@ export default function ProfilePage() {
                 <Avatar className="h-24 w-24 ring-4 ring-primary/10">
                   <AvatarImage 
                     src={avatarPreview || undefined} 
-                    alt={`${user?.username || 'User'}'s avatar`} 
+                    alt={`${user?.username || 'Sourish Ghosh'}'s avatar`} 
                   />
                   <AvatarFallback className="text-2xl font-semibold bg-primary/10 text-primary">
-                    {user?.username?.substring(0, 2).toUpperCase() || 'U'}
+                    {user?.username?.substring(0, 2).toUpperCase() || 'SG'}
                   </AvatarFallback>
                 </Avatar>
                 <div className="absolute -bottom-2 -right-2">
@@ -191,7 +262,7 @@ export default function ProfilePage() {
               </div>
               <div className="space-y-2 text-center">
                 <h3 className="text-xl font-semibold">
-                  {user?.username || 'User'}
+                  {user?.username || 'Sourish Ghosh'}
                 </h3>
                 <p className="text-sm text-muted-foreground">
                   {user?.email || 'No email provided'}
@@ -208,7 +279,7 @@ export default function ProfilePage() {
                   className="flex-1"
                   onClick={() => setIsEditing(!isEditing)}
                 >
-                  <Settings className="w-4 h-4 mr-2" />
+<SettingsIcon className="w-4 h-4 mr-2" />
                   {isEditing ? 'Cancel' : 'Edit Profile'}
                 </Button>
               </div>
@@ -221,7 +292,7 @@ export default function ProfilePage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <User className="w-5 h-5 text-blue-500" />
+<UserIcon className="w-5 h-5 text-blue-500" />
                 <span>Account Information</span>
               </CardTitle>
               <CardDescription>
@@ -239,7 +310,7 @@ export default function ProfilePage() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className="flex items-center space-x-2">
-                              <User className="w-4 h-4" />
+<UserIcon className="w-4 h-4" />
                               <span>Username</span>
                             </FormLabel>
                             <FormControl>
@@ -339,11 +410,11 @@ export default function ProfilePage() {
                   <div className="grid gap-6 sm:grid-cols-2">
                     <div className="space-y-2">
                       <Label className="flex items-center space-x-2">
-                        <User className="w-4 h-4" />
+<UserIcon className="w-4 h-4" />
                         <span>Username</span>
                       </Label>
                       <Input 
-                        value={user?.username ?? ''} 
+                        value={user?.username ?? 'Sourish Ghosh'} 
                         readOnly 
                         className="bg-muted/50"
                       />
@@ -377,7 +448,7 @@ export default function ProfilePage() {
                         <span>Account Status</span>
                       </Label>
                       <div className="flex items-center space-x-2">
-                        <Badge variant="default" className="bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400">
+<Badge variant="default" className="bg-green-100 text-green-800">
                           Active
                         </Badge>
                       </div>
@@ -392,7 +463,7 @@ export default function ProfilePage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <Settings className="w-5 h-5 text-gray-500" />
+<SettingsIcon className="w-5 h-5 text-gray-500" />
                 <span>Settings & Preferences</span>
               </CardTitle>
               <CardDescription>

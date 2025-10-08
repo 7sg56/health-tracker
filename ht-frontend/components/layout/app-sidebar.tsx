@@ -44,7 +44,6 @@ export function AppSidebar({ children, basePath = '/dashboard' }: SidebarProps) 
       { name: 'Water Intake', href: `${base}/water`, icon: Droplets, badge: 'Daily' },
       { name: 'Food Intake', href: `${base}/food`, icon: Utensils, badge: 'Track' },
       { name: 'Workouts', href: `${base}/workout`, icon: Dumbbell, badge: 'Fit' },
-      { name: 'Health Score', href: `${base}/health-score`, icon: Heart },
       { name: 'Profile', href: `${base}/profile`, icon: User },
     ];
   }, [basePath]);
@@ -96,7 +95,7 @@ export function AppSidebar({ children, basePath = '/dashboard' }: SidebarProps) 
             </Avatar>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                John Doe
+                Sourish Ghosh
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
                 Health Goal: Stay Fit

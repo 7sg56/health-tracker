@@ -14,7 +14,7 @@ export const ROUTE_REDIRECTS: Record<string, string> = {
   '/home/foodIntake': '/dashboard/food',
   '/home/workout': '/dashboard/workout',
   '/home/profile': '/dashboard/profile',
-  '/home/health-score': '/dashboard/health-score',
+  '/home/health-score': '/dashboard',
   '/home/demo-search': '/dashboard',
 };
 
@@ -99,7 +99,6 @@ export function useNavigationRoutes() {
     { id: 'water', label: 'Water Intake', href: '/dashboard/water', icon: 'Droplets' },
     { id: 'food', label: 'Food Intake', href: '/dashboard/food', icon: 'Utensils' },
     { id: 'workout', label: 'Workouts', href: '/dashboard/workout', icon: 'Dumbbell' },
-    { id: 'health-score', label: 'Health Score', href: '/dashboard/health-score', icon: 'Heart' },
     { id: 'profile', label: 'Profile', href: '/dashboard/profile', icon: 'User' },
   ];
 
@@ -184,7 +183,6 @@ export function getBreadcrumbItems(pathname: string): Array<{ label: string; hre
     food: 'Food Intake',
     workout: 'Workouts',
     profile: 'Profile',
-    'health-score': 'Health Score',
     settings: 'Settings',
   };
 

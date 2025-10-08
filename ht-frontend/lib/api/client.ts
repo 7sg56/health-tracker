@@ -44,21 +44,6 @@ class ApiClient {
     this.responseInterceptors.push(interceptor);
   }
 
-  // Auth removed: CSRF/session features disabled
-  private getCSRFToken(): string | null {
-    // Try to get from cookie first (Spring Security default)
-    const cookies = document.cookie.split(';');
-    for (const cookie of cookies) {
-      const [name, value] = cookie.trim().split('=');
-      if (name === 'XSRF-TOKEN') {
-        return decodeURIComponent(value);
-      }
-    }
-    
-    // Fallback to meta tag
-    const metaTag = document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement;
-    return metaTag?.content || null;
-  }
 
   /**
    * Check if session is valid

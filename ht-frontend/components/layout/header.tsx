@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Menu, User, LogOut, Settings, Activity } from "lucide-react";
+import { Menu, User, Settings, Activity } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -28,15 +28,11 @@ export function Header({
 }: HeaderProps) {
   // Mock user data - this will be replaced with actual auth context
   const user = {
-    name: "John Doe",
-    email: "john@example.com",
+    name: "Sourish Ghosh",
+    email: "sourish@example.com",
     avatar: null,
   };
 
-  const handleLogout = () => {
-    // This will be implemented with actual auth context
-    console.log("Logout clicked");
-  };
 
   return (
     <header 
@@ -55,7 +51,7 @@ export function Header({
             className="lg:hidden mr-2 h-9 w-9 sm:h-10 sm:w-10"
             onClick={onMenuClick}
             aria-label="Open navigation menu"
-            aria-expanded="false"
+            aria-expanded={false}
             aria-controls="navigation"
           >
             <Menu className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
@@ -125,15 +121,6 @@ export function Header({
             <DropdownMenuItem role="menuitem">
               <Settings className="mr-2 h-4 w-4" aria-hidden="true" />
               <span>Settings</span>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem 
-              onClick={handleLogout} 
-              className="cursor-pointer"
-              role="menuitem"
-            >
-              <LogOut className="mr-2 h-4 w-4" aria-hidden="true" />
-              <span>Log out</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

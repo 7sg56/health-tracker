@@ -55,12 +55,6 @@ const navItems: NavItem[] = [
     icon: Dumbbell,
     description: "Record your exercise activities",
   },
-  {
-    title: "Health Score",
-    href: "/dashboard/health-score",
-    icon: TrendingUp,
-    description: "View your health trends",
-  },
 ];
 
 export function Sidebar({ isOpen, onClose, className }: SidebarProps) {

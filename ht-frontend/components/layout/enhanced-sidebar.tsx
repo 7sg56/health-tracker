@@ -61,7 +61,7 @@ interface UserProfile {
 // Mock data - in real app this would come from context/API
 const mockUserProfile: UserProfile = {
   id: '1',
-  name: 'John Doe',
+  name: 'Sourish Ghosh',
   email: 'john.doe@example.com',
   avatar: '/avatar-placeholder.png',
   healthGoal: 'Stay Fit & Healthy'

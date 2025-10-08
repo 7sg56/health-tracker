@@ -13,27 +13,15 @@ const HOME_TO_DASHBOARD_REDIRECTS: Record<string, string> = {
   '/home/foodIntake': '/dashboard/food',
   '/home/workout': '/dashboard/workout',
   '/home/profile': '/dashboard/profile',
-  '/home/health-score': '/dashboard/health-score',
+' /home/health-score': '/dashboard',
   '/home/demo-search': '/dashboard',
 };
-
-// Define protected routes that require authentication
-const PROTECTED_ROUTES: string[] = [];
 
 // Define public routes that should redirect authenticated users
 const LEGACY_AUTH_ROUTES = [
   '/auth/login',
   '/auth/register',
 ];
-
-/**
- * Check if a path matches any of the protected route patterns
- */
-function isProtectedRoute(pathname: string): boolean {
-  return PROTECTED_ROUTES.some(route => 
-    pathname === route || pathname.startsWith(`${route}/`)
-  );
-}
 
 /**
  * Check if a path matches any of the public route patterns
@@ -44,18 +32,6 @@ function isLegacyAuthRoute(pathname: string): boolean {
   );
 }
 
-/**
- * Check if user is authenticated by looking for auth token
- * In a real app, you might want to verify the token validity
- */
-function isAuthenticated(request: NextRequest): boolean {
-  // Check for authentication token in cookies
-  const authToken = request.cookies.get('auth-token')?.value;
-  const sessionId = request.cookies.get('session-id')?.value;
-  
-  // Return true if either token exists (basic check)
-  return !!(authToken || sessionId);
-}
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;

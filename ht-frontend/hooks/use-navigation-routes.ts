@@ -82,14 +82,6 @@ const MAIN_ROUTES: Omit<NavigationRoute, 'isActive'>[] = [
     shortcut: '⌘E',
   },
   {
-    id: 'health-score',
-    label: 'Health Score',
-    href: '/dashboard/health-score',
-    icon: Heart,
-    description: 'View your overall health metrics',
-    shortcut: '⌘H',
-  },
-  {
     id: 'profile',
     label: 'Profile',
     href: '/dashboard/profile',
@@ -202,7 +194,7 @@ export function useNavigationGroups(): NavigationGroup[] {
       {
         id: 'tracking',
         label: 'Health Tracking',
-        routes: routes.filter(route => ['food', 'workout', 'health-score'].includes(route.id)),
+        routes: routes.filter(route => ['food', 'workout'].includes(route.id)),
         collapsible: true,
         defaultCollapsed: false,
       },
@@ -255,7 +247,6 @@ export function useBreadcrumbs(): Array<{ label: string; href?: string }> {
       food: 'Food Intake',
       workout: 'Workouts',
       profile: 'Profile',
-      'health-score': 'Health Score',
       settings: 'Settings',
       analytics: 'Analytics',
       goals: 'Goals',

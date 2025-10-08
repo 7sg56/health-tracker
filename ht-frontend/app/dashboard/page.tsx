@@ -37,6 +37,14 @@ export default function DashboardPage() {
     error
   } = useDashboardData();
 
+  // Weekly aggregates (placeholder averages)
+  const weeklyData = {
+    healthScore: 78,
+    water: 85,
+    food: 72,
+    exercise: 68,
+  };
+
   const today = new Date().toISOString().split('T')[0];
 
   // Calculate today's stats
@@ -410,6 +418,70 @@ export default function DashboardPage() {
         </SlideIn>
       </div>
 
+      {/* Detailed Breakdown (merged from Health Score page) */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <SlideIn direction="up" delay={260}>
+          <Card className="hover:shadow-md transition-shadow">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-base font-medium">Hydration</CardTitle>
+              <Droplets className="h-5 w-5 text-blue-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-2xl font-bold text-blue-600">{breakdown?.water || 0}%</span>
+                  <Badge variant={breakdown?.water && breakdown.water >= 80 ? "default" : "secondary"}>
+                    {breakdown?.water && breakdown.water >= 80 ? "Great" : "Needs Work"}
+                  </Badge>
+                </div>
+                <Progress value={breakdown?.water || 0} className="h-2" />
+                <p className="text-xs text-muted-foreground">Based on daily water intake vs. goal</p>
+              </div>
+            </CardContent>
+          </Card>
+        </SlideIn>
+        <SlideIn direction="up" delay={280}>
+          <Card className="hover:shadow-md transition-shadow">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-base font-medium">Nutrition</CardTitle>
+              <Utensils className="h-5 w-5 text-orange-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-2xl font-bold text-orange-600">{breakdown?.food || 0}%</span>
+                  <Badge variant={breakdown?.food && breakdown.food >= 80 ? "default" : "secondary"}>
+                    {breakdown?.food && breakdown.food >= 80 ? "Great" : "Needs Work"}
+                  </Badge>
+                </div>
+                <Progress value={breakdown?.food || 0} className="h-2" />
+                <p className="text-xs text-muted-foreground">Based on calorie intake and meal balance</p>
+              </div>
+            </CardContent>
+          </Card>
+        </SlideIn>
+        <SlideIn direction="up" delay={300}>
+          <Card className="hover:shadow-md transition-shadow">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-base font-medium">Exercise</CardTitle>
+              <Dumbbell className="h-5 w-5 text-green-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-2xl font-bold text-green-600">{breakdown?.exercise || 0}%</span>
+                  <Badge variant={breakdown?.exercise && breakdown.exercise >= 80 ? "default" : "secondary"}>
+                    {breakdown?.exercise && breakdown.exercise >= 80 ? "Great" : "Needs Work"}
+                  </Badge>
+                </div>
+                <Progress value={breakdown?.exercise || 0} className="h-2" />
+                <p className="text-xs text-muted-foreground">Based on workout duration and frequency</p>
+              </div>
+            </CardContent>
+          </Card>
+        </SlideIn>
+      </div>
+
       {/* Enhanced Quick Actions & Goals Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Quick Actions */}
@@ -508,17 +580,101 @@ export default function DashboardPage() {
         </SlideIn>
       </div>
 
-      {/* View Details Button */}
-      <FadeIn delay={800}>
-        <div className="flex justify-center pt-4">
-          <Button asChild variant="outline" size="lg" className={microInteractions.button}>
-            <Link href="/dashboard/health-score">
-              <TrendingUp className="w-4 h-4 mr-2" />
-              View Detailed Health Analysis
-            </Link>
-          </Button>
-        </div>
-      </FadeIn>
+      {/* Weekly Trends and Recommendations (merged) */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        <SlideIn direction="left" delay={820}>
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <TrendingUp className="w-5 h-5 text-blue-500" />
+                <span>Weekly Trends</span>
+              </CardTitle>
+              <CardDescription>Your average scores over the past week</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">Overall Health Score</span>
+                  <span className="text-sm text-muted-foreground">{weeklyData.healthScore}%</span>
+                </div>
+                <Progress value={weeklyData.healthScore} className="h-2" />
+              </div>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">Hydration</span>
+                  <span className="text-sm text-muted-foreground">{weeklyData.water}%</span>
+                </div>
+                <Progress value={weeklyData.water} className="h-2" />
+              </div>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">Nutrition</span>
+                  <span className="text-sm text-muted-foreground">{weeklyData.food}%</span>
+                </div>
+                <Progress value={weeklyData.food} className="h-2" />
+              </div>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">Exercise</span>
+                  <span className="text-sm text-muted-foreground">{weeklyData.exercise}%</span>
+                </div>
+                <Progress value={weeklyData.exercise} className="h-2" />
+              </div>
+            </CardContent>
+          </Card>
+        </SlideIn>
+        <SlideIn direction="right" delay={860}>
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Award className="w-5 h-5 text-purple-500" />
+                <span>Recommendations</span>
+              </CardTitle>
+              <CardDescription>Personalized tips to improve your health score</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-3">
+                {breakdown?.water && breakdown.water < 80 && (
+                  <div className="flex items-start space-x-3 p-3 bg-blue-50 rounded-lg">
+                    <Droplets className="w-4 h-4 text-blue-500 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-medium">Increase Water Intake</p>
+                      <p className="text-xs text-muted-foreground">Try to drink more water throughout the day to reach your hydration goals.</p>
+                    </div>
+                  </div>
+                )}
+                {breakdown?.food && breakdown.food < 80 && (
+                  <div className="flex items-start space-x-3 p-3 bg-orange-50 rounded-lg">
+                    <Utensils className="w-4 h-4 text-orange-500 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-medium">Balance Your Nutrition</p>
+                      <p className="text-xs text-muted-foreground">Focus on balanced meals with proper calorie distribution.</p>
+                    </div>
+                  </div>
+                )}
+                {breakdown?.exercise && breakdown.exercise < 80 && (
+                  <div className="flex items-start space-x-3 p-3 bg-green-50 rounded-lg">
+                    <Dumbbell className="w-4 h-4 text-green-500 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-medium">Increase Physical Activity</p>
+                      <p className="text-xs text-muted-foreground">Add more exercise sessions to meet your daily activity goals.</p>
+                    </div>
+                  </div>
+                )}
+                {(!breakdown || (breakdown.water >= 80 && breakdown.food >= 80 && breakdown.exercise >= 80)) && (
+                  <div className="flex items-start space-x-3 p-3 bg-green-50 rounded-lg">
+                    <Award className="w-4 h-4 text-green-500 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-medium">Great Job!</p>
+                      <p className="text-xs text-muted-foreground">You&apos;re doing excellent across all health metrics. Keep it up!</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </SlideIn>
+      </div>
     </PageTransition>
   );
 }

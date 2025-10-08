@@ -63,14 +63,6 @@ export const DEFAULT_NAVIGATION_ITEMS: NavigationItem[] = [
     shortcut: '⌘E',
   },
   {
-    id: 'health-score',
-    label: 'Health Score',
-    href: '/dashboard/health-score',
-    icon: Heart,
-    description: 'View your overall health metrics',
-    shortcut: '⌘H',
-  },
-  {
     id: 'profile',
     label: 'Profile',
     href: '/dashboard/profile',
@@ -105,7 +97,7 @@ export const NAVIGATION_GROUPS: NavigationGroup[] = [
   {
     id: 'tracking',
     label: 'Health Tracking',
-    items: DEFAULT_NAVIGATION_ITEMS.slice(2, 5), // Food, Workout, Health Score
+    items: DEFAULT_NAVIGATION_ITEMS.slice(2, 4), // Food, Workout
     collapsible: true,
     defaultCollapsed: false,
   },
@@ -205,11 +197,11 @@ export function createNavigationConfig(
  */
 export const DEFAULT_USER_PROFILE: UserProfile = {
   id: '1',
-  name: 'John Doe',
-  email: 'john.doe@example.com',
+  name: 'Sourish Ghosh',
+  email: 'sourish@example.com',
   avatar: '/avatar-placeholder.png',
   healthGoal: 'Stay Fit & Healthy',
-  initials: 'JD',
+  initials: 'SG',
 };
 
 /**
@@ -256,7 +248,6 @@ export const NAVIGATION_PRIORITIES = {
   water: 2,
   food: 3,
   workout: 4,
-  'health-score': 5,
   profile: 6,
   analytics: 7,
   goals: 8,
@@ -273,7 +264,6 @@ export const NAVIGATION_SHORTCUTS = {
   water: '⌘W',
   food: '⌘F',
   workout: '⌘E',
-  'health-score': '⌘H',
   profile: '⌘P',
   settings: '⌘,',
 } as const;

@@ -111,7 +111,7 @@ const nextConfig: NextConfig = {
       },
       {
         source: '/home/health-score',
-        destination: '/dashboard/health-score',
+        destination: '/dashboard',
         permanent: true,
       },
       {
