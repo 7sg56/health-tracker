@@ -7,8 +7,7 @@ import {
   ApiResponse, 
   ErrorResponse, 
   RequestConfig, 
-  HttpMethod,
-  SessionInfo 
+  HttpMethod
 } from '../types/api';
 import { ApiError } from '../errors';
 
@@ -23,7 +22,6 @@ class ApiClient {
   private defaultHeaders: Record<string, string>;
   private requestInterceptors: RequestInterceptor[] = [];
   private responseInterceptors: ResponseInterceptor[] = [];
-  private sessionInfo: SessionInfo | null = null;
 
   constructor(baseURL: string) {
     this.baseURL = baseURL.replace(/\/$/, ''); // Remove trailing slash
@@ -46,9 +44,7 @@ class ApiClient {
     this.responseInterceptors.push(interceptor);
   }
 
-  /**
-   * Get CSRF token from cookie or meta tag
-   */
+  // Auth removed: CSRF/session features disabled
   private getCSRFToken(): string | null {
     // Try to get from cookie first (Spring Security default)
     const cookies = document.cookie.split(';');
@@ -67,29 +63,6 @@ class ApiClient {
   /**
    * Check if session is valid
    */
-  private async checkSession(): Promise<boolean> {
-    try {
-      const response = await fetch(`${this.baseURL}/api/auth/session`, {
-        method: 'GET',
-        credentials: 'include',
-      });
-      
-      if (response.ok) {
-        const sessionData = await response.json();
-        this.sessionInfo = {
-          isValid: true,
-          expiresAt: sessionData.expiresAt,
-          csrfToken: this.getCSRFToken() || undefined,
-        };
-        return true;
-      }
-    } catch (error) {
-      console.warn('Session check failed:', error);
-    }
-    
-    this.sessionInfo = { isValid: false };
-    return false;
-  }
 
   /**
    * Apply request interceptors
@@ -167,12 +140,6 @@ class ApiClient {
 
     // Add CSRF token for non-GET requests
     const method = (config.method || 'GET').toUpperCase() as HttpMethod;
-    if (method !== 'GET') {
-      const csrfToken = this.getCSRFToken();
-      if (csrfToken) {
-        headers['X-CSRF-TOKEN'] = csrfToken;
-      }
-    }
 
     // Create request function for potential retries
     const makeRequest = async (): Promise<Response> => {
@@ -180,7 +147,7 @@ class ApiClient {
         ...config,
         method,
         headers,
-        credentials: 'include', // Include cookies for session management
+        credentials: 'omit',
       });
 
       // Apply timeout if specified
@@ -294,46 +261,12 @@ class ApiClient {
     });
   }
 
-  /**
-   * Get current session info
-   */
-  getSessionInfo(): SessionInfo | null {
-    return this.sessionInfo;
-  }
-
-  /**
-   * Refresh session info
-   */
-  async refreshSession(): Promise<boolean> {
-    return this.checkSession();
-  }
-
-  /**
-   * Clear session info
-   */
-  clearSession(): void {
-    this.sessionInfo = null;
-  }
 }
 
 // Create and export the default API client instance
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080';
 export const apiClient = new ApiClient(API_BASE_URL);
 
-// Add default response interceptor for authentication errors
-apiClient.addResponseInterceptor(async <T>(response: ApiResponse<T>) => {
-  if (response.status === 401) {
-    // Clear session on authentication error
-    apiClient.clearSession();
-    
-    // Redirect to login if we're in the browser
-    if (typeof window !== 'undefined') {
-      window.location.href = '/auth/login';
-    }
-  }
-  
-  return response;
-});
 
 export { ApiClient };
 export type { RequestInterceptor, ResponseInterceptor };

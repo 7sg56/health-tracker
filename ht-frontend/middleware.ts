@@ -2,8 +2,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 /**
- * Next.js Middleware for handling route redirects and authentication
- * This runs on the Edge Runtime for optimal performance
+ * Next.js Middleware for handling legacy route redirects only (auth removed)
  */
 
 // Define route mappings for /home to /dashboard redirects
@@ -19,13 +18,10 @@ const HOME_TO_DASHBOARD_REDIRECTS: Record<string, string> = {
 };
 
 // Define protected routes that require authentication
-const PROTECTED_ROUTES = [
-  '/dashboard',
-  '/home', // Still protected even though it redirects
-];
+const PROTECTED_ROUTES: string[] = [];
 
 // Define public routes that should redirect authenticated users
-const PUBLIC_ROUTES = [
+const LEGACY_AUTH_ROUTES = [
   '/auth/login',
   '/auth/register',
 ];
@@ -42,8 +38,8 @@ function isProtectedRoute(pathname: string): boolean {
 /**
  * Check if a path matches any of the public route patterns
  */
-function isPublicRoute(pathname: string): boolean {
-  return PUBLIC_ROUTES.some(route => 
+function isLegacyAuthRoute(pathname: string): boolean {
+  return LEGACY_AUTH_ROUTES.some(route => 
     pathname === route || pathname.startsWith(`${route}/`)
   );
 }
@@ -87,31 +83,10 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(redirectUrl, 301); // Permanent redirect
   }
 
-  // Check authentication status
-  const authenticated = isAuthenticated(request);
-
-  // Handle protected routes
-  if (isProtectedRoute(pathname)) {
-    if (!authenticated) {
-      // Redirect to login with return URL
-      const loginUrl = new URL('/auth/login', request.url);
-      loginUrl.searchParams.set('returnUrl', pathname);
-      return NextResponse.redirect(loginUrl);
-    }
-  }
-
-  // Handle public routes (redirect authenticated users)
-  if (isPublicRoute(pathname) && authenticated) {
-    // Check for return URL in query params
-    const returnUrl = request.nextUrl.searchParams.get('returnUrl');
-    
-    if (returnUrl && returnUrl.startsWith('/')) {
-      // Validate return URL is safe (starts with /)
-      return NextResponse.redirect(new URL(returnUrl, request.url));
-    }
-    
-    // Default redirect for authenticated users on public pages
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+  // Legacy auth routes: redirect to dashboard
+  if (isLegacyAuthRoute(pathname)) {
+    const dest = new URL('/dashboard', request.url);
+    return NextResponse.redirect(dest, 301);
   }
 
   // Continue with the request

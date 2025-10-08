@@ -26,7 +26,6 @@ import {
 import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { cn } from "@/lib/utils"
 import { announceToScreenReader } from "@/lib/utils/accessibility"
-import { useAuth } from "@/contexts/AuthContext"
 import { useBreadcrumbs } from "@/hooks/use-navigation-routes"
 
 interface TopHeaderProps {
@@ -48,18 +47,8 @@ export function TopHeader({
   className 
 }: TopHeaderProps) {
   const pathname = usePathname()
-  const { state, logout } = useAuth()
-  const { user } = state
 
   const breadcrumbs = useBreadcrumbs()
-
-  const handleLogout = async () => {
-    try {
-      await logout()
-    } catch (error) {
-      console.error('Logout failed:', error)
-    }
-  }
 
   return (
     <header 
@@ -137,88 +126,10 @@ export function TopHeader({
           {/* Theme toggle */}
           <ThemeToggle />
 
-          {/* User profile dropdown */}
-          {user ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  className="relative h-8 w-8 rounded-full transition-all duration-200 hover:scale-110 active:scale-95 focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                  aria-label={`User menu for ${user.username}`}
-                  aria-haspopup="menu"
-                  aria-expanded={false}
-                >
-                  <Avatar className="h-8 w-8 transition-all duration-200 hover:ring-2 hover:ring-primary/20">
-                    <AvatarImage 
-                      src={undefined} 
-                      alt={`${user.username}'s avatar`} 
-                    />
-                    <AvatarFallback className="text-xs transition-colors duration-200 hover:bg-primary/10">
-                      {user.username
-                        .substring(0, 2)
-                        .toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent 
-                className="w-56" 
-                align="end" 
-                forceMount
-                role="menu"
-                aria-label="User account menu"
-                onCloseAutoFocus={(e) => {
-                  // Prevent auto-focus behavior that might interfere with screen readers
-                  e.preventDefault();
-                }}
-              >
-                <DropdownMenuLabel className="font-normal" role="none">
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none truncate">
-                      {user.username}
-                    </p>
-                    <p className="text-xs leading-none text-muted-foreground truncate">
-                      {user.email}
-                    </p>
-                  </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator role="separator" />
-                <DropdownMenuItem asChild>
-                  <Link 
-                    href="/dashboard/profile" 
-                    className="cursor-pointer transition-all duration-200 hover:bg-accent/80 focus:bg-accent focus:outline-none"
-                    role="menuitem"
-                  >
-                    <User className="mr-2 h-4 w-4 transition-transform duration-200 hover:scale-110" aria-hidden="true" />
-                    <span>Profile</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                  role="menuitem" 
-                  className="transition-all duration-200 hover:bg-accent/80 focus:bg-accent cursor-pointer"
-                >
-                  <Settings className="mr-2 h-4 w-4 transition-transform duration-200 hover:rotate-90" aria-hidden="true" />
-                  <span>Settings</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator role="separator" />
-                <DropdownMenuItem 
-                  onClick={() => {
-                    handleLogout();
-                    announceToScreenReader('Signing out...', 'polite');
-                  }}
-                  className="cursor-pointer text-red-600 focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-950/20 transition-all duration-200 hover:bg-red-50 dark:hover:bg-red-950/20"
-                  role="menuitem"
-                >
-                  <LogOut className="mr-2 h-4 w-4 transition-transform duration-200 hover:scale-110" aria-hidden="true" />
-                  <span>Log out</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <Button asChild variant="ghost" size="sm" className="focus:ring-2 focus:ring-ring focus:ring-offset-2">
-              <Link href="/auth/login">Sign In</Link>
-            </Button>
-          )}
+          {/* Profile link (auth removed) */}
+          <Button asChild variant="ghost" size="sm" className="focus:ring-2 focus:ring-ring focus:ring-offset-2">
+            <Link href="/dashboard/profile">Profile</Link>
+          </Button>
         </div>
       </div>
     </header>

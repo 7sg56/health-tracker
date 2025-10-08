@@ -4,6 +4,9 @@ import com.healthtracker.htbackend.dto.DailyHealthIndexResponseDto;
 import com.healthtracker.htbackend.dto.ErrorResponse;
 import com.healthtracker.htbackend.exception.UnauthorizedException;
 import com.healthtracker.htbackend.service.HealthScoreService;
+import com.healthtracker.htbackend.repository.UserRepository;
+import com.healthtracker.htbackend.entity.User;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -33,10 +36,16 @@ import java.time.LocalDate;
 public class HealthIndexController {
 
     private final HealthScoreService healthScoreService;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public HealthIndexController(HealthScoreService healthScoreService) {
+    public HealthIndexController(HealthScoreService healthScoreService,
+                                 UserRepository userRepository,
+                                 PasswordEncoder passwordEncoder) {
         this.healthScoreService = healthScoreService;
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     /**
@@ -186,15 +195,27 @@ public class HealthIndexController {
      */
     private Long getCurrentUserId(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
-        if (session == null) {
-            throw new UnauthorizedException("No active session");
+        if (session != null) {
+            Long userId = (Long) session.getAttribute("userId");
+            if (userId != null) {
+                return userId;
+            }
         }
+        // Auth removed on frontend: fall back to demo user for anonymous access
+        return getOrCreateDemoUserId();
+    }
 
-        Long userId = (Long) session.getAttribute("userId");
-        if (userId == null) {
-            throw new UnauthorizedException("Invalid session");
-        }
-
-        return userId;
+    private Long getOrCreateDemoUserId() {
+        return userRepository.findByUsername("demo")
+                .map(User::getId)
+                .orElseGet(() -> {
+                    User demo = new User(
+                            "demo",
+                            "demo@example.com",
+                            passwordEncoder.encode("DemoPass123")
+                    );
+                    User saved = userRepository.save(demo);
+                    return saved.getId();
+                });
     }
 }

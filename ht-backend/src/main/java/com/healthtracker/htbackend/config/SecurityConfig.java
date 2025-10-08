@@ -26,11 +26,10 @@ public class SecurityConfig {
         return http
                 // CORS Configuration
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                // CSRF Protection with secure cookie settings
+                // CSRF Protection: ignore all API endpoints so the frontend can call without CSRF/auth
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                        .ignoringRequestMatchers("/api/auth/register", "/api/auth/login", "/api/auth/logout", 
-                                               "/api/water", "/api/food", "/api/workouts", "/api/health-score"))
+                        .ignoringRequestMatchers("/api/**"))
                 // Session Management Configuration
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)

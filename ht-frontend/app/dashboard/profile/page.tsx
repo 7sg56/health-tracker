@@ -1,66 +1,14 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Switch } from '@/components/ui/switch';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Separator } from '@/components/ui/separator';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-  Form, 
-  FormControl, 
-  FormDescription, 
-  FormField, 
-  FormItem, 
-  FormLabel, 
-  FormMessage 
-} from '@/components/ui/form';
-import { useAuthStatus, useAuthActions } from '@/contexts/AuthContext';
-import { 
-  profileFormSchema, 
-  settingsFormSchema, 
-  type ProfileFormData, 
-  type SettingsFormData,
-  healthGoalOptions,
-  languageOptions,
-  timezoneOptions
-} from '@/lib/validations/profile';
-import { 
-  User, 
-  Mail, 
-  Target, 
-  Calendar,
-  Settings,
-  Shield,
-  Bell,
-  Palette,
-  Camera,
-  Upload,
-  Save,
-  AlertCircle,
-  CheckCircle2,
-  Lock,
-  Globe,
-  Moon,
-  Sun
-} from 'lucide-react';
 
 export default function ProfilePage() {
-  const { user, isLoading } = useAuthStatus();
-  const { refreshUser } = useAuthActions();
-  const [isEditing, setIsEditing] = useState(false);
-  const [avatarFile, setAvatarFile] = useState<File | null>(null);
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
-  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
+  const [name, setName] = useState('Guest');
+  const [goal, setGoal] = useState('Stay Healthy');
 
   // Profile form
   const profileForm = useForm<ProfileFormData>({
@@ -94,22 +42,17 @@ export default function ProfilePage() {
     },
   });
 
-  // Update form values when user data changes
   useEffect(() => {
-    if (user) {
-      profileForm.reset({
-        username: user.username || '',
-        email: user.email || '',
-        bio: '',
-        healthGoal: 'maintain',
-      });
-    }
-  }, [user, profileForm]);
+    const storedName = localStorage.getItem('ht_name');
+    const storedGoal = localStorage.getItem('ht_goal');
+    if (storedName) setName(storedName);
+    if (storedGoal) setGoal(storedGoal);
+  }, []);
 
-  useEffect(() => {
-    // Ensure profile is fresh
-    refreshUser().catch(() => {});
-  }, [refreshUser]);
+  const save = () => {
+    localStorage.setItem('ht_name', name);
+    localStorage.setItem('ht_goal', goal);
+  };
 
   // Handle avatar file selection
   const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -180,45 +123,6 @@ export default function ProfilePage() {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="space-y-6">
-        <div className="space-y-2">
-          <Skeleton className="h-8 w-32" />
-          <Skeleton className="h-4 w-64" />
-        </div>
-        <div className="grid gap-6 lg:grid-cols-3">
-          <Card className="lg:col-span-1">
-            <CardContent className="pt-6 space-y-4">
-              <div className="flex flex-col items-center space-y-4">
-                <Skeleton className="h-24 w-24 rounded-full" />
-                <div className="space-y-2 text-center">
-                  <Skeleton className="h-6 w-32" />
-                  <Skeleton className="h-4 w-24" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <div className="lg:col-span-2 space-y-6">
-            <Card>
-              <CardHeader>
-                <Skeleton className="h-6 w-40" />
-                <Skeleton className="h-4 w-32" />
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="space-y-2">
-                    <Skeleton className="h-4 w-20" />
-                    <Skeleton className="h-10 w-full" />
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6">

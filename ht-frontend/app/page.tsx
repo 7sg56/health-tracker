@@ -14,14 +14,9 @@ export default function Home() {
             <span className="text-2xl font-bold text-gray-900 dark:text-white">HealthTracker</span>
           </div>
           <div className="flex items-center space-x-4">
-            <Link href="/auth/login">
-              <Button variant="ghost" size="sm">
-                Sign In
-              </Button>
-            </Link>
-            <Link href="/auth/register">
+            <Link href="/dashboard">
               <Button size="sm">
-                Get Started
+                Open Dashboard
               </Button>
             </Link>
           </div>
@@ -40,14 +35,9 @@ export default function Home() {
             Get personalized insights and achieve your wellness goals.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/auth/register">
+            <Link href="/dashboard">
               <Button size="lg" className="w-full sm:w-auto">
-                Start Tracking Today
-              </Button>
-            </Link>
-            <Link href="/auth/login">
-              <Button variant="outline" size="lg" className="w-full sm:w-auto">
-                Sign In to Continue
+                Open Dashboard
               </Button>
             </Link>
           </div>
@@ -146,9 +136,9 @@ export default function Home() {
               <p className="mb-6 opacity-90">
                 Join thousands of users who are already improving their health with our comprehensive tracking platform.
               </p>
-              <Link href="/auth/register">
+              <Link href="/dashboard">
                 <Button variant="secondary" size="lg" className="w-full">
-                  Create Your Account
+                  Open Dashboard
                 </Button>
               </Link>
             </div>
@@ -163,9 +153,9 @@ export default function Home() {
           <p className="text-lg text-gray-600 dark:text-gray-300 mb-8">
             Take control of your wellness with comprehensive health tracking and personalized insights.
           </p>
-          <Link href="/auth/register">
+          <Link href="/dashboard">
             <Button size="lg">
-              Get Started for Free
+              Open Dashboard
             </Button>
           </Link>
         </div>

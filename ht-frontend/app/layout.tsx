@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { EnhancedThemeProvider } from "@/lib/theme";
-import { AuthProvider } from "@/contexts/AuthContext";
 import { Toaster } from "@/components/ui/sonner";
 import { SkipLinks, MainContentSkipLink, NavigationSkipLink } from "@/components/ui/skip-link";
 import "./globals.css";
@@ -105,17 +104,13 @@ export default function RootLayout({
         
         <EnhancedThemeProvider
           attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-          storageKey="health-tracker-theme"
+          defaultTheme="light"
+          storageKey="ht-theme-v2"
           enableHighContrast={true}
           enableReducedMotion={true}
         >
-          <AuthProvider>
-            {children}
-            <Toaster />
-          </AuthProvider>
+          {children}
+          <Toaster />
         </EnhancedThemeProvider>
 
         {/* Screen reader announcements container */}

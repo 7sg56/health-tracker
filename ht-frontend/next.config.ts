@@ -119,15 +119,15 @@ const nextConfig: NextConfig = {
         destination: '/dashboard/:path*',
         permanent: true,
       },
-      // Auth shortcuts
+      // Legacy auth shortcuts -> dashboard
       {
         source: '/login',
-        destination: '/auth/login',
+        destination: '/dashboard',
         permanent: true,
       },
       {
         source: '/register',
-        destination: '/auth/register',
+        destination: '/dashboard',
         permanent: true,
       },
     ];

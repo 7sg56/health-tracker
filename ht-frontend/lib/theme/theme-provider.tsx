@@ -205,8 +205,8 @@ export function EnhancedThemeProvider({
       {...props}
       storageKey={storageKey}
       attribute="class"
-      defaultTheme="system"
-      enableSystem
+      defaultTheme="light"
+      enableSystem={false}
     >
       <ThemeContext.Provider value={contextValue}>
         {children}

@@ -4,7 +4,6 @@
  */
 
 export { apiClient, ApiClient } from './client';
-export { AuthService } from './auth';
 export { HealthService } from './health';
 export { HealthScoreService } from './health-score';
 
