@@ -6,7 +6,7 @@ The **HealthTracker Frontend** is a modern health tracking application built wit
 
 - **Framework**: Next.js 15 (App Router) with React 19 and TypeScript
 - **Styling**: Tailwind CSS v4, PostCSS, shadcn/ui components (Radix primitives), Lucide icons
-- **Testing & Linting**: Jest + Testing Library, ESLint (flat config), Prettier
+- **Linting & Formatting**: ESLint (flat config), Prettier
 - **Build & Deploy**: Docker, Nginx, production build scripts, middleware redirects
 - **Path Aliases**: Configured in `tsconfig.json` for clean imports (`@/*`, `@/components/*`, `@/lib/*`, etc.)
 
@@ -42,8 +42,6 @@ ht-frontend/
 | `tailwind.config.ts` | Tailwind CSS configuration with custom theme, animations, and health-specific colors |
 | `postcss.config.mjs` | PostCSS configuration loading Tailwind's plugin |
 | `eslint.config.mjs` | ESLint flat configuration extending Next.js rules |
-| `jest.config.js` | Jest testing framework configuration |
-| `jest.setup.js` | Test setup with mocks for Next.js components and browser APIs |
 | `components.json` | shadcn/ui configuration for component generation |
 | `middleware.ts` | Next.js middleware handling legacy route redirects |
 | `.prettierrc` / `.prettierignore` | Code formatting rules and ignore patterns |
@@ -55,23 +53,15 @@ ht-frontend/
 |------|---------|
 | `README.md` | Main project documentation |
 | `ACCESSIBILITY.md` | Accessibility guidelines and practices |
-| `DEPLOYMENT.md` | Deployment instructions and environment setup |
 
 ### Build & Deployment
 
-| File | Purpose |
-|------|---------|
-| `Dockerfile` | Container image definition for app deployment |
-| `docker-compose.yml` | Multi-service container orchestration |
-| `nginx.conf` | Nginx configuration for production deployment |
-| `scripts/build-production.sh` | Production build script with optimizations |
+Currently, containerization files and production deployment scripts are not included in this repo. Deployment guidance will be added when production packaging is reintroduced.
 
-### Testing & Development
+### Development Artifacts
 
 | File | Purpose |
 |------|---------|
-| `test-routing.js` | Utility script for testing routing functionality |
-| `test-accessibility.js` | Accessibility testing helpers |
 | `tsconfig.tsbuildinfo` | TypeScript incremental build cache (auto-generated) |
 
 ---
@@ -120,7 +110,7 @@ The `app/` directory uses Next.js 13+ App Router with file-based routing:
 
 **Accessibility Components**:
 - `focus-trap.tsx`, `skip-link.tsx`, `announcer.tsx` - A11y utilities
-- `accessibility-test.tsx`, `accessibility-audit.tsx` - A11y testing tools
+- `accessibility-audit.tsx` - A11y auditing helper
 
 **Theme & Responsive**:
 - `theme-toggle.tsx`, `theme-settings.tsx` - Theme customization
@@ -174,12 +164,10 @@ The `app/` directory uses Next.js 13+ App Router with file-based routing:
 **Data Management**:
 - `use-water-intake.ts`, `use-food-intake.ts`, `use-workout.ts` - Feature-specific data hooks
 - `use-dashboard-data.ts` - Aggregated dashboard data
-- `use-health-score-trends.ts` - Analytics and trend data
 - `use-paginated-data.ts` - Generic pagination helper
 
 **UI & UX**:
-- `use-responsive.ts`, `use-responsive-layout.ts` - Responsive design helpers
-- `use-theme-aware-styles.ts` - Dynamic theme-based styling
+- `use-responsive.ts` - Responsive design helpers
 - `use-search-filter.ts` - Search and filtering functionality
 
 **Navigation**:
@@ -212,7 +200,6 @@ The `app/` directory uses Next.js 13+ App Router with file-based routing:
 - `auth.ts` - Authentication endpoints
 - `health.ts` - Health data endpoints
 - `health-score.ts` - Analytics endpoints
-- `test.ts` - Test/example endpoints
 
 ### Theme System (`lib/theme/`)
 - `theme-provider.tsx` - Theme context provider
@@ -226,8 +213,6 @@ The `app/` directory uses Next.js 13+ App Router with file-based routing:
 
 ### Navigation (`lib/navigation/`)
 - `index.ts` - Navigation exports
-- `examples/usage-example.tsx` - Integration examples
-- `__tests__/` - Navigation tests
 - `README.md` - Navigation documentation
 
 ### Utilities (`lib/utils/`)
@@ -268,12 +253,7 @@ The `app/` directory uses Next.js 13+ App Router with file-based routing:
 - `npm run lint` - Run ESLint with auto-fix
 - `npm run type-check` - TypeScript compilation check
 - `npm run format` - Format code with Prettier
-- `npm run test` - Run Jest tests
-- `npm run test:coverage` - Generate test coverage report
 
-**Production**:
-- `npm run build:production` - Production build with optimizations
-- `npm run deploy:production` - Deploy to production environment
 
 ### Path Aliases
 
@@ -311,11 +291,6 @@ import { Button } from '@/components/ui/button'
 4. **Context providers** manage global state
 5. **Validation** handled by Zod schemas (`lib/validations/`)
 
-### Testing Strategy
-- **Jest** + **Testing Library** for component testing
-- **Mocked** Next.js components and browser APIs
-- **Coverage thresholds** set at 70% for all metrics
-- **Accessibility testing** utilities included
 
 ### Deployment
 - **Docker** containerization with multi-stage builds
@@ -356,7 +331,7 @@ When adding new files:
 2. **Use barrel exports**: Add to relevant `index.ts` files
 3. **Include TypeScript types**: Define in appropriate `lib/types/` files
 4. **Add validation schemas**: Use Zod in `lib/validations/`
-5. **Write tests**: Include unit tests for new functionality
+5. Ensure lint, type-check, and runtime flows pass; a unit test framework may be reintroduced later
 6. **Document accessibility**: Include ARIA labels and keyboard support
 7. **Follow responsive patterns**: Use mobile-first design principles
 
@@ -366,7 +341,6 @@ When adding new files:
 
 - **Main README**: `/README.md` - Project overview and setup
 - **Accessibility Guide**: `/ACCESSIBILITY.md` - A11y standards and practices  
-- **Deployment Guide**: `/DEPLOYMENT.md` - Production deployment instructions
 - **Theme Documentation**: `/lib/theme/README.md` - Theme customization guide
 - **Navigation Guide**: `/lib/navigation/README.md` - Navigation system usage
 

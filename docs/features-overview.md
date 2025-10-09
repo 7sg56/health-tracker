@@ -31,7 +31,6 @@ This document summarizes the key capabilities of the HealthTracker application a
   - Next.js 15 with React 19 and Turbopack for fast dev/build.
   - CSS inlining/optimization via Critters.
   - TypeScript-first codebase with ESLint and Prettier.
-  - Jest + Testing Library setup for unit/integration tests.
 
 - Routing & Navigation
   - Navigation and sidebars updated to reflect the Health Score merge.
