@@ -38,10 +38,10 @@ public class Workout {
     @Max(value = 2000, message = "Calories burned must not exceed 2000")
     private Integer caloriesBurned;
 
-    @Column(columnDefinition = "DATE DEFAULT CURRENT_DATE", nullable = false)
+    @Column(nullable = false)
     private LocalDate date;
 
-    @Column(name = "created_at", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     public Workout() {}
