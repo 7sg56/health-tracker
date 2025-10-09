@@ -7,15 +7,6 @@ import com.healthtracker.htbackend.service.HealthScoreService;
 import com.healthtracker.htbackend.repository.UserRepository;
 import com.healthtracker.htbackend.entity.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +22,6 @@ import java.time.LocalDate;
  */
 @RestController
 @RequestMapping("/api/health-index")
-@Tag(name = "Health Index", description = "Daily health score calculation and retrieval based on water intake, food consumption, and exercise")
-@SecurityRequirement(name = "sessionAuth")
 public class HealthIndexController {
 
     private final HealthScoreService healthScoreService;
@@ -55,33 +44,6 @@ public class HealthIndexController {
      * @param request the HTTP request for session management
      * @return ResponseEntity with DailyHealthIndexResponseDto
      */
-    @Operation(
-        summary = "Get current daily health index",
-        description = "Retrieve the health score for today. The score (0-100) is calculated based on: " +
-                     "Water intake (30% weight, target 2.5L), Calorie balance (40% weight, target 2000 calories), " +
-                     "Exercise activity (30% weight, target 30 minutes). Automatically calculates if not cached."
-    )
-    @ApiResponses(value = {
-        @ApiResponse(
-            responseCode = "200",
-            description = "Health index retrieved successfully",
-            content = @Content(
-                mediaType = "application/json",
-                schema = @Schema(implementation = DailyHealthIndexResponseDto.class),
-                examples = @ExampleObject(
-                    value = "{\"id\": 1, \"date\": \"2024-01-15\", \"healthScore\": 85.5, \"waterScore\": 90.0, \"calorieScore\": 80.0, \"exerciseScore\": 87.0, \"createdAt\": \"2024-01-15T10:30:00\"}"
-                )
-            )
-        ),
-        @ApiResponse(
-            responseCode = "401",
-            description = "User not authenticated",
-            content = @Content(
-                mediaType = "application/json",
-                schema = @Schema(implementation = ErrorResponse.class)
-            )
-        )
-    })
     @GetMapping
     public ResponseEntity<DailyHealthIndexResponseDto> getCurrentHealthIndex(
             HttpServletRequest request) {
@@ -101,45 +63,8 @@ public class HealthIndexController {
      * @param request the HTTP request for session management
      * @return ResponseEntity with DailyHealthIndexResponseDto
      */
-    @Operation(
-        summary = "Get health index for specific date",
-        description = "Retrieve the health score for a specific date. Returns score of 0 if no health data exists for that date."
-    )
-    @ApiResponses(value = {
-        @ApiResponse(
-            responseCode = "200",
-            description = "Health index retrieved successfully",
-            content = @Content(
-                mediaType = "application/json",
-                schema = @Schema(implementation = DailyHealthIndexResponseDto.class),
-                examples = @ExampleObject(
-                    value = "{\"id\": 1, \"date\": \"2024-01-10\", \"healthScore\": 72.3, \"waterScore\": 80.0, \"calorieScore\": 65.0, \"exerciseScore\": 73.0, \"createdAt\": \"2024-01-10T15:45:00\"}"
-                )
-            )
-        ),
-        @ApiResponse(
-            responseCode = "400",
-            description = "Invalid date format",
-            content = @Content(
-                mediaType = "application/json",
-                schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(
-                    value = "{\"timestamp\": \"2024-01-15T10:30:00Z\", \"status\": 400, \"error\": \"Bad Request\", \"message\": \"Invalid date format\", \"path\": \"/api/health-index/invalid-date\"}"
-                )
-            )
-        ),
-        @ApiResponse(
-            responseCode = "401",
-            description = "User not authenticated",
-            content = @Content(
-                mediaType = "application/json",
-                schema = @Schema(implementation = ErrorResponse.class)
-            )
-        )
-    })
     @GetMapping("/{date}")
     public ResponseEntity<DailyHealthIndexResponseDto> getHealthIndexByDate(
-            @Parameter(description = "Date in YYYY-MM-DD format", required = true, example = "2024-01-15")
             @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             HttpServletRequest request) {
         

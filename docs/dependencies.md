@@ -34,9 +34,7 @@ Dev & Testing
 - eslint (^9) and eslint-config-next (15.5.4): Linting and Next.js rules.
 - @eslint/eslintrc (^3): ESLint configuration utilities.
 - prettier (^3.6.2) and prettier-plugin-tailwindcss (^0.6.14): Code formatting.
-- jest (^30.2.0), jest-environment-jsdom (^30.2.0): Testing framework and DOM env.
-- @testing-library/*: DOM, React, and user-event testing helpers.
-- @types/*: Type definitions for Node, React, Recharts, and Jest.
+- @types/*: Type definitions for Node, React, and Recharts.
 
 Notes
 - Uses Turbopack for dev/build via scripts (fast HMR and builds).
@@ -50,12 +48,10 @@ Core Spring Boot
 - spring-boot-starter-security: Security framework for authn/authz (future-ready).
 - spring-boot-starter-actuator: Operational endpoints (health, metrics, info).
 
-API Documentation
-- springdoc-openapi-starter-webmvc-ui (2.6.0): OpenAPI generation and Swagger UI.
 
 Database & Persistence
-- mysql-connector-j (runtime): JDBC driver for MySQL in production.
-- HikariCP: High-performance JDBC connection pooling.
+- mysql-connector-j (runtime): JDBC driver for MySQL (optional in dev).
+- HikariCP: High-performance JDBC connection pooling (via Spring Boot starter).
 - h2 (runtime): In-memory DB for tests/development.
 
 Testing
@@ -78,11 +74,8 @@ Scripts
 - dev:frontend: Runs Next.js dev server.
 - install:all: Builds backend then installs frontend dependencies.
 - build:all: Builds backend package then frontend build.
-- start:prod: Runs backend JAR and frontend server concurrently.
 
 ## Considerations & Follow-ups
 
 - Authentication: Security starter is present in the backend and auth components exist in the frontend but are currently minimal/stubbed. Integrate when ready.
 - TypeScript: Some TS issues are being temporarily ignored to enable builds. Plan to address and re-enable strict builds.
-- Database: Ensure appropriate production configuration (secrets via environment variables) and confirm pool sizing for HikariCP.
-- OpenAPI: Publish Swagger UI location in a developer guide, and consider generating typed clients for the frontend.

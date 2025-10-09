@@ -33,10 +33,10 @@ public class FoodIntake {
     @NotNull
     private Integer calories;
 
-    @Column(columnDefinition = "DATE DEFAULT CURRENT_DATE", nullable = false)
+    @Column(nullable = false)
     private LocalDate date;
 
-    @Column(name = "created_at", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     public FoodIntake() {}

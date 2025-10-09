@@ -20,16 +20,16 @@ public class WaterIntake {
     @NotNull
     private User user;
 
-    @Column(name = "amount_ltr", columnDefinition = "FLOAT(4,2)", nullable = false)
+    @Column(name = "amount_ltr", nullable = false)
     @DecimalMin(value = "0.1", message = "Water amount must be at least 0.1 liters")
     @DecimalMax(value = "10.0", message = "Water amount must not exceed 10.0 liters")
     @NotNull
     private Float amountLtr;
 
-    @Column(columnDefinition = "DATE DEFAULT CURRENT_DATE", nullable = false)
+    @Column(nullable = false)
     private LocalDate date;
 
-    @Column(name = "created_at", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     public WaterIntake() {}

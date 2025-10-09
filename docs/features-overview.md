@@ -40,9 +40,8 @@ This document summarizes the key capabilities of the HealthTracker application a
 - Backend Overview
   - Spring Boot 3 (Java 25) service with REST endpoints (Web + Validation).
   - Data access via Spring Data JPA with HikariCP connection pooling.
-  - MySQL in production; H2 for local/test runtime.
-  - Actuator endpoints for health/metrics.
-  - OpenAPI/Swagger UI provided via springdoc-openapi.
+  - H2 for local/test runtime.
+  - Actuator endpoints for health.
 
 ## Current Status Notes
 

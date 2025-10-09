@@ -6,9 +6,6 @@
     <springProfile name="!prod">
         <property name="LOG_FILE" value="${LOG_FILE:-logs/health-tracker-dev}"/>
     </springProfile>
-    <springProfile name="prod">
-        <property name="LOG_FILE" value="${LOG_FILE:-/var/log/healthtracker/application}"/>
-    </springProfile>
     
     <!-- Console appender for development -->
     <springProfile name="!prod">
@@ -19,14 +16,6 @@
         </appender>
     </springProfile>
     
-    <!-- Console appender for production (minimal) -->
-    <springProfile name="prod">
-        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-            <encoder>
-                <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
-            </encoder>
-        </appender>
-    </springProfile>
     
     <!-- File appender for all profiles -->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -101,11 +90,6 @@
         </logger>
     </springProfile>
     
-    <!-- Production database logging (minimal) -->
-    <springProfile name="prod">
-        <logger name="org.hibernate.SQL" level="WARN"/>
-        <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="WARN"/>
-    </springProfile>
     
     <!-- Root logger -->
     <springProfile name="!prod">
@@ -116,11 +100,4 @@
         </root>
     </springProfile>
     
-    <springProfile name="prod">
-        <root level="WARN">
-            <appender-ref ref="CONSOLE"/>
-            <appender-ref ref="ASYNC_FILE"/>
-            <appender-ref ref="ASYNC_ERROR_FILE"/>
-        </root>
-    </springProfile>
 </configuration>

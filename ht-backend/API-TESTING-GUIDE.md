@@ -8,29 +8,9 @@ cd ht-backend
 ./mvnw spring-boot:run
 ```
 
-### 2. Access API Documentation
-Once the application is running, access the interactive API documentation:
-
-- **Swagger UI**: http://localhost:8080/swagger-ui/index.html
-- **OpenAPI JSON**: http://localhost:8080/v3/api-docs
-- **Static Documentation**: http://localhost:8080/api-documentation.md
-
 ## Testing Methods
 
-### Method 1: Swagger UI (Recommended for Beginners)
-
-1. Open http://localhost:8080/swagger-ui/index.html
-2. Click on "Authentication" section
-3. Try the "Register User" endpoint:
-   - Click "Try it out"
-   - Fill in the request body with valid data
-   - Click "Execute"
-4. Use the "Login User" endpoint to authenticate
-5. Test other endpoints (they require authentication)
-
-**Note**: Swagger UI automatically handles session cookies after login.
-
-### Method 2: Postman Collection
+### Method 1: Postman Collection
 
 1. Import the Postman collection: `postman-collection.json`
 2. Set up environment variables:

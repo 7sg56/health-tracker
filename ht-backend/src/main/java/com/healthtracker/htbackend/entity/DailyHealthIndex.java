@@ -20,17 +20,17 @@ public class DailyHealthIndex {
     @NotNull
     private User user;
 
-    @Column(nullable = false, columnDefinition = "DATE DEFAULT CURRENT_DATE")
+    @Column(nullable = false)
     @NotNull
     private LocalDate date;
 
-    @Column(name = "health_score", columnDefinition = "FLOAT(5,2)", nullable = false)
+    @Column(name = "health_score", nullable = false)
     @DecimalMin(value = "0.0", message = "Health score must be at least 0.0")
     @DecimalMax(value = "100.0", message = "Health score must not exceed 100.0")
     @NotNull
     private Float healthScore;
 
-    @Column(name = "created_at", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     public DailyHealthIndex() {

@@ -125,14 +125,6 @@ const EXTENDED_ROUTES: Omit<NavigationRoute, 'isActive'>[] = [
     badge: 'New',
     description: 'View your health milestones and rewards',
   },
-  {
-    id: 'accessibility-test',
-    label: 'Accessibility Test',
-    href: '/dashboard/accessibility-test',
-    icon: Settings,
-    badge: 'Dev',
-    description: 'Test and validate accessibility features',
-  },
 ];
 
 /**
