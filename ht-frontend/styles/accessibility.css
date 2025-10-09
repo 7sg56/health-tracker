@@ -173,12 +173,13 @@
   color: var(--accent-foreground);
 }
 
-/* Expanded states */
-[aria-expanded='false'] + * {
+/* Expanded states (scoped to avoid global layout breakage) */
+/* To use disclosure behavior, wrap controls in `.aria-disclosure` container */
+.aria-disclosure [aria-expanded='false'] + * {
   display: none;
 }
 
-[aria-expanded='true'] + * {
+.aria-disclosure [aria-expanded='true'] + * {
   display: block;
 }
 
