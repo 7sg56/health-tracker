@@ -220,7 +220,11 @@ export function FoodIntakeForm({
                         <SelectValue placeholder="Select meal type" />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent>
+                    <SelectContent
+                      position="popper"
+                      align="start"
+                      className="z-[60]"
+                    >
                       {MEAL_TYPES.map(type => (
                         <SelectItem key={type.value} value={type.value}>
                           {type.label}
@@ -248,7 +252,11 @@ export function FoodIntakeForm({
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Filter by category" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent
+                  position="popper"
+                  align="start"
+                  className="z-[60]"
+                >
                   <SelectItem value="all">All Categories</SelectItem>
                   {categories.map(category => (
                     <SelectItem key={category} value={category}>
@@ -285,7 +293,7 @@ export function FoodIntakeForm({
 
                       {/* Enhanced Suggestions Dropdown */}
                       {showSuggestions && filteredSuggestions.length > 0 && (
-                        <div className="bg-popover absolute z-50 mt-1 max-h-64 w-full overflow-y-auto rounded-md border shadow-lg">
+                        <div className="bg-popover absolute z-40 mt-1 max-h-64 w-full overflow-y-auto rounded-md border shadow-lg">
                           <div className="p-2">
                             <p className="text-muted-foreground mb-2 text-xs">
                               Suggestions ({filteredSuggestions.length})
@@ -404,10 +412,10 @@ export function FoodIntakeForm({
                 loading={isFormLoading}
                 loadingText={isEditMode ? 'Updating...' : 'Adding...'}
                 disabled={
-                  !isValid ||
-                  !watchedFoodItem ||
-                  !watchedCalories ||
-                  watchedCalories <= 0
+                  isFormLoading ||
+                  !watchedFoodItem?.toString().trim() ||
+                  Number.isNaN(Number(watchedCalories)) ||
+                  Number(watchedCalories) <= 0
                 }
                 className="flex-1"
                 size="lg"

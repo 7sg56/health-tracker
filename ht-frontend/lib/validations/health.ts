@@ -18,7 +18,7 @@ export const foodIntakeSchema = z.object({
     .min(1, 'Food item is required')
     .max(100, 'Food item must be less than 100 characters')
     .trim(),
-  calories: z
+  calories: z.coerce
     .number({
       message: 'Calories must be a number',
     })
