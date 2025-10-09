@@ -14,11 +14,8 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
-    "build:production": "./scripts/build-production.sh",
     "build:analyze": "ANALYZE=true next build",
-    "build:standalone": "BUILD_STANDALONE=true next build",
     "start": "next start",
-    "start:production": "NODE_ENV=production next start",
     "lint": "eslint . --ext .ts,.tsx --fix",
     "lint:check": "eslint . --ext .ts,.tsx",
     "type-check": "tsc --noEmit",
@@ -32,8 +29,6 @@
     "precommit": "npm run lint:check && npm run type-check && npm run test:ci",
     "prebuild": "npm run clean && npm run type-check && npm run lint:check",
     "postbuild": "echo 'Build completed successfully!'",
-    "deploy:staging": "npm run build && echo 'Deploy to staging'",
-    "deploy:production": "npm run build:production && echo 'Deploy to production'"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

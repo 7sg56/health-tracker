@@ -3,7 +3,7 @@
 A modern full‑stack health tracking application.
 
 - Frontend: Next.js 15, React 19, TypeScript, Tailwind CSS, Radix UI primitives, Recharts
-- Backend: Spring Boot 3 (Java 25), Spring Data JPA, MySQL/H2, Actuator, OpenAPI
+- Backend: Spring Boot 3 (Java 25), Spring Data JPA, MySQL/H2, Actuator
 
 See docs/features-overview.md for a high‑level feature summary and docs/dependencies.md for a complete package/rationale listing.
 
@@ -40,17 +40,6 @@ Run only the backend (dev profile):
 cd ht-backend && ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
 ```
 
-## Build & run (production)
-
-Build backend JAR and frontend app:
-```bash path=null start=null
-npm run build:all
-```
-
-Start both in production mode:
-```bash path=null start=null
-npm run start:prod
-```
 
 ## Root scripts
 
@@ -59,7 +48,6 @@ npm run start:prod
 - dev:frontend: Starts Next.js dev server.
 - install:all: Builds backend, installs frontend deps.
 - build:all: Packages backend and builds frontend.
-- start:prod: Runs backend JAR and frontend server concurrently.
 
 ## Frontend (ht-frontend)
 
@@ -82,7 +70,6 @@ Common tasks:
 
 Operational features:
 - Actuator endpoints for health/metrics.
-- OpenAPI/Swagger UI via springdoc (check `/swagger-ui.html` when enabled).
 
 ## Environment configuration
 
