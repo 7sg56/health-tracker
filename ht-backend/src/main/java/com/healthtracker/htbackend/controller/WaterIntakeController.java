@@ -9,16 +9,7 @@ import com.healthtracker.htbackend.exception.UnauthorizedException;
 import com.healthtracker.htbackend.service.WaterIntakeService;
 import com.healthtracker.htbackend.repository.UserRepository;
 import com.healthtracker.htbackend.entity.User;
-import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -40,8 +31,6 @@ import java.time.LocalDate;
  */
 @RestController
 @RequestMapping("/api/water")
-@Tag(name = "Water Intake", description = "Water intake tracking endpoints for monitoring daily hydration")
-@SecurityRequirement(name = "sessionAuth")
 public class WaterIntakeController {
 
     private final WaterIntakeService waterIntakeService;
@@ -64,46 +53,8 @@ public class WaterIntakeController {
      * @param request the HTTP request for session management
      * @return ResponseEntity with WaterIntakeResponseDto and HTTP 201 status
      */
-    @Operation(
-        summary = "Create water intake entry",
-        description = "Record a new water intake entry for the authenticated user. " +
-                     "Amount must be between 0.1 and 10.0 liters."
-    )
-    @ApiResponses(value = {
-        @ApiResponse(
-            responseCode = "201",
-            description = "Water intake entry created successfully",
-            content = @Content(
-                mediaType = "application/json",
-                schema = @Schema(implementation = WaterIntakeResponseDto.class),
-                examples = @ExampleObject(
-                    value = "{\"id\": 1, \"amountLtr\": 0.5, \"date\": \"2024-01-15\", \"createdAt\": \"2024-01-15T10:30:00\"}"
-                )
-            )
-        ),
-        @ApiResponse(
-            responseCode = "400",
-            description = "Invalid input data",
-            content = @Content(
-                mediaType = "application/json",
-                schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(
-                    value = "{\"timestamp\": \"2024-01-15T10:30:00Z\", \"status\": 400, \"error\": \"Bad Request\", \"message\": \"Validation failed\", \"details\": [{\"field\": \"amountLtr\", \"message\": \"Amount must be between 0.1 and 10.0 liters\"}], \"path\": \"/api/water\"}"
-                )
-            )
-        ),
-        @ApiResponse(
-            responseCode = "401",
-            description = "User not authenticated",
-            content = @Content(
-                mediaType = "application/json",
-                schema = @Schema(implementation = ErrorResponse.class)
-            )
-        )
-    })
     @PostMapping
     public ResponseEntity<WaterIntakeResponseDto> createWaterIntake(
-            @Parameter(description = "Water intake data", required = true)
             @Valid @RequestBody WaterIntakeRequestDto requestDto,
             HttpServletRequest request) {
         
@@ -123,43 +74,12 @@ public class WaterIntakeController {
      * @param request the HTTP request for session management
      * @return ResponseEntity with paginated water intake entries
      */
-    @Operation(
-        summary = "Get water intake history",
-        description = "Retrieve paginated water intake entries for the authenticated user. " +
-                     "Supports date range filtering and sorting by date or amount."
-    )
-    @ApiResponses(value = {
-        @ApiResponse(
-            responseCode = "200",
-            description = "Water intake entries retrieved successfully",
-            content = @Content(
-                mediaType = "application/json",
-                schema = @Schema(implementation = PaginatedResponse.class),
-                examples = @ExampleObject(
-                    value = "{\"content\": [{\"id\": 1, \"amountLtr\": 0.5, \"date\": \"2024-01-15\", \"createdAt\": \"2024-01-15T10:30:00\"}], \"page\": {\"number\": 0, \"size\": 10, \"totalElements\": 1, \"totalPages\": 1}}"
-                )
-            )
-        ),
-        @ApiResponse(
-            responseCode = "401",
-            description = "User not authenticated",
-            content = @Content(
-                mediaType = "application/json",
-                schema = @Schema(implementation = ErrorResponse.class)
-            )
-        )
-    })
     @GetMapping
     public ResponseEntity<PaginatedResponse<WaterIntakeResponseDto>> getWaterIntakes(
-            @Parameter(description = "Page number (0-based)", example = "0")
             @RequestParam(defaultValue = "0") int page,
-            @Parameter(description = "Page size", example = "10")
             @RequestParam(defaultValue = "10") int size,
-            @Parameter(description = "Start date for filtering (YYYY-MM-DD)", example = "2024-01-01")
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @Parameter(description = "End date for filtering (YYYY-MM-DD)", example = "2024-01-31")
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-            @Parameter(description = "Sort parameters (property,direction)", example = "date,desc")
             @RequestParam(defaultValue = "date,desc") String[] sort,
             HttpServletRequest request) {
         
@@ -191,49 +111,8 @@ public class WaterIntakeController {
      * @param request the HTTP request for session management
      * @return ResponseEntity with HTTP 204 status
      */
-    @Operation(
-        summary = "Delete water intake entry",
-        description = "Delete a specific water intake entry. Users can only delete their own entries."
-    )
-    @ApiResponses(value = {
-        @ApiResponse(
-            responseCode = "204",
-            description = "Water intake entry deleted successfully"
-        ),
-        @ApiResponse(
-            responseCode = "401",
-            description = "User not authenticated",
-            content = @Content(
-                mediaType = "application/json",
-                schema = @Schema(implementation = ErrorResponse.class)
-            )
-        ),
-        @ApiResponse(
-            responseCode = "403",
-            description = "User not authorized to delete this entry",
-            content = @Content(
-                mediaType = "application/json",
-                schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(
-                    value = "{\"timestamp\": \"2024-01-15T10:30:00Z\", \"status\": 403, \"error\": \"Forbidden\", \"message\": \"Access denied\", \"path\": \"/api/water/1\"}"
-                )
-            )
-        ),
-        @ApiResponse(
-            responseCode = "404",
-            description = "Water intake entry not found",
-            content = @Content(
-                mediaType = "application/json",
-                schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(
-                    value = "{\"timestamp\": \"2024-01-15T10:30:00Z\", \"status\": 404, \"error\": \"Not Found\", \"message\": \"Water intake entry not found\", \"path\": \"/api/water/999\"}"
-                )
-            )
-        )
-    })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteWaterIntake(
-            @Parameter(description = "Water intake entry ID", required = true, example = "1")
             @PathVariable Long id,
             HttpServletRequest request) {
         
