@@ -14,13 +14,8 @@ export const profileFormSchema = z.object({
     .string()
     .email('Invalid email format')
     .max(150, 'Email must be less than 150 characters'),
-  bio: z
-    .string()
-    .max(500, 'Bio must be less than 500 characters')
-    .optional(),
-  healthGoal: z
-    .string()
-    .min(1, 'Please select a health goal'),
+  bio: z.string().max(500, 'Bio must be less than 500 characters').optional(),
+  healthGoal: z.string().min(1, 'Please select a health goal'),
 });
 
 // Settings form validation schema

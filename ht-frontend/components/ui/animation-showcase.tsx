@@ -1,29 +1,29 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { cn } from "@/lib/utils";
-import { Button } from "./button";
-import { Card, CardContent, CardHeader, CardTitle } from "./card";
-import { Badge } from "./badge";
-import { Avatar, AvatarFallback } from "./avatar";
-import { LoadingButton } from "./loading-button";
-import { LoadingSpinner } from "./loading-spinner";
-import { Skeleton } from "./skeleton";
-import { 
-  createInteractiveElement, 
-  microInteractions, 
+import * as React from 'react';
+import { cn } from '@/lib/utils';
+import { Button } from './button';
+import { Card, CardContent, CardHeader, CardTitle } from './card';
+import { Badge } from './badge';
+import { Avatar, AvatarFallback } from './avatar';
+import { LoadingButton } from './loading-button';
+import { LoadingSpinner } from './loading-spinner';
+import { Skeleton } from './skeleton';
+import {
+  createInteractiveElement,
+  microInteractions,
   animationVariants,
-  getStaggerDelay 
-} from "@/lib/utils/animations";
-import { 
-  Heart, 
-  Star, 
-  Zap, 
-  Sparkles, 
+  getStaggerDelay,
+} from '@/lib/utils/animations';
+import {
+  Heart,
+  Star,
+  Zap,
+  Sparkles,
   Play,
   Pause,
-  RotateCcw
-} from "lucide-react";
+  RotateCcw,
+} from 'lucide-react';
 
 interface AnimationShowcaseProps {
   className?: string;
@@ -45,16 +45,16 @@ export function AnimationShowcase({ className }: AnimationShowcaseProps) {
   };
 
   const demoItems = [
-    { id: 1, label: "Water Intake", icon: "💧", value: "2.1L" },
-    { id: 2, label: "Calories", icon: "🍎", value: "1,450" },
-    { id: 3, label: "Exercise", icon: "🏃", value: "45min" },
-    { id: 4, label: "Sleep", icon: "😴", value: "7.5h" },
+    { id: 1, label: 'Water Intake', icon: '💧', value: '2.1L' },
+    { id: 2, label: 'Calories', icon: '🍎', value: '1,450' },
+    { id: 3, label: 'Exercise', icon: '🏃', value: '45min' },
+    { id: 4, label: 'Sleep', icon: '😴', value: '7.5h' },
   ];
 
   return (
-    <div className={cn("space-y-8 p-6", className)}>
+    <div className={cn('space-y-8 p-6', className)}>
       {/* Header */}
-      <div className="text-center space-y-2">
+      <div className="space-y-2 text-center">
         <h2 className="text-2xl font-bold">Animation Showcase</h2>
         <p className="text-muted-foreground">
           Demonstrating smooth animations and micro-interactions
@@ -65,7 +65,7 @@ export function AnimationShowcase({ className }: AnimationShowcaseProps) {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-primary" />
+            <Sparkles className="text-primary h-5 w-5" />
             Hover Effects & Micro-interactions
           </CardTitle>
         </CardHeader>
@@ -74,25 +74,23 @@ export function AnimationShowcase({ className }: AnimationShowcaseProps) {
           <div className="space-y-3">
             <h4 className="font-medium">Interactive Buttons</h4>
             <div className="flex flex-wrap gap-3">
-              <Button className={microInteractions.button}>
-                Scale Effect
-              </Button>
-              <Button 
-                variant="outline" 
-                className={createInteractiveElement("", {
-                  hover: "lift",
-                  focus: "ring",
-                  transition: "normal"
+              <Button className={microInteractions.button}>Scale Effect</Button>
+              <Button
+                variant="outline"
+                className={createInteractiveElement('', {
+                  hover: 'lift',
+                  focus: 'ring',
+                  transition: 'normal',
                 })}
               >
                 Lift Effect
               </Button>
-              <Button 
+              <Button
                 variant="secondary"
-                className={createInteractiveElement("", {
-                  hover: "glow",
-                  focus: "ring",
-                  transition: "slow"
+                className={createInteractiveElement('', {
+                  hover: 'glow',
+                  focus: 'ring',
+                  transition: 'slow',
                 })}
               >
                 Glow Effect
@@ -103,14 +101,11 @@ export function AnimationShowcase({ className }: AnimationShowcaseProps) {
           {/* Interactive Cards */}
           <div className="space-y-3">
             <h4 className="font-medium">Interactive Cards</h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               {demoItems.slice(0, 2).map((item, index) => (
-                <Card 
+                <Card
                   key={item.id}
-                  className={cn(
-                    microInteractions.card,
-                    "cursor-pointer"
-                  )}
+                  className={cn(microInteractions.card, 'cursor-pointer')}
                   style={getStaggerDelay(index)}
                 >
                   <CardContent className="p-4">
@@ -118,7 +113,9 @@ export function AnimationShowcase({ className }: AnimationShowcaseProps) {
                       <div className="text-2xl">{item.icon}</div>
                       <div>
                         <p className="font-medium">{item.label}</p>
-                        <p className="text-sm text-muted-foreground">{item.value}</p>
+                        <p className="text-muted-foreground text-sm">
+                          {item.value}
+                        </p>
                       </div>
                     </div>
                   </CardContent>
@@ -131,9 +128,18 @@ export function AnimationShowcase({ className }: AnimationShowcaseProps) {
           <div className="space-y-3">
             <h4 className="font-medium">Interactive Icons</h4>
             <div className="flex gap-4">
-              <Heart className={cn("h-8 w-8 text-red-500", microInteractions.icon)} />
-              <Star className={cn("h-8 w-8 text-yellow-500", microInteractions.icon)} />
-              <Zap className={cn("h-8 w-8 text-blue-500", microInteractions.icon)} />
+              <Heart
+                className={cn('h-8 w-8 text-red-500', microInteractions.icon)}
+              />
+              <Star
+                className={cn(
+                  'h-8 w-8 text-yellow-500',
+                  microInteractions.icon
+                )}
+              />
+              <Zap
+                className={cn('h-8 w-8 text-blue-500', microInteractions.icon)}
+              />
             </div>
           </div>
 
@@ -141,10 +147,10 @@ export function AnimationShowcase({ className }: AnimationShowcaseProps) {
           <div className="space-y-3">
             <h4 className="font-medium">Interactive Avatars</h4>
             <div className="flex gap-3">
-              {["JD", "SM", "AB"].map((initials, index) => (
-                <Avatar 
+              {['JD', 'SM', 'AB'].map((initials, index) => (
+                <Avatar
                   key={initials}
-                  className={cn(microInteractions.avatar, "cursor-pointer")}
+                  className={cn(microInteractions.avatar, 'cursor-pointer')}
                   style={getStaggerDelay(index, 100)}
                 >
                   <AvatarFallback>{initials}</AvatarFallback>
@@ -226,7 +232,7 @@ export function AnimationShowcase({ className }: AnimationShowcaseProps) {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Play className="h-5 w-5 text-primary" />
+            <Play className="text-primary h-5 w-5" />
             Page Transitions
           </CardTitle>
         </CardHeader>
@@ -238,8 +244,12 @@ export function AnimationShowcase({ className }: AnimationShowcaseProps) {
                 onClick={() => setIsPlaying(!isPlaying)}
                 className="flex items-center gap-2"
               >
-                {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-                {isPlaying ? "Pause" : "Play"} Demo
+                {isPlaying ? (
+                  <Pause className="h-4 w-4" />
+                ) : (
+                  <Play className="h-4 w-4" />
+                )}
+                {isPlaying ? 'Pause' : 'Play'} Demo
               </Button>
               <Button
                 size="sm"
@@ -254,27 +264,29 @@ export function AnimationShowcase({ className }: AnimationShowcaseProps) {
                 Restart
               </Button>
             </div>
-            
+
             {/* Demo transition elements */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               {demoItems.map((item, index) => (
                 <div
                   key={item.id}
                   className={cn(
-                    "p-4 border rounded-lg transition-all duration-500 ease-out",
-                    isPlaying 
-                      ? "opacity-100 translate-y-0 scale-100" 
-                      : "opacity-0 translate-y-4 scale-95"
+                    'rounded-lg border p-4 transition-all duration-500 ease-out',
+                    isPlaying
+                      ? 'translate-y-0 scale-100 opacity-100'
+                      : 'translate-y-4 scale-95 opacity-0'
                   )}
                   style={{
-                    transitionDelay: isPlaying ? `${index * 150}ms` : '0ms'
+                    transitionDelay: isPlaying ? `${index * 150}ms` : '0ms',
                   }}
                 >
                   <div className="flex items-center gap-3">
                     <div className="text-2xl">{item.icon}</div>
                     <div>
                       <p className="font-medium">{item.label}</p>
-                      <p className="text-sm text-muted-foreground">{item.value}</p>
+                      <p className="text-muted-foreground text-sm">
+                        {item.value}
+                      </p>
                     </div>
                     <Badge variant="secondary" className="ml-auto">
                       {index + 1}
@@ -291,35 +303,35 @@ export function AnimationShowcase({ className }: AnimationShowcaseProps) {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Zap className="h-5 w-5 text-primary animate-bounce-gentle" />
+            <Zap className="text-primary animate-bounce-gentle h-5 w-5" />
             Special Animations
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+          <div className="grid grid-cols-2 gap-4 text-center md:grid-cols-4">
             <div className="space-y-2">
-              <div className="h-16 w-16 mx-auto bg-primary/10 rounded-full flex items-center justify-center">
-                <Heart className="h-8 w-8 text-red-500 animate-pulse-health" />
+              <div className="bg-primary/10 mx-auto flex h-16 w-16 items-center justify-center rounded-full">
+                <Heart className="animate-pulse-health h-8 w-8 text-red-500" />
               </div>
               <p className="text-sm font-medium">Health Pulse</p>
             </div>
-            
+
             <div className="space-y-2">
-              <div className="h-16 w-16 mx-auto bg-primary/10 rounded-full flex items-center justify-center">
-                <Star className="h-8 w-8 text-yellow-500 animate-wiggle" />
+              <div className="bg-primary/10 mx-auto flex h-16 w-16 items-center justify-center rounded-full">
+                <Star className="animate-wiggle h-8 w-8 text-yellow-500" />
               </div>
               <p className="text-sm font-medium">Wiggle</p>
             </div>
-            
+
             <div className="space-y-2">
-              <div className="h-16 w-16 mx-auto bg-primary/10 rounded-full flex items-center justify-center">
-                <Sparkles className="h-8 w-8 text-purple-500 animate-bounce-gentle" />
+              <div className="bg-primary/10 mx-auto flex h-16 w-16 items-center justify-center rounded-full">
+                <Sparkles className="animate-bounce-gentle h-8 w-8 text-purple-500" />
               </div>
               <p className="text-sm font-medium">Gentle Bounce</p>
             </div>
-            
+
             <div className="space-y-2">
-              <div className="h-16 w-16 mx-auto bg-primary/10 rounded-full flex items-center justify-center animate-scale-in">
+              <div className="bg-primary/10 animate-scale-in mx-auto flex h-16 w-16 items-center justify-center rounded-full">
                 <Zap className="h-8 w-8 text-blue-500" />
               </div>
               <p className="text-sm font-medium">Scale In</p>

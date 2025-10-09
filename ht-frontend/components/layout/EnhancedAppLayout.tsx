@@ -7,7 +7,10 @@
 
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { EnhancedErrorBoundary, SuspenseErrorBoundary } from '../ui/enhanced-error-boundary';
+import {
+  EnhancedErrorBoundary,
+  SuspenseErrorBoundary,
+} from '../ui/enhanced-error-boundary';
 import { NetworkError, AuthenticationError } from '../ui/error-messages';
 import { GlobalErrorHandler } from '../../lib/utils/global-error-handler';
 import { useToast } from '../../lib/utils/toast';
@@ -48,12 +51,18 @@ export function EnhancedAppLayout({
         },
       });
     }
-  }, [requireAuth, authState.isAuthenticated, authState.isLoading, toast, router]);
+  }, [
+    requireAuth,
+    authState.isAuthenticated,
+    authState.isLoading,
+    toast,
+    router,
+  ]);
 
   // Show authentication error if required
   if (requireAuth && !authState.isAuthenticated && !authState.isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="flex min-h-screen items-center justify-center p-4">
         <AuthenticationError
           onLogin={() => router.push('/auth/login')}
           onGoHome={() => router.push('/')}
@@ -65,9 +74,9 @@ export function EnhancedAppLayout({
   // Show loading state
   if (authState.isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <div className="border-primary mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2"></div>
           <p className="text-muted-foreground">Loading...</p>
         </div>
       </div>
@@ -83,19 +92,21 @@ export function EnhancedAppLayout({
       onError={(error, errorInfo) => {
         // Custom error handling for layout errors
         console.error('Layout error:', error, errorInfo);
-        
+
         // Send to error tracking service in production
         if (process.env.NODE_ENV === 'production') {
           // Example: errorTrackingService.captureError(error, { context: 'AppLayout', ...errorInfo });
         }
       }}
     >
-      <div className={`min-h-screen bg-background ${className}`}>
+      <div className={`bg-background min-h-screen ${className}`}>
         {/* Network error boundary for handling connection issues */}
         <SuspenseErrorBoundary
           fallback={
             <div className="flex items-center justify-center p-8">
-              <div className="animate-pulse text-muted-foreground">Loading...</div>
+              <div className="text-muted-foreground animate-pulse">
+                Loading...
+              </div>
             </div>
           }
           errorFallback={
@@ -109,7 +120,7 @@ export function EnhancedAppLayout({
           <EnhancedErrorBoundary
             level="section"
             maxRetries={2}
-            onError={(error) => {
+            onError={error => {
               toast.error('A section of the page failed to load', {
                 action: {
                   label: 'Refresh',
@@ -118,9 +129,7 @@ export function EnhancedAppLayout({
               });
             }}
           >
-            <main className="flex-1">
-              {children}
-            </main>
+            <main className="flex-1">{children}</main>
           </EnhancedErrorBoundary>
         </SuspenseErrorBoundary>
       </div>
@@ -131,11 +140,11 @@ export function EnhancedAppLayout({
 /**
  * Error boundary wrapper for individual pages
  */
-export function PageErrorBoundary({ 
-  children, 
-  pageName 
-}: { 
-  children: React.ReactNode; 
+export function PageErrorBoundary({
+  children,
+  pageName,
+}: {
+  children: React.ReactNode;
   pageName: string;
 }) {
   const toast = useToast();
@@ -146,7 +155,7 @@ export function PageErrorBoundary({
       maxRetries={2}
       onError={(error, errorInfo) => {
         console.error(`${pageName} page error:`, error, errorInfo);
-        
+
         toast.error(`Error loading ${pageName} page`, {
           action: {
             label: 'Reload',
@@ -163,11 +172,11 @@ export function PageErrorBoundary({
 /**
  * Form error boundary wrapper
  */
-export function FormErrorBoundary({ 
-  children, 
-  formName 
-}: { 
-  children: React.ReactNode; 
+export function FormErrorBoundary({
+  children,
+  formName,
+}: {
+  children: React.ReactNode;
   formName: string;
 }) {
   const toast = useToast();
@@ -176,9 +185,9 @@ export function FormErrorBoundary({
     <EnhancedErrorBoundary
       level="component"
       maxRetries={1}
-      onError={(error) => {
+      onError={error => {
         console.error(`${formName} form error:`, error);
-        
+
         toast.error(`Error in ${formName} form`, {
           action: {
             label: 'Reset',
@@ -195,12 +204,12 @@ export function FormErrorBoundary({
 /**
  * Data loading error boundary wrapper
  */
-export function DataErrorBoundary({ 
-  children, 
+export function DataErrorBoundary({
+  children,
   dataType,
-  onRetry 
-}: { 
-  children: React.ReactNode; 
+  onRetry,
+}: {
+  children: React.ReactNode;
   dataType: string;
   onRetry?: () => void;
 }) {
@@ -210,14 +219,16 @@ export function DataErrorBoundary({
     <EnhancedErrorBoundary
       level="section"
       maxRetries={3}
-      onError={(error) => {
+      onError={error => {
         console.error(`${dataType} data loading error:`, error);
-        
+
         toast.error(`Failed to load ${dataType}`, {
-          action: onRetry ? {
-            label: 'Retry',
-            onClick: onRetry,
-          } : undefined,
+          action: onRetry
+            ? {
+                label: 'Retry',
+                onClick: onRetry,
+              }
+            : undefined,
         });
       }}
     >
@@ -232,21 +243,26 @@ export function DataErrorBoundary({
 export function useComponentErrorHandler(componentName: string) {
   const toast = useToast();
 
-  return React.useCallback((error: Error, context?: string) => {
-    const fullContext = context ? `${componentName}: ${context}` : componentName;
-    
-    GlobalErrorHandler.handleComponentError(error, fullContext, {
-      showToast: false, // We'll handle the toast manually
-      logError: true,
-    });
+  return React.useCallback(
+    (error: Error, context?: string) => {
+      const fullContext = context
+        ? `${componentName}: ${context}`
+        : componentName;
 
-    toast.error(`Error in ${componentName}`, {
-      action: {
-        label: 'Refresh',
-        onClick: () => window.location.reload(),
-      },
-    });
-  }, [componentName, toast]);
+      GlobalErrorHandler.handleComponentError(error, fullContext, {
+        showToast: false, // We'll handle the toast manually
+        logError: true,
+      });
+
+      toast.error(`Error in ${componentName}`, {
+        action: {
+          label: 'Refresh',
+          onClick: () => window.location.reload(),
+        },
+      });
+    },
+    [componentName, toast]
+  );
 }
 
 /**
@@ -255,54 +271,56 @@ export function useComponentErrorHandler(componentName: string) {
 export function useAsyncErrorHandler() {
   const toast = useToast();
 
-  return React.useCallback(async <T,>(
-    operation: () => Promise<T>,
-    operationName: string,
-    options: {
-      showSuccessToast?: boolean;
-      successMessage?: string;
-      showErrorToast?: boolean;
-      retryCount?: number;
-    } = {}
-  ): Promise<T | null> => {
-    const {
-      showSuccessToast = false,
-      successMessage = 'Operation completed successfully',
-      showErrorToast = true,
-      retryCount = 0,
-    } = options;
+  return React.useCallback(
+    async <T,>(
+      operation: () => Promise<T>,
+      operationName: string,
+      options: {
+        showSuccessToast?: boolean;
+        successMessage?: string;
+        showErrorToast?: boolean;
+        retryCount?: number;
+      } = {}
+    ): Promise<T | null> => {
+      const {
+        showSuccessToast = false,
+        successMessage = 'Operation completed successfully',
+        showErrorToast = true,
+        retryCount = 0,
+      } = options;
 
-    try {
-      const result = await operation();
-      
-      if (showSuccessToast) {
-        toast.success(successMessage);
-      }
-      
-      return result;
-    } catch (error) {
-      const apiError = GlobalErrorHandler.handleApiOperation(
-        error,
-        operationName,
-        undefined,
-        { showToast: showErrorToast }
-      );
+      try {
+        const result = await operation();
 
-      // Retry logic
-      if (retryCount > 0 && GlobalErrorHandler.shouldRetry(apiError)) {
-        const delay = GlobalErrorHandler.getRetryDelay(retryCount);
-        await new Promise(resolve => setTimeout(resolve, delay));
-        
-        return useAsyncErrorHandler()(
-          operation,
+        if (showSuccessToast) {
+          toast.success(successMessage);
+        }
+
+        return result;
+      } catch (error) {
+        const apiError = GlobalErrorHandler.handleApiOperation(
+          error,
           operationName,
-          { ...options, retryCount: retryCount - 1 }
+          undefined,
+          { showToast: showErrorToast }
         );
-      }
 
-      return null;
-    }
-  }, [toast]);
+        // Retry logic
+        if (retryCount > 0 && GlobalErrorHandler.shouldRetry(apiError)) {
+          const delay = GlobalErrorHandler.getRetryDelay(retryCount);
+          await new Promise(resolve => setTimeout(resolve, delay));
+
+          return useAsyncErrorHandler()(operation, operationName, {
+            ...options,
+            retryCount: retryCount - 1,
+          });
+        }
+
+        return null;
+      }
+    },
+    [toast]
+  );
 }
 
 /**
@@ -344,7 +362,7 @@ export function ErrorHandlingExample() {
   };
 
   return (
-    <div className="p-4 space-y-4">
+    <div className="space-y-4 p-4">
       <h3 className="text-lg font-semibold">Error Handling Examples</h3>
       <div className="flex gap-2">
         <button
@@ -355,19 +373,19 @@ export function ErrorHandlingExample() {
               handleError(error as Error, 'Button click');
             }
           }}
-          className="px-4 py-2 bg-destructive text-destructive-foreground rounded"
+          className="bg-destructive text-destructive-foreground rounded px-4 py-2"
         >
           Simulate Error
         </button>
         <button
           onClick={simulateAsyncError}
-          className="px-4 py-2 bg-warning text-warning-foreground rounded"
+          className="bg-warning text-warning-foreground rounded px-4 py-2"
         >
           Simulate Async Error
         </button>
         <button
           onClick={simulateSuccess}
-          className="px-4 py-2 bg-primary text-primary-foreground rounded"
+          className="bg-primary text-primary-foreground rounded px-4 py-2"
         >
           Simulate Success
         </button>

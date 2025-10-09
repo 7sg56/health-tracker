@@ -18,10 +18,7 @@ export {
 } from './theme-config';
 
 // Enhanced theme provider
-export {
-  EnhancedThemeProvider,
-  useEnhancedTheme,
-} from './theme-provider';
+export { EnhancedThemeProvider, useEnhancedTheme } from './theme-provider';
 
 // Theme utilities
 export {

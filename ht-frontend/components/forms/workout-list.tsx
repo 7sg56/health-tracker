@@ -2,15 +2,15 @@
 
 import React, { useState } from 'react';
 import { format } from 'date-fns';
-import { 
-  Dumbbell, 
-  Edit3, 
-  Trash2, 
-  Clock, 
-  Flame, 
+import {
+  Dumbbell,
+  Edit3,
+  Trash2,
+  Clock,
+  Flame,
   Calendar,
   MoreVertical,
-  AlertTriangle
+  AlertTriangle,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -36,7 +36,10 @@ import {
 
 import { Workout } from '@/lib/types/health';
 import { Pagination, SimplePagination } from '@/components/ui/pagination';
-import { InfiniteScroll, LoadMoreButton } from '@/components/ui/infinite-scroll';
+import {
+  InfiniteScroll,
+  LoadMoreButton,
+} from '@/components/ui/infinite-scroll';
 
 interface WorkoutListProps {
   workouts: Workout[];
@@ -65,7 +68,12 @@ interface WorkoutItemProps {
   isDeleting?: boolean;
 }
 
-function WorkoutItem({ workout, onEdit, onDelete, isDeleting = false }: WorkoutItemProps) {
+function WorkoutItem({
+  workout,
+  onEdit,
+  onDelete,
+  isDeleting = false,
+}: WorkoutItemProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isDeleteLoading, setIsDeleteLoading] = useState(false);
 
@@ -102,33 +110,41 @@ function WorkoutItem({ workout, onEdit, onDelete, isDeleting = false }: WorkoutI
 
   return (
     <>
-      <Card className={`transition-all hover:shadow-md hover:scale-[1.01] ${isToday ? 'ring-2 ring-green-200 dark:ring-green-800 bg-green-50/50 dark:bg-green-950/10' : ''}`}>
+      <Card
+        className={`transition-all hover:scale-[1.01] hover:shadow-md ${isToday ? 'bg-green-50/50 ring-2 ring-green-200 dark:bg-green-950/10 dark:ring-green-800' : ''}`}
+      >
         <CardContent className="p-4">
           <div className="flex items-start justify-between">
             <div className="flex-1 space-y-3">
               {/* Header with Activity Icon */}
               <div className="flex items-center gap-3">
-                <div className="flex items-center justify-center w-10 h-10 bg-purple-100 dark:bg-purple-900/20 rounded-xl">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-100 dark:bg-purple-900/20">
                   <Dumbbell className="h-5 w-5 text-purple-600" />
                 </div>
                 <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-semibold text-foreground text-lg">{workout.activity}</span>
+                  <div className="mb-1 flex items-center gap-2">
+                    <span className="text-foreground text-lg font-semibold">
+                      {workout.activity}
+                    </span>
                     {isToday && (
                       <Badge variant="default" className="text-xs">
                         Today
                       </Badge>
                     )}
                   </div>
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                  <div className="text-muted-foreground flex items-center gap-4 text-sm">
                     <div className="flex items-center gap-1">
                       <Clock className="h-3 w-3" />
-                      <span className="font-medium">{workout.durationMin} min</span>
+                      <span className="font-medium">
+                        {workout.durationMin} min
+                      </span>
                     </div>
                     {workout.caloriesBurned && (
                       <div className="flex items-center gap-1">
                         <Flame className="h-3 w-3" />
-                        <span className="font-medium">{workout.caloriesBurned} cal</span>
+                        <span className="font-medium">
+                          {workout.caloriesBurned} cal
+                        </span>
                       </div>
                     )}
                   </div>
@@ -136,7 +152,7 @@ function WorkoutItem({ workout, onEdit, onDelete, isDeleting = false }: WorkoutI
               </div>
 
               {/* Date and Time */}
-              <div className="flex items-center gap-2 text-xs text-muted-foreground pl-13">
+              <div className="text-muted-foreground flex items-center gap-2 pl-13 text-xs">
                 <Calendar className="h-3 w-3" />
                 <span>{formatDate(workout.date)}</span>
                 <span>•</span>
@@ -146,12 +162,12 @@ function WorkoutItem({ workout, onEdit, onDelete, isDeleting = false }: WorkoutI
               {/* Enhanced Progress Indicators */}
               <div className="flex items-center gap-2 pl-13">
                 <Badge variant="secondary" className="text-xs font-medium">
-                  <Clock className="w-3 h-3 mr-1" />
+                  <Clock className="mr-1 h-3 w-3" />
                   {workout.durationMin}min
                 </Badge>
                 {workout.caloriesBurned && (
                   <Badge variant="outline" className="text-xs font-medium">
-                    <Flame className="w-3 h-3 mr-1" />
+                    <Flame className="mr-1 h-3 w-3" />
                     {workout.caloriesBurned}cal
                   </Badge>
                 )}
@@ -169,7 +185,7 @@ function WorkoutItem({ workout, onEdit, onDelete, isDeleting = false }: WorkoutI
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-8 w-8 p-0 hover:bg-muted/80 transition-colors"
+                  className="hover:bg-muted/80 h-8 w-8 p-0 transition-colors"
                   disabled={isDeleting || isDeleteLoading}
                 >
                   <MoreVertical className="h-4 w-4" />
@@ -179,14 +195,14 @@ function WorkoutItem({ workout, onEdit, onDelete, isDeleting = false }: WorkoutI
               <DropdownMenuContent align="end" className="w-40">
                 <DropdownMenuItem
                   onClick={() => onEdit(workout)}
-                  className="flex items-center gap-2 cursor-pointer"
+                  className="flex cursor-pointer items-center gap-2"
                 >
                   <Edit3 className="h-4 w-4" />
                   Edit
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => setShowDeleteDialog(true)}
-                  className="flex items-center gap-2 text-destructive focus:text-destructive cursor-pointer"
+                  className="text-destructive focus:text-destructive flex cursor-pointer items-center gap-2"
                 >
                   <Trash2 className="h-4 w-4" />
                   Delete
@@ -202,14 +218,16 @@ function WorkoutItem({ workout, onEdit, onDelete, isDeleting = false }: WorkoutI
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-destructive" />
+              <AlertTriangle className="text-destructive h-5 w-5" />
               Delete Workout
             </AlertDialogTitle>
             <AlertDialogDescription>
               Are you sure you want to delete this workout entry?
-              <div className="mt-2 p-2 bg-muted rounded text-sm">
-                <strong>{workout.activity}</strong> - {workout.durationMin} minutes
-                {workout.caloriesBurned && ` - ${workout.caloriesBurned} calories`}
+              <div className="bg-muted mt-2 rounded p-2 text-sm">
+                <strong>{workout.activity}</strong> - {workout.durationMin}{' '}
+                minutes
+                {workout.caloriesBurned &&
+                  ` - ${workout.caloriesBurned} calories`}
               </div>
               This action cannot be undone.
             </AlertDialogDescription>
@@ -242,13 +260,13 @@ function WorkoutItem({ workout, onEdit, onDelete, isDeleting = false }: WorkoutI
   );
 }
 
-export function WorkoutList({ 
-  workouts, 
-  onEdit, 
-  onDelete, 
-  isLoading = false, 
+export function WorkoutList({
+  workouts,
+  onEdit,
+  onDelete,
+  isLoading = false,
   error,
-  emptyMessage = "No workouts recorded yet. Add your first workout to get started!",
+  emptyMessage = 'No workouts recorded yet. Add your first workout to get started!',
   currentPage = 0,
   totalPages = 0,
   totalElements = 0,
@@ -257,7 +275,7 @@ export function WorkoutList({
   onPageChange,
   onLoadMore,
   paginationType = 'none',
-  isMobile = false
+  isMobile = false,
 }: WorkoutListProps) {
   if (error) {
     return (
@@ -285,23 +303,23 @@ export function WorkoutList({
           {/* Loading Skeletons */}
           {[...Array(3)].map((_, index) => (
             <div key={index} className="animate-pulse">
-              <div className="flex items-start justify-between p-4 border rounded-lg">
+              <div className="flex items-start justify-between rounded-lg border p-4">
                 <div className="flex-1 space-y-2">
                   <div className="flex items-center gap-3">
-                    <div className="h-4 w-4 bg-muted rounded" />
-                    <div className="h-4 w-24 bg-muted rounded" />
-                    <div className="h-3 w-16 bg-muted rounded" />
+                    <div className="bg-muted h-4 w-4 rounded" />
+                    <div className="bg-muted h-4 w-24 rounded" />
+                    <div className="bg-muted h-3 w-16 rounded" />
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="h-3 w-3 bg-muted rounded" />
-                    <div className="h-3 w-20 bg-muted rounded" />
+                    <div className="bg-muted h-3 w-3 rounded" />
+                    <div className="bg-muted h-3 w-20 rounded" />
                   </div>
                   <div className="flex gap-2">
-                    <div className="h-5 w-16 bg-muted rounded" />
-                    <div className="h-5 w-20 bg-muted rounded" />
+                    <div className="bg-muted h-5 w-16 rounded" />
+                    <div className="bg-muted h-5 w-20 rounded" />
                   </div>
                 </div>
-                <div className="h-8 w-8 bg-muted rounded" />
+                <div className="bg-muted h-8 w-8 rounded" />
               </div>
             </div>
           ))}
@@ -320,8 +338,8 @@ export function WorkoutList({
           </CardTitle>
         </CardHeader>
         <CardContent className="p-6">
-          <div className="text-center py-8">
-            <Dumbbell className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+          <div className="py-8 text-center">
+            <Dumbbell className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
             <p className="text-muted-foreground">{emptyMessage}</p>
           </div>
         </CardContent>
@@ -331,33 +349,45 @@ export function WorkoutList({
 
   // Calculate totals
   const totalWorkouts = workouts.length;
-  const totalMinutes = workouts.reduce((sum, workout) => sum + workout.durationMin, 0);
-  const totalCalories = workouts.reduce((sum, workout) => sum + (workout.caloriesBurned || 0), 0);
+  const totalMinutes = workouts.reduce(
+    (sum, workout) => sum + workout.durationMin,
+    0
+  );
+  const totalCalories = workouts.reduce(
+    (sum, workout) => sum + (workout.caloriesBurned || 0),
+    0
+  );
 
   return (
-    <Card className="shadow-sm hover:shadow-md transition-shadow">
+    <Card className="shadow-sm transition-shadow hover:shadow-md">
       <CardHeader className="pb-4">
         <CardTitle className="flex items-center gap-2">
-          <div className="flex items-center justify-center w-8 h-8 bg-purple-100 dark:bg-purple-900/20 rounded-lg">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-100 dark:bg-purple-900/20">
             <Dumbbell className="h-4 w-4 text-purple-600" />
           </div>
           Recent Workouts
         </CardTitle>
-        
+
         {/* Enhanced Summary Stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-4">
-          <div className="text-center p-3 bg-muted/50 rounded-lg">
-            <div className="text-lg font-bold text-foreground">{totalWorkouts}</div>
-            <div className="text-xs text-muted-foreground">Total Workouts</div>
+        <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3">
+          <div className="bg-muted/50 rounded-lg p-3 text-center">
+            <div className="text-foreground text-lg font-bold">
+              {totalWorkouts}
+            </div>
+            <div className="text-muted-foreground text-xs">Total Workouts</div>
           </div>
-          <div className="text-center p-3 bg-muted/50 rounded-lg">
-            <div className="text-lg font-bold text-foreground">{totalMinutes}</div>
-            <div className="text-xs text-muted-foreground">Minutes</div>
+          <div className="bg-muted/50 rounded-lg p-3 text-center">
+            <div className="text-foreground text-lg font-bold">
+              {totalMinutes}
+            </div>
+            <div className="text-muted-foreground text-xs">Minutes</div>
           </div>
           {totalCalories > 0 && (
-            <div className="text-center p-3 bg-muted/50 rounded-lg">
-              <div className="text-lg font-bold text-foreground">{totalCalories}</div>
-              <div className="text-xs text-muted-foreground">Calories</div>
+            <div className="bg-muted/50 rounded-lg p-3 text-center">
+              <div className="text-foreground text-lg font-bold">
+                {totalCalories}
+              </div>
+              <div className="text-muted-foreground text-xs">Calories</div>
             </div>
           )}
         </div>
@@ -371,7 +401,7 @@ export function WorkoutList({
             errorMessage={error}
             onRetry={onLoadMore}
           >
-            {workouts.map((workout) => (
+            {workouts.map(workout => (
               <WorkoutItem
                 key={workout.id}
                 workout={workout}
@@ -383,7 +413,7 @@ export function WorkoutList({
           </InfiniteScroll>
         ) : (
           <>
-            {workouts.map((workout) => (
+            {workouts.map(workout => (
               <WorkoutItem
                 key={workout.id}
                 workout={workout}

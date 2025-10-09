@@ -5,12 +5,12 @@
 
 import { usePathname } from 'next/navigation';
 import { useMemo } from 'react';
-import { 
-  Home, 
-  Droplets, 
-  Utensils, 
-  Dumbbell, 
-  Heart, 
+import {
+  Home,
+  Droplets,
+  Utensils,
+  Dumbbell,
+  Heart,
   User,
   Settings,
   TrendingUp,
@@ -19,7 +19,7 @@ import {
   Award,
   BarChart3,
   Clock,
-  type LucideIcon
+  type LucideIcon,
 } from 'lucide-react';
 
 export interface NavigationRoute {
@@ -143,27 +143,31 @@ const SECONDARY_ROUTES: Omit<NavigationRoute, 'isActive'>[] = [
 /**
  * Hook to get navigation routes with active state
  */
-export function useNavigationRoutes(options: {
-  includeExtended?: boolean;
-  includeSecondary?: boolean;
-} = {}) {
+export function useNavigationRoutes(
+  options: {
+    includeExtended?: boolean;
+    includeSecondary?: boolean;
+  } = {}
+) {
   const pathname = usePathname();
   const { includeExtended = false, includeSecondary = false } = options;
 
   const routes = useMemo(() => {
     let allRoutes = [...MAIN_ROUTES];
-    
+
     if (includeExtended) {
       allRoutes = [...allRoutes, ...EXTENDED_ROUTES];
     }
-    
+
     if (includeSecondary) {
       allRoutes = [...allRoutes, ...SECONDARY_ROUTES];
     }
 
     return allRoutes.map(route => ({
       ...route,
-      isActive: pathname === route.href || (route.href === '/dashboard' && pathname === '/dashboard'),
+      isActive:
+        pathname === route.href ||
+        (route.href === '/dashboard' && pathname === '/dashboard'),
     }));
   }, [pathname, includeExtended, includeSecondary]);
 
@@ -181,7 +185,9 @@ export function useNavigationGroups(): NavigationGroup[] {
       {
         id: 'main',
         label: 'Main Navigation',
-        routes: routes.filter(route => ['dashboard', 'water'].includes(route.id)),
+        routes: routes.filter(route =>
+          ['dashboard', 'water'].includes(route.id)
+        ),
       },
       {
         id: 'tracking',
@@ -193,7 +199,9 @@ export function useNavigationGroups(): NavigationGroup[] {
       {
         id: 'insights',
         label: 'Insights & Goals',
-        routes: routes.filter(route => ['analytics', 'goals', 'history', 'achievements'].includes(route.id)),
+        routes: routes.filter(route =>
+          ['analytics', 'goals', 'history', 'achievements'].includes(route.id)
+        ),
         collapsible: true,
         defaultCollapsed: true,
       },
@@ -213,8 +221,11 @@ export function useNavigationGroups(): NavigationGroup[] {
  * Hook to get the current active route
  */
 export function useActiveRoute(): NavigationRoute | null {
-  const routes = useNavigationRoutes({ includeExtended: true, includeSecondary: true });
-  
+  const routes = useNavigationRoutes({
+    includeExtended: true,
+    includeSecondary: true,
+  });
+
   return useMemo(() => {
     return routes.find(route => route.isActive) || null;
   }, [routes]);
@@ -225,7 +236,7 @@ export function useActiveRoute(): NavigationRoute | null {
  */
 export function useBreadcrumbs(): Array<{ label: string; href?: string }> {
   const pathname = usePathname();
-  
+
   return useMemo(() => {
     const segments = pathname.split('/').filter(Boolean);
     const breadcrumbs: Array<{ label: string; href?: string }> = [];
@@ -250,12 +261,14 @@ export function useBreadcrumbs(): Array<{ label: string; href?: string }> {
     let currentPath = '';
     segments.forEach((segment, index) => {
       currentPath += `/${segment}`;
-      
+
       // Skip dashboard since we already added it
       if (segment === 'dashboard' && index === 0) return;
-      
-      const label = segmentLabels[segment] || segment.charAt(0).toUpperCase() + segment.slice(1);
-      
+
+      const label =
+        segmentLabels[segment] ||
+        segment.charAt(0).toUpperCase() + segment.slice(1);
+
       // Last segment is current page (no link)
       if (index === segments.length - 1) {
         breadcrumbs.push({ label });
@@ -273,9 +286,11 @@ export function useBreadcrumbs(): Array<{ label: string; href?: string }> {
  */
 export function useIsRouteActive(href: string): boolean {
   const pathname = usePathname();
-  
+
   return useMemo(() => {
-    return pathname === href || (href === '/dashboard' && pathname === '/dashboard');
+    return (
+      pathname === href || (href === '/dashboard' && pathname === '/dashboard')
+    );
   }, [pathname, href]);
 }
 
@@ -303,6 +318,6 @@ export function getCanonicalDashboardPath(path: string): string {
   if (path.startsWith('/home')) {
     return path.replace('/home', '/dashboard');
   }
-  
+
   return path;
 }

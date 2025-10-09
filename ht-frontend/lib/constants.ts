@@ -3,7 +3,8 @@
 export const APP_CONFIG = {
   name: process.env.NEXT_PUBLIC_APP_NAME || 'Health Tracker',
   version: process.env.NEXT_PUBLIC_APP_VERSION || '1.0.0',
-  description: 'Track your daily health metrics including water intake, food consumption, and workouts.',
+  description:
+    'Track your daily health metrics including water intake, food consumption, and workouts.',
 } as const;
 
 export const API_CONFIG = {

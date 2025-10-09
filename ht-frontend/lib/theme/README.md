@@ -5,22 +5,26 @@ The HealthTracker application features a comprehensive theme system built on top
 ## Features
 
 ### 🎨 Theme Modes
+
 - **Light Mode**: Clean, bright interface for daytime use
-- **Dark Mode**: Easy on the eyes for low-light environments  
+- **Dark Mode**: Easy on the eyes for low-light environments
 - **System Mode**: Automatically follows system preference
 
 ### ♿ Accessibility
+
 - **High Contrast**: Enhanced contrast ratios for better visibility
 - **Reduced Motion**: Minimizes animations for users with motion sensitivity
 - **WCAG Compliance**: Meets accessibility standards for color contrast
 
 ### 🎯 Health-Specific Colors
+
 - **Primary**: Main brand color for primary actions
 - **Success**: Green tones for positive health metrics
 - **Warning**: Amber tones for cautionary health data
 - **Danger**: Red tones for concerning health metrics
 
 ### 🛠️ Customization
+
 - **Border Radius**: Adjustable corner roundness (0-20px)
 - **Animation Duration**: Configurable transition speeds
 - **Theme Persistence**: Saves user preferences locally
@@ -67,9 +71,7 @@ function MyComponent() {
   return (
     <div className={isHighContrast ? 'high-contrast' : ''}>
       <p>Current theme: {theme}</p>
-      <button onClick={toggleHighContrast}>
-        Toggle High Contrast
-      </button>
+      <button onClick={toggleHighContrast}>Toggle High Contrast</button>
     </div>
   );
 }
@@ -82,14 +84,10 @@ import { useThemeAwareStyles } from '@/hooks/use-theme-aware-styles';
 
 function HealthCard({ healthScore }: { healthScore: number }) {
   const { getHealthStatusStyle } = useThemeAwareStyles();
-  
+
   const style = getHealthStatusStyle(healthScore, { good: 80, warning: 60 });
-  
-  return (
-    <div style={style}>
-      Health Score: {healthScore}
-    </div>
-  );
+
+  return <div style={style}>Health Score: {healthScore}</div>;
 }
 ```
 
@@ -100,9 +98,9 @@ import { useHealthMetricsStyles } from '@/hooks/use-theme-aware-styles';
 
 function WaterIntakeCard({ current, goal }: { current: number; goal: number }) {
   const { getWaterIntakeStyle } = useHealthMetricsStyles();
-  
+
   const style = getWaterIntakeStyle(current, goal);
-  
+
   return (
     <div style={style}>
       Water: {current}ml / {goal}ml
@@ -114,26 +112,29 @@ function WaterIntakeCard({ current, goal }: { current: number; goal: number }) {
 ## Components
 
 ### ThemeToggle
+
 Basic theme switcher with light/dark/system options plus accessibility controls.
 
 ```tsx
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 
-<ThemeToggle />
+<ThemeToggle />;
 ```
 
 ### ThemeSettings
+
 Advanced theme customization dialog with full configuration options.
 
 ```tsx
 import { ThemeSettings } from '@/components/ui/theme-settings';
 
-<ThemeSettings />
+<ThemeSettings />;
 ```
 
 ## Theme Configuration
 
 ### Default Light Theme
+
 ```typescript
 {
   mode: 'light',
@@ -162,6 +163,7 @@ import { ThemeSettings } from '@/components/ui/theme-settings';
 ```
 
 ### Custom Theme Creation
+
 ```typescript
 import { ThemeConfig, applyThemeToDocument } from '@/lib/theme';
 
@@ -193,19 +195,25 @@ The theme system automatically applies CSS custom properties:
 ## Accessibility Features
 
 ### High Contrast Mode
+
 Automatically adjusts colors for better visibility:
+
 - Increases border contrast
 - Enhances focus indicators
 - Improves text readability
 
 ### Reduced Motion
+
 Respects user motion preferences:
+
 - Disables animations when enabled
 - Reduces transition durations
 - Maintains functionality without motion
 
 ### System Preferences
+
 Automatically detects and respects:
+
 - `prefers-color-scheme`
 - `prefers-reduced-motion`
 - `prefers-contrast`
@@ -234,6 +242,7 @@ npm test -- --testPathPatterns=theme-system.test.tsx
 ```
 
 Tests cover:
+
 - Theme provider functionality
 - Accessibility toggles
 - Configuration validation

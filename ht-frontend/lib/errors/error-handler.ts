@@ -1,14 +1,14 @@
 // Error handling utilities for consistent error management
 
-import { 
-  ApiError, 
-  ValidationError, 
-  AuthenticationError, 
-  AuthorizationError, 
-  NotFoundError, 
-  ConflictError, 
-  ServerError, 
-  NetworkError
+import {
+  ApiError,
+  ValidationError,
+  AuthenticationError,
+  AuthorizationError,
+  NotFoundError,
+  ConflictError,
+  ServerError,
+  NetworkError,
 } from './api-error';
 
 /**
@@ -26,7 +26,9 @@ export class ErrorHandler {
 
     // Handle fetch/network errors
     if (error instanceof TypeError && error.message.includes('fetch')) {
-      return new NetworkError('Unable to connect to the server. Please check your internet connection.');
+      return new NetworkError(
+        'Unable to connect to the server. Please check your internet connection.'
+      );
     }
 
     // Handle generic Error objects
@@ -46,7 +48,7 @@ export class ErrorHandler {
 
     try {
       const errorData = await response.json();
-      
+
       // Create specific error types based on status code
       switch (status) {
         case 400:
@@ -65,7 +67,9 @@ export class ErrorHandler {
       }
     } catch {
       // If we can't parse the error response, create a generic error
-      return new ServerError(`Server error (${status}): ${response.statusText}`);
+      return new ServerError(
+        `Server error (${status}): ${response.statusText}`
+      );
     }
   }
 
@@ -76,7 +80,8 @@ export class ErrorHandler {
     const logData = {
       ...error.toJSON(),
       context,
-      userAgent: typeof window !== 'undefined' ? window.navigator.userAgent : 'server',
+      userAgent:
+        typeof window !== 'undefined' ? window.navigator.userAgent : 'server',
       url: typeof window !== 'undefined' ? window.location.href : 'unknown',
     };
 
@@ -101,7 +106,7 @@ export class ErrorHandler {
    */
   static shouldRetry(error: ApiError, attemptCount: number = 0): boolean {
     const maxRetries = 3;
-    
+
     if (attemptCount >= maxRetries) {
       return false;
     }
@@ -116,12 +121,12 @@ export class ErrorHandler {
   static getRetryDelay(attemptCount: number): number {
     const baseDelay = 1000; // 1 second
     const maxDelay = 10000; // 10 seconds
-    
+
     const delay = Math.min(baseDelay * Math.pow(2, attemptCount), maxDelay);
-    
+
     // Add some jitter to prevent thundering herd
     const jitter = Math.random() * 0.1 * delay;
-    
+
     return delay + jitter;
   }
 }
@@ -152,24 +157,27 @@ export async function withRetry<T>(
   maxRetries: number = 3
 ): Promise<T> {
   let lastError: ApiError;
-  
+
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
       return await operation();
     } catch (error) {
       lastError = ErrorHandler.handleError(error);
-      
-      if (attempt === maxRetries || !ErrorHandler.shouldRetry(lastError, attempt)) {
+
+      if (
+        attempt === maxRetries ||
+        !ErrorHandler.shouldRetry(lastError, attempt)
+      ) {
         ErrorHandler.logError(lastError, context);
         throw lastError;
       }
-      
+
       // Wait before retrying
       const delay = ErrorHandler.getRetryDelay(attempt);
       await new Promise(resolve => setTimeout(resolve, delay));
     }
   }
-  
+
   throw lastError!;
 }
 
@@ -200,9 +208,9 @@ export interface ErrorInfo {
 
 export function handleReactError(error: Error, errorInfo: ErrorInfo): void {
   const apiError = ErrorHandler.handleError(error);
-  
+
   ErrorHandler.logError(apiError, `React Error: ${errorInfo.componentStack}`);
-  
+
   // In production, you might want to send React errors to a service
   if (process.env.NODE_ENV === 'production') {
     // Example: Send to error tracking service

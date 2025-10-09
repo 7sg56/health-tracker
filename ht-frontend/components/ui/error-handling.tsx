@@ -8,7 +8,7 @@ export {
   useErrorHandler,
   withErrorBoundary,
   ErrorFallback,
-  AsyncErrorBoundary
+  AsyncErrorBoundary,
 } from './error-boundary';
 
 export {
@@ -16,7 +16,7 @@ export {
   useErrorHandler as useEnhancedErrorHandler,
   withEnhancedErrorBoundary,
   AsyncErrorBoundary as EnhancedAsyncErrorBoundary,
-  SuspenseErrorBoundary
+  SuspenseErrorBoundary,
 } from './enhanced-error-boundary';
 
 export {
@@ -27,7 +27,7 @@ export {
   NotFoundError,
   ServerError,
   ValidationError,
-  useErrorComponent
+  useErrorComponent,
 } from './error-messages';
 
 export {
@@ -38,14 +38,14 @@ export {
   ApiErrorDisplay,
   FieldValidationStatus,
   FormSubmissionStatus,
-  useFormErrorDisplay
+  useFormErrorDisplay,
 } from './form-error-display';
 
 export {
   NetworkErrorHandler,
   useNetworkRetry,
   NetworkStatus,
-  OfflineFallback
+  OfflineFallback,
 } from './network-error-handler';
 
 export {
@@ -53,7 +53,7 @@ export {
   DataLoader,
   ImageWithFallback,
   SuspenseFallback,
-  useLoadingErrorState
+  useLoadingErrorState,
 } from './loading-error-states';
 
 // Enhanced form field components
@@ -61,7 +61,7 @@ export {
   EnhancedInputField,
   EnhancedTextareaField,
   EnhancedSelectField,
-  useFieldValidation
+  useFieldValidation,
 } from './enhanced-form-field';
 
 // Form error hooks
@@ -70,12 +70,20 @@ export {
   useFormSubmission,
   useFieldValidation as useFormFieldValidation,
   useValidatedForm,
-  useOptimisticUpdate
+  useOptimisticUpdate,
 } from '../../lib/errors/form-error-hooks';
 
 // Error handling utilities
-export { ApiError, ValidationError as ApiValidationError } from '../../lib/errors/api-error';
-export { ErrorHandler, safeAsync, withRetry, withTimeout } from '../../lib/errors/error-handler';
+export {
+  ApiError,
+  ValidationError as ApiValidationError,
+} from '../../lib/errors/api-error';
+export {
+  ErrorHandler,
+  safeAsync,
+  withRetry,
+  withTimeout,
+} from '../../lib/errors/error-handler';
 export { GlobalErrorHandler } from '../../lib/utils/global-error-handler';
 
 // Common error handling patterns and utilities
@@ -101,7 +109,7 @@ export function withComprehensiveErrorHandling<P extends object>(
     level = 'component',
     showDetails = false,
     maxRetries = 3,
-    fallback
+    fallback,
   } = options;
 
   const WrappedComponent = (props: P) => (
@@ -116,7 +124,7 @@ export function withComprehensiveErrorHandling<P extends object>(
   );
 
   WrappedComponent.displayName = `withComprehensiveErrorHandling(${Component.displayName || Component.name})`;
-  
+
   return WrappedComponent;
 }
 
@@ -160,7 +168,7 @@ export function useComprehensiveErrorHandling() {
     handleError,
     clearError,
     executeWithErrorHandling,
-    hasError: !!error
+    hasError: !!error,
   };
 }
 
@@ -176,7 +184,7 @@ interface ErrorBoundaryProviderProps {
 export function ErrorBoundaryProvider({
   children,
   fallback,
-  onError
+  onError,
 }: ErrorBoundaryProviderProps) {
   return (
     <EnhancedErrorBoundary
@@ -209,7 +217,7 @@ export function AsyncOperationWrapper<T>({
   onError,
   loadingComponent,
   errorComponent,
-  children
+  children,
 }: AsyncOperationWrapperProps<T>) {
   const [data, setData] = React.useState<T | null>(null);
   const [isLoading, setIsLoading] = React.useState(true);
@@ -241,7 +249,13 @@ export function AsyncOperationWrapper<T>({
   }
 
   if (error) {
-    return <>{errorComponent || <LoadingErrorState error={error} onRetry={executeOperation} />}</>;
+    return (
+      <>
+        {errorComponent || (
+          <LoadingErrorState error={error} onRetry={executeOperation} />
+        )}
+      </>
+    );
   }
 
   if (data) {
@@ -260,27 +274,34 @@ interface FormWrapperProps {
   className?: string;
 }
 
-export function FormWrapper({ children, onSubmit, className }: FormWrapperProps) {
+export function FormWrapper({
+  children,
+  onSubmit,
+  className,
+}: FormWrapperProps) {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [submitError, setSubmitError] = React.useState<Error | null>(null);
   const [submitSuccess, setSubmitSuccess] = React.useState(false);
 
-  const handleSubmit = React.useCallback(async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setSubmitError(null);
-    setSubmitSuccess(false);
+  const handleSubmit = React.useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      setIsSubmitting(true);
+      setSubmitError(null);
+      setSubmitSuccess(false);
 
-    try {
-      await onSubmit(e);
-      setSubmitSuccess(true);
-    } catch (err) {
-      const errorObj = err instanceof Error ? err : new Error(String(err));
-      setSubmitError(errorObj);
-    } finally {
-      setIsSubmitting(false);
-    }
-  }, [onSubmit]);
+      try {
+        await onSubmit(e);
+        setSubmitSuccess(true);
+      } catch (err) {
+        const errorObj = err instanceof Error ? err : new Error(String(err));
+        setSubmitError(errorObj);
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
+    [onSubmit]
+  );
 
   return (
     <form onSubmit={handleSubmit} className={className}>
@@ -292,7 +313,7 @@ export function FormWrapper({ children, onSubmit, className }: FormWrapperProps)
           className="mb-4"
         />
       )}
-      
+
       {submitSuccess && (
         <FormErrorDisplay
           errors="Form submitted successfully!"
@@ -302,10 +323,8 @@ export function FormWrapper({ children, onSubmit, className }: FormWrapperProps)
           className="mb-4"
         />
       )}
-      
-      <fieldset disabled={isSubmitting}>
-        {children}
-      </fieldset>
+
+      <fieldset disabled={isSubmitting}>{children}</fieldset>
     </form>
   );
 }

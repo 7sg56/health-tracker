@@ -25,17 +25,14 @@ export const PROTECTED_ROUTES = [
 ];
 
 // Public routes that should redirect authenticated users
-export const PUBLIC_ROUTES = [
-  '/auth/login',
-  '/auth/register',
-];
+export const PUBLIC_ROUTES = ['/auth/login', '/auth/register'];
 
 /**
  * Check if a path is a protected route
  */
 export function isProtectedRoute(pathname: string): boolean {
-  return PROTECTED_ROUTES.some(route => 
-    pathname === route || pathname.startsWith(`${route}/`)
+  return PROTECTED_ROUTES.some(
+    route => pathname === route || pathname.startsWith(`${route}/`)
   );
 }
 
@@ -43,8 +40,8 @@ export function isProtectedRoute(pathname: string): boolean {
  * Check if a path is a public route
  */
 export function isPublicRoute(pathname: string): boolean {
-  return PUBLIC_ROUTES.some(route => 
-    pathname === route || pathname.startsWith(`${route}/`)
+  return PUBLIC_ROUTES.some(
+    route => pathname === route || pathname.startsWith(`${route}/`)
   );
 }
 
@@ -93,18 +90,40 @@ export function useRouteRedirect() {
  */
 export function useNavigationRoutes() {
   const pathname = usePathname();
-  
+
   const routes = [
     { id: 'dashboard', label: 'Dashboard', href: '/dashboard', icon: 'Home' },
-    { id: 'water', label: 'Water Intake', href: '/dashboard/water', icon: 'Droplets' },
-    { id: 'food', label: 'Food Intake', href: '/dashboard/food', icon: 'Utensils' },
-    { id: 'workout', label: 'Workouts', href: '/dashboard/workout', icon: 'Dumbbell' },
-    { id: 'profile', label: 'Profile', href: '/dashboard/profile', icon: 'User' },
+    {
+      id: 'water',
+      label: 'Water Intake',
+      href: '/dashboard/water',
+      icon: 'Droplets',
+    },
+    {
+      id: 'food',
+      label: 'Food Intake',
+      href: '/dashboard/food',
+      icon: 'Utensils',
+    },
+    {
+      id: 'workout',
+      label: 'Workouts',
+      href: '/dashboard/workout',
+      icon: 'Dumbbell',
+    },
+    {
+      id: 'profile',
+      label: 'Profile',
+      href: '/dashboard/profile',
+      icon: 'User',
+    },
   ];
 
   return routes.map(route => ({
     ...route,
-    isActive: pathname === route.href || (route.href === '/dashboard' && pathname === '/dashboard'),
+    isActive:
+      pathname === route.href ||
+      (route.href === '/dashboard' && pathname === '/dashboard'),
   }));
 }
 
@@ -122,14 +141,14 @@ export function buildReturnUrl(currentPath: string): string {
  */
 export function parseReturnUrl(searchParams: URLSearchParams): string {
   const returnUrl = searchParams.get('returnUrl');
-  
+
   if (!returnUrl) {
     return '/dashboard'; // Default return path
   }
 
   try {
     const decodedUrl = decodeURIComponent(returnUrl);
-    
+
     // Validate that the return URL is safe (starts with /)
     if (!decodedUrl.startsWith('/')) {
       return '/dashboard';
@@ -159,7 +178,7 @@ export function isValidReturnUrl(url: string): boolean {
 
     // Must be a valid path
     new URL(url, 'http://localhost');
-    
+
     return true;
   } catch {
     return false;
@@ -169,7 +188,9 @@ export function isValidReturnUrl(url: string): boolean {
 /**
  * Get breadcrumb items for a given path
  */
-export function getBreadcrumbItems(pathname: string): Array<{ label: string; href?: string }> {
+export function getBreadcrumbItems(
+  pathname: string
+): Array<{ label: string; href?: string }> {
   const canonicalPath = getCanonicalPath(pathname);
   const segments = canonicalPath.split('/').filter(Boolean);
   const breadcrumbs: Array<{ label: string; href?: string }> = [];
@@ -190,12 +211,14 @@ export function getBreadcrumbItems(pathname: string): Array<{ label: string; hre
   let currentPath = '';
   segments.forEach((segment, index) => {
     currentPath += `/${segment}`;
-    
+
     // Skip dashboard since we already added it
     if (segment === 'dashboard' && index === 0) return;
-    
-    const label = segmentLabels[segment] || segment.charAt(0).toUpperCase() + segment.slice(1);
-    
+
+    const label =
+      segmentLabels[segment] ||
+      segment.charAt(0).toUpperCase() + segment.slice(1);
+
     // Last segment is current page (no link)
     if (index === segments.length - 1) {
       breadcrumbs.push({ label });

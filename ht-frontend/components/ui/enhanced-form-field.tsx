@@ -9,8 +9,20 @@ import { cn } from '@/lib/utils';
 import { Input } from './input';
 import { Textarea } from './textarea';
 import { Label } from './label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './select';
-import { FormControl, FormDescription, FormItem, FormLabel, FormMessage } from './form';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from './select';
+import {
+  FormControl,
+  FormDescription,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from './form';
 
 interface BaseFieldProps {
   label?: string;
@@ -30,7 +42,11 @@ interface EnhancedInputFieldProps extends BaseFieldProps {
   value: string | number;
   onChange: (value: string | number) => void;
   onBlur?: () => void;
-  validator?: (value: string | number) => Promise<{ isValid: boolean; error?: string }> | { isValid: boolean; error?: string };
+  validator?: (
+    value: string | number
+  ) =>
+    | Promise<{ isValid: boolean; error?: string }>
+    | { isValid: boolean; error?: string };
   debounceMs?: number;
   min?: number;
   max?: number;
@@ -70,46 +86,53 @@ export function EnhancedInputField({
   const error = externalError || internalError;
   const validationState = isValid === null ? null : isValid && !error;
 
-  const validateValue = useCallback(async (val: string | number, immediate = false) => {
-    if (!validator || !isTouched) return;
+  const validateValue = useCallback(
+    async (val: string | number, immediate = false) => {
+      if (!validator || !isTouched) return;
 
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
-    }
-
-    const performValidation = async () => {
-      setIsValidating(true);
-      try {
-        const result = await validator(val);
-        setInternalError(result.error);
-        setIsValid(result.isValid);
-        onValidationChange?.(result.isValid, result.error);
-      } catch (err) {
-        setInternalError('Validation error');
-        setIsValid(false);
-        onValidationChange?.(false, 'Validation error');
-      } finally {
-        setIsValidating(false);
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
       }
-    };
 
-    if (immediate) {
-      await performValidation();
-    } else {
-      debounceRef.current = setTimeout(performValidation, debounceMs);
-    }
-  }, [validator, debounceMs, isTouched, onValidationChange]);
+      const performValidation = async () => {
+        setIsValidating(true);
+        try {
+          const result = await validator(val);
+          setInternalError(result.error);
+          setIsValid(result.isValid);
+          onValidationChange?.(result.isValid, result.error);
+        } catch (err) {
+          setInternalError('Validation error');
+          setIsValid(false);
+          onValidationChange?.(false, 'Validation error');
+        } finally {
+          setIsValidating(false);
+        }
+      };
 
-  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = type === 'number' ? parseFloat(e.target.value) || 0 : e.target.value;
-    onChange(newValue);
-    
-    if (isTouched && error) {
-      setInternalError(undefined);
-    }
-    
-    validateValue(newValue);
-  }, [onChange, type, validateValue, isTouched, error]);
+      if (immediate) {
+        await performValidation();
+      } else {
+        debounceRef.current = setTimeout(performValidation, debounceMs);
+      }
+    },
+    [validator, debounceMs, isTouched, onValidationChange]
+  );
+
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const newValue =
+        type === 'number' ? parseFloat(e.target.value) || 0 : e.target.value;
+      onChange(newValue);
+
+      if (isTouched && error) {
+        setInternalError(undefined);
+      }
+
+      validateValue(newValue);
+    },
+    [onChange, type, validateValue, isTouched, error]
+  );
 
   const handleBlur = useCallback(() => {
     setIsTouched(true);
@@ -127,26 +150,31 @@ export function EnhancedInputField({
 
   const getValidationIcon = () => {
     if (!showValidationState || !isTouched) return null;
-    
+
     if (isValidating || externalIsValidating) {
-      return <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />;
+      return <Loader2 className="text-muted-foreground h-4 w-4 animate-spin" />;
     }
-    
+
     if (error) {
-      return <AlertCircle className="h-4 w-4 text-destructive" />;
+      return <AlertCircle className="text-destructive h-4 w-4" />;
     }
-    
+
     if (validationState === true) {
       return <CheckCircle2 className="h-4 w-4 text-green-500" />;
     }
-    
+
     return null;
   };
 
   return (
     <FormItem className={className}>
       {label && (
-        <FormLabel className={cn(required && "after:content-['*'] after:ml-0.5 after:text-destructive")}>
+        <FormLabel
+          className={cn(
+            required &&
+              "after:text-destructive after:ml-0.5 after:content-['*']"
+          )}
+        >
           {label}
         </FormLabel>
       )}
@@ -163,23 +191,22 @@ export function EnhancedInputField({
             max={max}
             step={step}
             className={cn(
-              error && "border-destructive focus-visible:ring-destructive",
-              validationState === true && "border-green-500 focus-visible:ring-green-500",
-              showValidationState && "pr-10"
+              error && 'border-destructive focus-visible:ring-destructive',
+              validationState === true &&
+                'border-green-500 focus-visible:ring-green-500',
+              showValidationState && 'pr-10'
             )}
             aria-invalid={!!error}
             aria-describedby={error ? `${label}-error` : undefined}
           />
           {showValidationState && (
-            <div className="absolute right-3 top-1/2 -translate-y-1/2">
+            <div className="absolute top-1/2 right-3 -translate-y-1/2">
               {getValidationIcon()}
             </div>
           )}
         </div>
       </FormControl>
-      {description && (
-        <FormDescription>{description}</FormDescription>
-      )}
+      {description && <FormDescription>{description}</FormDescription>}
       {error && (
         <FormMessage id={`${label}-error`} className="text-destructive">
           {error}
@@ -193,7 +220,11 @@ interface EnhancedTextareaFieldProps extends BaseFieldProps {
   value: string;
   onChange: (value: string) => void;
   onBlur?: () => void;
-  validator?: (value: string) => Promise<{ isValid: boolean; error?: string }> | { isValid: boolean; error?: string };
+  validator?: (
+    value: string
+  ) =>
+    | Promise<{ isValid: boolean; error?: string }>
+    | { isValid: boolean; error?: string };
   debounceMs?: number;
   rows?: number;
   maxLength?: number;
@@ -234,52 +265,58 @@ export function EnhancedTextareaField({
   const charCount = value.length;
   const isOverLimit = maxLength ? charCount > maxLength : false;
 
-  const validateValue = useCallback(async (val: string, immediate = false) => {
-    if (!validator || !isTouched) return;
+  const validateValue = useCallback(
+    async (val: string, immediate = false) => {
+      if (!validator || !isTouched) return;
 
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
-    }
-
-    const performValidation = async () => {
-      setIsValidating(true);
-      try {
-        const result = await validator(val);
-        setInternalError(result.error);
-        setIsValid(result.isValid);
-        onValidationChange?.(result.isValid, result.error);
-      } catch (err) {
-        setInternalError('Validation error');
-        setIsValid(false);
-        onValidationChange?.(false, 'Validation error');
-      } finally {
-        setIsValidating(false);
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
       }
-    };
 
-    if (immediate) {
-      await performValidation();
-    } else {
-      debounceRef.current = setTimeout(performValidation, debounceMs);
-    }
-  }, [validator, debounceMs, isTouched, onValidationChange]);
+      const performValidation = async () => {
+        setIsValidating(true);
+        try {
+          const result = await validator(val);
+          setInternalError(result.error);
+          setIsValid(result.isValid);
+          onValidationChange?.(result.isValid, result.error);
+        } catch (err) {
+          setInternalError('Validation error');
+          setIsValid(false);
+          onValidationChange?.(false, 'Validation error');
+        } finally {
+          setIsValidating(false);
+        }
+      };
 
-  const handleChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const newValue = e.target.value;
-    
-    // Prevent input if over max length
-    if (maxLength && newValue.length > maxLength) {
-      return;
-    }
-    
-    onChange(newValue);
-    
-    if (isTouched && error) {
-      setInternalError(undefined);
-    }
-    
-    validateValue(newValue);
-  }, [onChange, validateValue, isTouched, error, maxLength]);
+      if (immediate) {
+        await performValidation();
+      } else {
+        debounceRef.current = setTimeout(performValidation, debounceMs);
+      }
+    },
+    [validator, debounceMs, isTouched, onValidationChange]
+  );
+
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      const newValue = e.target.value;
+
+      // Prevent input if over max length
+      if (maxLength && newValue.length > maxLength) {
+        return;
+      }
+
+      onChange(newValue);
+
+      if (isTouched && error) {
+        setInternalError(undefined);
+      }
+
+      validateValue(newValue);
+    },
+    [onChange, validateValue, isTouched, error, maxLength]
+  );
 
   const handleBlur = useCallback(() => {
     setIsTouched(true);
@@ -298,7 +335,12 @@ export function EnhancedTextareaField({
   return (
     <FormItem className={className}>
       {label && (
-        <FormLabel className={cn(required && "after:content-['*'] after:ml-0.5 after:text-destructive")}>
+        <FormLabel
+          className={cn(
+            required &&
+              "after:text-destructive after:ml-0.5 after:content-['*']"
+          )}
+        >
           {label}
         </FormLabel>
       )}
@@ -312,25 +354,24 @@ export function EnhancedTextareaField({
             disabled={disabled}
             rows={rows}
             className={cn(
-              error && "border-destructive focus-visible:ring-destructive",
-              validationState === true && "border-green-500 focus-visible:ring-green-500",
-              isOverLimit && "border-destructive"
+              error && 'border-destructive focus-visible:ring-destructive',
+              validationState === true &&
+                'border-green-500 focus-visible:ring-green-500',
+              isOverLimit && 'border-destructive'
             )}
             aria-invalid={!!error}
             aria-describedby={error ? `${label}-error` : undefined}
           />
           {showValidationState && (isValidating || externalIsValidating) && (
-            <div className="absolute right-3 top-3">
-              <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+            <div className="absolute top-3 right-3">
+              <Loader2 className="text-muted-foreground h-4 w-4 animate-spin" />
             </div>
           )}
         </div>
       </FormControl>
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <div>
-          {description && (
-            <FormDescription>{description}</FormDescription>
-          )}
+          {description && <FormDescription>{description}</FormDescription>}
           {error && (
             <FormMessage id={`${label}-error`} className="text-destructive">
               {error}
@@ -338,10 +379,12 @@ export function EnhancedTextareaField({
           )}
         </div>
         {showCharCount && maxLength && (
-          <div className={cn(
-            "text-xs text-muted-foreground",
-            isOverLimit && "text-destructive"
-          )}>
+          <div
+            className={cn(
+              'text-muted-foreground text-xs',
+              isOverLimit && 'text-destructive'
+            )}
+          >
             {charCount}/{maxLength}
           </div>
         )}
@@ -355,7 +398,11 @@ interface EnhancedSelectFieldProps extends BaseFieldProps {
   onChange: (value: string) => void;
   onBlur?: () => void;
   options: Array<{ value: string; label: string; disabled?: boolean }>;
-  validator?: (value: string) => Promise<{ isValid: boolean; error?: string }> | { isValid: boolean; error?: string };
+  validator?: (
+    value: string
+  ) =>
+    | Promise<{ isValid: boolean; error?: string }>
+    | { isValid: boolean; error?: string };
 }
 
 /**
@@ -385,30 +432,36 @@ export function EnhancedSelectField({
   const error = externalError || internalError;
   const validationState = isValid === null ? null : isValid && !error;
 
-  const validateValue = useCallback(async (val: string) => {
-    if (!validator || !isTouched) return;
+  const validateValue = useCallback(
+    async (val: string) => {
+      if (!validator || !isTouched) return;
 
-    try {
-      const result = await validator(val);
-      setInternalError(result.error);
-      setIsValid(result.isValid);
-      onValidationChange?.(result.isValid, result.error);
-    } catch (err) {
-      setInternalError('Validation error');
-      setIsValid(false);
-      onValidationChange?.(false, 'Validation error');
-    }
-  }, [validator, isTouched, onValidationChange]);
+      try {
+        const result = await validator(val);
+        setInternalError(result.error);
+        setIsValid(result.isValid);
+        onValidationChange?.(result.isValid, result.error);
+      } catch (err) {
+        setInternalError('Validation error');
+        setIsValid(false);
+        onValidationChange?.(false, 'Validation error');
+      }
+    },
+    [validator, isTouched, onValidationChange]
+  );
 
-  const handleValueChange = useCallback((newValue: string) => {
-    onChange(newValue);
-    
-    if (isTouched && error) {
-      setInternalError(undefined);
-    }
-    
-    validateValue(newValue);
-  }, [onChange, validateValue, isTouched, error]);
+  const handleValueChange = useCallback(
+    (newValue: string) => {
+      onChange(newValue);
+
+      if (isTouched && error) {
+        setInternalError(undefined);
+      }
+
+      validateValue(newValue);
+    },
+    [onChange, validateValue, isTouched, error]
+  );
 
   const handleBlur = useCallback(() => {
     setIsTouched(true);
@@ -419,7 +472,12 @@ export function EnhancedSelectField({
   return (
     <FormItem className={className}>
       {label && (
-        <FormLabel className={cn(required && "after:content-['*'] after:ml-0.5 after:text-destructive")}>
+        <FormLabel
+          className={cn(
+            required &&
+              "after:text-destructive after:ml-0.5 after:content-['*']"
+          )}
+        >
           {label}
         </FormLabel>
       )}
@@ -432,8 +490,9 @@ export function EnhancedSelectField({
           <SelectTrigger
             onBlur={handleBlur}
             className={cn(
-              error && "border-destructive focus:ring-destructive",
-              validationState === true && "border-green-500 focus:ring-green-500"
+              error && 'border-destructive focus:ring-destructive',
+              validationState === true &&
+                'border-green-500 focus:ring-green-500'
             )}
             aria-invalid={!!error}
             aria-describedby={error ? `${label}-error` : undefined}
@@ -442,7 +501,7 @@ export function EnhancedSelectField({
           </SelectTrigger>
         </FormControl>
         <SelectContent>
-          {options.map((option) => (
+          {options.map(option => (
             <SelectItem
               key={option.value}
               value={option.value}
@@ -453,9 +512,7 @@ export function EnhancedSelectField({
           ))}
         </SelectContent>
       </Select>
-      {description && (
-        <FormDescription>{description}</FormDescription>
-      )}
+      {description && <FormDescription>{description}</FormDescription>}
       {error && (
         <FormMessage id={`${label}-error`} className="text-destructive">
           {error}
@@ -469,7 +526,11 @@ export function EnhancedSelectField({
  * Hook for managing form field validation state
  */
 export function useFieldValidation<T>(
-  validator?: (value: T) => Promise<{ isValid: boolean; error?: string }> | { isValid: boolean; error?: string },
+  validator?: (
+    value: T
+  ) =>
+    | Promise<{ isValid: boolean; error?: string }>
+    | { isValid: boolean; error?: string },
   debounceMs = 300
 ) {
   const [error, setError] = useState<string | undefined>();
@@ -478,33 +539,36 @@ export function useFieldValidation<T>(
   const [isTouched, setIsTouched] = useState(false);
   const debounceRef = React.useRef<NodeJS.Timeout | null>(null);
 
-  const validate = useCallback(async (value: T, immediate = false) => {
-    if (!validator || !isTouched) return;
+  const validate = useCallback(
+    async (value: T, immediate = false) => {
+      if (!validator || !isTouched) return;
 
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
-    }
-
-    const performValidation = async () => {
-      setIsValidating(true);
-      try {
-        const result = await validator(value);
-        setError(result.error);
-        setIsValid(result.isValid);
-      } catch (err) {
-        setError('Validation error');
-        setIsValid(false);
-      } finally {
-        setIsValidating(false);
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
       }
-    };
 
-    if (immediate) {
-      await performValidation();
-    } else {
-      debounceRef.current = setTimeout(performValidation, debounceMs);
-    }
-  }, [validator, debounceMs, isTouched]);
+      const performValidation = async () => {
+        setIsValidating(true);
+        try {
+          const result = await validator(value);
+          setError(result.error);
+          setIsValid(result.isValid);
+        } catch (err) {
+          setError('Validation error');
+          setIsValid(false);
+        } finally {
+          setIsValidating(false);
+        }
+      };
+
+      if (immediate) {
+        await performValidation();
+      } else {
+        debounceRef.current = setTimeout(performValidation, debounceMs);
+      }
+    },
+    [validator, debounceMs, isTouched]
+  );
 
   const clearValidation = useCallback(() => {
     setError(undefined);

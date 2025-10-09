@@ -30,7 +30,7 @@ export function useKeyboardNavigation({
       switch (event.key) {
         case 'ArrowDown':
           event.preventDefault();
-          setSelectedIndex((prev) => {
+          setSelectedIndex(prev => {
             const next = prev + 1;
             return loop ? next % itemCount : Math.min(next, itemCount - 1);
           });
@@ -38,13 +38,9 @@ export function useKeyboardNavigation({
 
         case 'ArrowUp':
           event.preventDefault();
-          setSelectedIndex((prev) => {
+          setSelectedIndex(prev => {
             const next = prev - 1;
-            return loop
-              ? next < 0
-                ? itemCount - 1
-                : next
-              : Math.max(next, 0);
+            return loop ? (next < 0 ? itemCount - 1 : next) : Math.max(next, 0);
           });
           break;
 
@@ -106,7 +102,9 @@ export function useFocusTrap(isActive: boolean = true) {
     );
 
     const firstElement = focusableElements[0] as HTMLElement;
-    const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+    const lastElement = focusableElements[
+      focusableElements.length - 1
+    ] as HTMLElement;
 
     const handleTabKey = (event: KeyboardEvent) => {
       if (event.key !== 'Tab') return;
@@ -143,7 +141,7 @@ export function useAnnouncer() {
   useEffect(() => {
     // Create or find the announcer element
     let announcerElement = document.getElementById('aria-announcer');
-    
+
     if (!announcerElement) {
       announcerElement = document.createElement('div');
       announcerElement.id = 'aria-announcer';

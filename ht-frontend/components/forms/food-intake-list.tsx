@@ -2,29 +2,29 @@
 
 import React, { useState } from 'react';
 import { format } from 'date-fns';
-import { 
-  Utensils, 
-  Trash2, 
-  Edit3, 
-  AlertCircle, 
-  Target, 
+import {
+  Utensils,
+  Trash2,
+  Edit3,
+  AlertCircle,
+  Target,
   MoreHorizontal,
   Calendar,
   TrendingUp,
-  BarChart3
+  BarChart3,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogDescription, 
-  DialogFooter, 
-  DialogHeader, 
-  DialogTitle 
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from '@/components/ui/dialog';
 import {
   DropdownMenu,
@@ -47,7 +47,10 @@ import { Separator } from '@/components/ui/separator';
 
 import { FoodIntake } from '@/lib/types/health';
 import { Pagination, SimplePagination } from '@/components/ui/pagination';
-import { InfiniteScroll, LoadMoreButton } from '@/components/ui/infinite-scroll';
+import {
+  InfiniteScroll,
+  LoadMoreButton,
+} from '@/components/ui/infinite-scroll';
 
 interface FoodIntakeListProps {
   foodIntakes: FoodIntake[];
@@ -78,12 +81,12 @@ interface DeleteConfirmationProps {
   isDeleting: boolean;
 }
 
-function DeleteConfirmationDialog({ 
-  isOpen, 
-  onClose, 
-  onConfirm, 
-  foodIntake, 
-  isDeleting 
+function DeleteConfirmationDialog({
+  isOpen,
+  onClose,
+  onConfirm,
+  foodIntake,
+  isDeleting,
 }: DeleteConfirmationProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -93,7 +96,7 @@ function DeleteConfirmationDialog({
           <DialogDescription>
             Are you sure you want to delete this food intake entry?
             {foodIntake && (
-              <div className="mt-2 p-2 bg-muted rounded-md">
+              <div className="bg-muted mt-2 rounded-md p-2">
                 <p className="text-sm">
                   <strong>Food:</strong> {foodIntake.foodItem}
                 </p>
@@ -101,7 +104,8 @@ function DeleteConfirmationDialog({
                   <strong>Calories:</strong> {foodIntake.calories}
                 </p>
                 <p className="text-sm">
-                  <strong>Time:</strong> {format(new Date(foodIntake.createdAt), 'MMM d, yyyy h:mm a')}
+                  <strong>Time:</strong>{' '}
+                  {format(new Date(foodIntake.createdAt), 'MMM d, yyyy h:mm a')}
                 </p>
               </div>
             )}
@@ -111,7 +115,11 @@ function DeleteConfirmationDialog({
           <Button variant="outline" onClick={onClose} disabled={isDeleting}>
             Cancel
           </Button>
-          <Button variant="destructive" onClick={onConfirm} disabled={isDeleting}>
+          <Button
+            variant="destructive"
+            onClick={onConfirm}
+            disabled={isDeleting}
+          >
             {isDeleting ? (
               <>
                 <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
@@ -130,15 +138,15 @@ function DeleteConfirmationDialog({
   );
 }
 
-function FoodIntakeItem({ 
-  foodIntake, 
+function FoodIntakeItem({
+  foodIntake,
   onEdit,
-  onDelete, 
-  showDate = true 
-}: { 
-  foodIntake: FoodIntake; 
+  onDelete,
+  showDate = true,
+}: {
+  foodIntake: FoodIntake;
   onEdit: (foodIntake: FoodIntake) => void;
-  onDelete: (id: number) => Promise<void>; 
+  onDelete: (id: number) => Promise<void>;
   showDate?: boolean;
 }) {
   const [isDeleting, setIsDeleting] = useState(false);
@@ -180,21 +188,26 @@ function FoodIntakeItem({
 
   return (
     <>
-      <Card className="hover:shadow-md transition-all duration-200 border-l-4 border-l-orange-500">
+      <Card className="border-l-4 border-l-orange-500 transition-all duration-200 hover:shadow-md">
         <CardContent className="p-4">
           <div className="flex items-start justify-between">
-            <div className="flex items-start gap-3 flex-1 min-w-0">
-              <div className="flex-shrink-0 mt-1">
-                <div className="w-8 h-8 bg-orange-100 dark:bg-orange-900/20 rounded-full flex items-center justify-center">
+            <div className="flex min-w-0 flex-1 items-start gap-3">
+              <div className="mt-1 flex-shrink-0">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-900/20">
                   <Utensils className="h-4 w-4 text-orange-600" />
                 </div>
               </div>
-              <div className="flex-1 min-w-0 space-y-2">
+              <div className="min-w-0 flex-1 space-y-2">
                 <div className="flex items-start justify-between">
                   <div className="space-y-1">
-                    <h4 className="font-semibold text-base leading-tight">{foodIntake.foodItem}</h4>
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <Badge variant={getCalorieColor(foodIntake.calories)} className="text-xs">
+                    <h4 className="text-base leading-tight font-semibold">
+                      {foodIntake.foodItem}
+                    </h4>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Badge
+                        variant={getCalorieColor(foodIntake.calories)}
+                        className="text-xs"
+                      >
                         {foodIntake.calories} cal
                       </Badge>
                       <Badge variant="outline" className="text-xs">
@@ -203,14 +216,14 @@ function FoodIntakeItem({
                     </div>
                   </div>
                 </div>
-                
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+
+                <div className="text-muted-foreground flex items-center gap-2 text-sm">
                   <Calendar className="h-3 w-3" />
                   <span>{formatTime(foodIntake.createdAt)}</span>
                 </div>
               </div>
             </div>
-            
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -228,7 +241,7 @@ function FoodIntakeItem({
                   <Edit3 className="mr-2 h-4 w-4" />
                   Edit
                 </DropdownMenuItem>
-                <DropdownMenuItem 
+                <DropdownMenuItem
                   onClick={() => setShowDeleteDialog(true)}
                   className="text-destructive"
                 >
@@ -252,11 +265,11 @@ function FoodIntakeItem({
   );
 }
 
-function FoodIntakeTableView({ 
-  foodIntakes, 
-  onEdit, 
-  onDelete, 
-  showDate = true 
+function FoodIntakeTableView({
+  foodIntakes,
+  onEdit,
+  onDelete,
+  showDate = true,
 }: {
   foodIntakes: FoodIntake[];
   onEdit: (foodIntake: FoodIntake) => void;
@@ -269,7 +282,7 @@ function FoodIntakeTableView({
 
   const handleDelete = async () => {
     if (!selectedItem) return;
-    
+
     setDeletingId(selectedItem.id);
     try {
       await onDelete(selectedItem.id);
@@ -310,7 +323,7 @@ function FoodIntakeTableView({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {foodIntakes.map((foodIntake) => (
+            {foodIntakes.map(foodIntake => (
               <TableRow key={foodIntake.id}>
                 <TableCell>
                   <div className="flex items-center gap-2">
@@ -319,13 +332,15 @@ function FoodIntakeTableView({
                   </div>
                 </TableCell>
                 <TableCell className="text-right">
-                  <span className={`font-semibold ${getCalorieColor(foodIntake.calories)}`}>
+                  <span
+                    className={`font-semibold ${getCalorieColor(foodIntake.calories)}`}
+                  >
                     {foodIntake.calories}
                   </span>
                   <span className="text-muted-foreground ml-1">cal</span>
                 </TableCell>
                 <TableCell>
-                  <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                  <div className="text-muted-foreground flex items-center gap-1 text-sm">
                     <Calendar className="h-3 w-3" />
                     {formatTime(foodIntake.createdAt)}
                   </div>
@@ -348,7 +363,7 @@ function FoodIntakeTableView({
                         <Edit3 className="mr-2 h-4 w-4" />
                         Edit
                       </DropdownMenuItem>
-                      <DropdownMenuItem 
+                      <DropdownMenuItem
                         onClick={() => {
                           setSelectedItem(foodIntake);
                           setShowDeleteDialog(true);
@@ -389,7 +404,7 @@ function FoodIntakeListSkeleton() {
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <Skeleton className="h-8 w-8 rounded-full" />
-              <div className="space-y-2 flex-1">
+              <div className="flex-1 space-y-2">
                 <div className="flex items-center gap-2">
                   <Skeleton className="h-4 w-32" />
                   <Skeleton className="h-5 w-16" />
@@ -405,11 +420,11 @@ function FoodIntakeListSkeleton() {
   );
 }
 
-export function FoodIntakeList({ 
-  foodIntakes, 
+export function FoodIntakeList({
+  foodIntakes,
   onEdit,
-  onDelete, 
-  isLoading = false, 
+  onDelete,
+  isLoading = false,
   error,
   showDate = true,
   dailyCalorieGoal = 2000,
@@ -421,15 +436,22 @@ export function FoodIntakeList({
   onPageChange,
   onLoadMore,
   paginationType = 'none',
-  isMobile = false
+  isMobile = false,
 }: FoodIntakeListProps) {
   const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
-  
+
   // Calculate total calories and statistics
-  const totalCalories = foodIntakes.reduce((sum, intake) => sum + intake.calories, 0);
-  const progressPercentage = Math.min((totalCalories / dailyCalorieGoal) * 100, 100);
+  const totalCalories = foodIntakes.reduce(
+    (sum, intake) => sum + intake.calories,
+    0
+  );
+  const progressPercentage = Math.min(
+    (totalCalories / dailyCalorieGoal) * 100,
+    100
+  );
   const isOverGoal = totalCalories > dailyCalorieGoal;
-  const averageCalories = foodIntakes.length > 0 ? Math.round(totalCalories / foodIntakes.length) : 0;
+  const averageCalories =
+    foodIntakes.length > 0 ? Math.round(totalCalories / foodIntakes.length) : 0;
 
   if (isLoading) {
     return (
@@ -455,7 +477,7 @@ export function FoodIntakeList({
             <Utensils className="h-5 w-5 text-orange-500" />
             Food Intake History
           </CardTitle>
-          
+
           {foodIntakes.length > 0 && (
             <div className="flex items-center gap-2">
               <Button
@@ -486,24 +508,24 @@ export function FoodIntakeList({
                   <Target className="h-3 w-3" />
                   Daily Progress
                 </span>
-                <span className={`font-medium ${isOverGoal ? 'text-red-600' : 'text-foreground'}`}>
+                <span
+                  className={`font-medium ${isOverGoal ? 'text-red-600' : 'text-foreground'}`}
+                >
                   {totalCalories} / {dailyCalorieGoal} cal
                 </span>
               </div>
-              <Progress 
-                value={progressPercentage} 
+              <Progress
+                value={progressPercentage}
                 className={`h-2 ${isOverGoal ? '[&>div]:bg-red-500' : '[&>div]:bg-orange-500'}`}
               />
-              <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <div className="text-muted-foreground flex items-center justify-between text-xs">
                 <span>{progressPercentage.toFixed(1)}% of goal</span>
                 {isOverGoal ? (
                   <span className="text-red-600">
                     +{totalCalories - dailyCalorieGoal} cal over
                   </span>
                 ) : (
-                  <span>
-                    {dailyCalorieGoal - totalCalories} cal remaining
-                  </span>
+                  <span>{dailyCalorieGoal - totalCalories} cal remaining</span>
                 )}
               </div>
             </div>
@@ -513,19 +535,23 @@ export function FoodIntakeList({
             {/* Quick Stats */}
             <div className="grid grid-cols-3 gap-4 text-center">
               <div className="space-y-1">
-                <p className="text-2xl font-bold text-orange-600">{foodIntakes.length}</p>
-                <p className="text-xs text-muted-foreground">Entries</p>
+                <p className="text-2xl font-bold text-orange-600">
+                  {foodIntakes.length}
+                </p>
+                <p className="text-muted-foreground text-xs">Entries</p>
               </div>
               <div className="space-y-1">
                 <p className="text-2xl font-bold">{averageCalories}</p>
-                <p className="text-xs text-muted-foreground">Avg/Entry</p>
+                <p className="text-muted-foreground text-xs">Avg/Entry</p>
               </div>
               <div className="space-y-1">
                 <div className="flex items-center justify-center gap-1">
                   <TrendingUp className="h-4 w-4 text-green-500" />
-                  <p className="text-2xl font-bold">{progressPercentage.toFixed(0)}%</p>
+                  <p className="text-2xl font-bold">
+                    {progressPercentage.toFixed(0)}%
+                  </p>
                 </div>
-                <p className="text-xs text-muted-foreground">Goal</p>
+                <p className="text-muted-foreground text-xs">Goal</p>
               </div>
             </div>
           </div>
@@ -566,7 +592,7 @@ export function FoodIntakeList({
                     onRetry={onLoadMore}
                   >
                     <div className="space-y-3">
-                      {foodIntakes.map((foodIntake) => (
+                      {foodIntakes.map(foodIntake => (
                         <FoodIntakeItem
                           key={foodIntake.id}
                           foodIntake={foodIntake}
@@ -579,7 +605,7 @@ export function FoodIntakeList({
                   </InfiniteScroll>
                 ) : (
                   <div className="space-y-3">
-                    {foodIntakes.map((foodIntake) => (
+                    {foodIntakes.map(foodIntake => (
                       <FoodIntakeItem
                         key={foodIntake.id}
                         foodIntake={foodIntake}
@@ -595,56 +621,70 @@ export function FoodIntakeList({
 
             {/* Enhanced Summary */}
             {foodIntakes.length > 1 && (
-              <div className="mt-6 pt-4 border-t space-y-3">
-                <div className="flex items-center gap-2 mb-2">
-                  <BarChart3 className="h-4 w-4 text-muted-foreground" />
+              <div className="mt-6 space-y-3 border-t pt-4">
+                <div className="mb-2 flex items-center gap-2">
+                  <BarChart3 className="text-muted-foreground h-4 w-4" />
                   <span className="text-sm font-medium">Session Summary</span>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
-                  <div className="text-center p-2 bg-muted/50 rounded-md">
+                <div className="grid grid-cols-2 gap-4 text-sm sm:grid-cols-4">
+                  <div className="bg-muted/50 rounded-md p-2 text-center">
                     <p className="font-semibold">{foodIntakes.length}</p>
-                    <p className="text-muted-foreground text-xs">Total Entries</p>
+                    <p className="text-muted-foreground text-xs">
+                      Total Entries
+                    </p>
                   </div>
-                  <div className="text-center p-2 bg-muted/50 rounded-md">
-                    <p className="font-semibold text-orange-600">{totalCalories}</p>
-                    <p className="text-muted-foreground text-xs">Total Calories</p>
+                  <div className="bg-muted/50 rounded-md p-2 text-center">
+                    <p className="font-semibold text-orange-600">
+                      {totalCalories}
+                    </p>
+                    <p className="text-muted-foreground text-xs">
+                      Total Calories
+                    </p>
                   </div>
-                  <div className="text-center p-2 bg-muted/50 rounded-md">
+                  <div className="bg-muted/50 rounded-md p-2 text-center">
                     <p className="font-semibold">{averageCalories}</p>
-                    <p className="text-muted-foreground text-xs">Avg per Entry</p>
+                    <p className="text-muted-foreground text-xs">
+                      Avg per Entry
+                    </p>
                   </div>
-                  <div className="text-center p-2 bg-muted/50 rounded-md">
-                    <p className={`font-semibold ${isOverGoal ? 'text-red-600' : 'text-green-600'}`}>
+                  <div className="bg-muted/50 rounded-md p-2 text-center">
+                    <p
+                      className={`font-semibold ${isOverGoal ? 'text-red-600' : 'text-green-600'}`}
+                    >
                       {progressPercentage.toFixed(0)}%
                     </p>
-                    <p className="text-muted-foreground text-xs">Goal Progress</p>
+                    <p className="text-muted-foreground text-xs">
+                      Goal Progress
+                    </p>
                   </div>
                 </div>
               </div>
             )}
 
             {/* Pagination Controls */}
-            {paginationType === 'pagination' && onPageChange && totalPages > 1 && (
-              <div className="mt-6">
-                {isMobile ? (
-                  <SimplePagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onPageChange={onPageChange}
-                    isLoading={isLoading}
-                  />
-                ) : (
-                  <Pagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    totalElements={totalElements}
-                    pageSize={pageSize}
-                    onPageChange={onPageChange}
-                    isLoading={isLoading}
-                  />
-                )}
-              </div>
-            )}
+            {paginationType === 'pagination' &&
+              onPageChange &&
+              totalPages > 1 && (
+                <div className="mt-6">
+                  {isMobile ? (
+                    <SimplePagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      onPageChange={onPageChange}
+                      isLoading={isLoading}
+                    />
+                  ) : (
+                    <Pagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      totalElements={totalElements}
+                      pageSize={pageSize}
+                      onPageChange={onPageChange}
+                      isLoading={isLoading}
+                    />
+                  )}
+                </div>
+              )}
 
             {/* Load More Button */}
             {paginationType === 'loadMore' && onLoadMore && (

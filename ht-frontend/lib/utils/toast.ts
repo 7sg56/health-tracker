@@ -5,7 +5,13 @@ import { ApiError } from '@/lib/errors/api-error';
 
 export interface ToastOptions {
   duration?: number;
-  position?: 'top-left' | 'top-center' | 'top-right' | 'bottom-left' | 'bottom-center' | 'bottom-right';
+  position?:
+    | 'top-left'
+    | 'top-center'
+    | 'top-right'
+    | 'bottom-left'
+    | 'bottom-center'
+    | 'bottom-right';
   dismissible?: boolean;
   action?: {
     label: string;
@@ -68,7 +74,10 @@ export class ToastService {
   /**
    * Show a loading toast notification
    */
-  static loading(message: string, options?: Omit<ToastOptions, 'duration'>): string | number {
+  static loading(
+    message: string,
+    options?: Omit<ToastOptions, 'duration'>
+  ): string | number {
     return toast.loading(message, {
       position: options?.position,
       dismissible: options?.dismissible !== false,
@@ -149,24 +158,31 @@ export class ToastService {
    * Show success message for common operations
    */
   static operationSuccess(operation: string, resource?: string): void {
-    const message = resource 
+    const message = resource
       ? `${resource} ${operation} successfully`
       : `${operation} completed successfully`;
-    
+
     this.success(message);
   }
 
   /**
    * Show error message for common operations
    */
-  static operationError(operation: string, resource?: string, error?: ApiError): void {
+  static operationError(
+    operation: string,
+    resource?: string,
+    error?: ApiError
+  ): void {
     if (error) {
-      this.handleApiError(error, `Failed to ${operation.toLowerCase()} ${resource || 'item'}`);
+      this.handleApiError(
+        error,
+        `Failed to ${operation.toLowerCase()} ${resource || 'item'}`
+      );
     } else {
-      const message = resource 
+      const message = resource
         ? `Failed to ${operation.toLowerCase()} ${resource}`
         : `${operation} failed`;
-      
+
       this.error(message);
     }
   }
@@ -174,7 +190,10 @@ export class ToastService {
   /**
    * Show validation error toast with field details
    */
-  static validationError(message: string = 'Please check the form for errors', fieldErrors?: Record<string, string>): void {
+  static validationError(
+    message: string = 'Please check the form for errors',
+    fieldErrors?: Record<string, string>
+  ): void {
     if (fieldErrors && Object.keys(fieldErrors).length > 0) {
       const firstError = Object.values(fieldErrors)[0];
       this.error(`${message}: ${firstError}`);
@@ -186,7 +205,9 @@ export class ToastService {
   /**
    * Show network error toast
    */
-  static networkError(message: string = 'Network error. Please check your connection.'): void {
+  static networkError(
+    message: string = 'Network error. Please check your connection.'
+  ): void {
     this.error(message, {
       action: {
         label: 'Retry',
@@ -232,9 +253,12 @@ export const showLoading = ToastService.loading.bind(ToastService);
 export const dismissToast = ToastService.dismiss.bind(ToastService);
 export const dismissAllToasts = ToastService.dismissAll.bind(ToastService);
 export const handleApiError = ToastService.handleApiError.bind(ToastService);
-export const showOperationSuccess = ToastService.operationSuccess.bind(ToastService);
-export const showOperationError = ToastService.operationError.bind(ToastService);
-export const showValidationError = ToastService.validationError.bind(ToastService);
+export const showOperationSuccess =
+  ToastService.operationSuccess.bind(ToastService);
+export const showOperationError =
+  ToastService.operationError.bind(ToastService);
+export const showValidationError =
+  ToastService.validationError.bind(ToastService);
 export const showNetworkError = ToastService.networkError.bind(ToastService);
 
 // Hook for using toast in components

@@ -5,11 +5,7 @@
 
 import { apiClient } from './client';
 import { HealthScoreService } from './health-score';
-import { 
-  ApiResponse, 
-  PaginatedResponse,
-  PaginationParams
-} from '../types/api';
+import { ApiResponse, PaginatedResponse, PaginationParams } from '../types/api';
 import {
   WaterIntake,
   WaterIntakeRequest,
@@ -17,29 +13,35 @@ import {
   FoodIntakeRequest,
   Workout,
   WorkoutRequest,
-  DailyHealthIndex
+  DailyHealthIndex,
 } from '../types/health';
 
 export class HealthService {
   // ==================== Water Intake Methods ====================
-  
+
   /**
    * Create a new water intake entry
    */
-  static async createWaterIntake(data: WaterIntakeRequest): Promise<ApiResponse<WaterIntake>> {
+  static async createWaterIntake(
+    data: WaterIntakeRequest
+  ): Promise<ApiResponse<WaterIntake>> {
     return apiClient.post<WaterIntake>('/api/water', data);
   }
 
   /**
    * Get paginated water intake entries
    */
-  static async getWaterIntakes(params: PaginationParams = {}): Promise<ApiResponse<PaginatedResponse<WaterIntake>>> {
+  static async getWaterIntakes(
+    params: PaginationParams = {}
+  ): Promise<ApiResponse<PaginatedResponse<WaterIntake>>> {
     const queryParams = new URLSearchParams();
-    
-    if (params.page !== undefined) queryParams.append('page', params.page.toString());
-    if (params.size !== undefined) queryParams.append('size', params.size.toString());
+
+    if (params.page !== undefined)
+      queryParams.append('page', params.page.toString());
+    if (params.size !== undefined)
+      queryParams.append('size', params.size.toString());
     if (params.sort) queryParams.append('sort', params.sort);
-    
+
     const endpoint = `/api/water${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
     return apiClient.get<PaginatedResponse<WaterIntake>>(endpoint);
   }
@@ -47,7 +49,9 @@ export class HealthService {
   /**
    * Get water intake entry by ID
    */
-  static async getWaterIntakeById(id: number): Promise<ApiResponse<WaterIntake>> {
+  static async getWaterIntakeById(
+    id: number
+  ): Promise<ApiResponse<WaterIntake>> {
     return apiClient.get<WaterIntake>(`/api/water/${id}`);
   }
 
@@ -59,24 +63,30 @@ export class HealthService {
   }
 
   // ==================== Food Intake Methods ====================
-  
+
   /**
    * Create a new food intake entry
    */
-  static async createFoodIntake(data: FoodIntakeRequest): Promise<ApiResponse<FoodIntake>> {
+  static async createFoodIntake(
+    data: FoodIntakeRequest
+  ): Promise<ApiResponse<FoodIntake>> {
     return apiClient.post<FoodIntake>('/api/food', data);
   }
 
   /**
    * Get paginated food intake entries
    */
-  static async getFoodIntakes(params: PaginationParams = {}): Promise<ApiResponse<PaginatedResponse<FoodIntake>>> {
+  static async getFoodIntakes(
+    params: PaginationParams = {}
+  ): Promise<ApiResponse<PaginatedResponse<FoodIntake>>> {
     const queryParams = new URLSearchParams();
-    
-    if (params.page !== undefined) queryParams.append('page', params.page.toString());
-    if (params.size !== undefined) queryParams.append('size', params.size.toString());
+
+    if (params.page !== undefined)
+      queryParams.append('page', params.page.toString());
+    if (params.size !== undefined)
+      queryParams.append('size', params.size.toString());
     if (params.sort) queryParams.append('sort', params.sort);
-    
+
     const endpoint = `/api/food${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
     return apiClient.get<PaginatedResponse<FoodIntake>>(endpoint);
   }
@@ -91,7 +101,10 @@ export class HealthService {
   /**
    * Update food intake entry
    */
-  static async updateFoodIntake(id: number, data: FoodIntakeRequest): Promise<ApiResponse<FoodIntake>> {
+  static async updateFoodIntake(
+    id: number,
+    data: FoodIntakeRequest
+  ): Promise<ApiResponse<FoodIntake>> {
     return apiClient.put<FoodIntake>(`/api/food/${id}`, data);
   }
 
@@ -103,24 +116,30 @@ export class HealthService {
   }
 
   // ==================== Workout Methods ====================
-  
+
   /**
    * Create a new workout entry
    */
-  static async createWorkout(data: WorkoutRequest): Promise<ApiResponse<Workout>> {
+  static async createWorkout(
+    data: WorkoutRequest
+  ): Promise<ApiResponse<Workout>> {
     return apiClient.post<Workout>('/api/workouts', data);
   }
 
   /**
    * Get paginated workout entries
    */
-  static async getWorkouts(params: PaginationParams = {}): Promise<ApiResponse<PaginatedResponse<Workout>>> {
+  static async getWorkouts(
+    params: PaginationParams = {}
+  ): Promise<ApiResponse<PaginatedResponse<Workout>>> {
     const queryParams = new URLSearchParams();
-    
-    if (params.page !== undefined) queryParams.append('page', params.page.toString());
-    if (params.size !== undefined) queryParams.append('size', params.size.toString());
+
+    if (params.page !== undefined)
+      queryParams.append('page', params.page.toString());
+    if (params.size !== undefined)
+      queryParams.append('size', params.size.toString());
     if (params.sort) queryParams.append('sort', params.sort);
-    
+
     const endpoint = `/api/workouts${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
     return apiClient.get<PaginatedResponse<Workout>>(endpoint);
   }
@@ -135,7 +154,10 @@ export class HealthService {
   /**
    * Update workout entry
    */
-  static async updateWorkout(id: number, data: WorkoutRequest): Promise<ApiResponse<Workout>> {
+  static async updateWorkout(
+    id: number,
+    data: WorkoutRequest
+  ): Promise<ApiResponse<Workout>> {
     return apiClient.put<Workout>(`/api/workouts/${id}`, data);
   }
 
@@ -147,56 +169,63 @@ export class HealthService {
   }
 
   // ==================== Batch Operations ====================
-  
+
   /**
    * Get all health data for a specific date
    */
-  static async getHealthDataByDate(date: string): Promise<ApiResponse<{
-    waterIntakes: WaterIntake[];
-    foodIntakes: FoodIntake[];
-    workouts: Workout[];
-  }>> {
+  static async getHealthDataByDate(date: string): Promise<
+    ApiResponse<{
+      waterIntakes: WaterIntake[];
+      foodIntakes: FoodIntake[];
+      workouts: Workout[];
+    }>
+  > {
     const [waterResponse, foodResponse, workoutResponse] = await Promise.all([
       this.getWaterIntakes({ size: 100 }), // Get more entries for date filtering
       this.getFoodIntakes({ size: 100 }),
-      this.getWorkouts({ size: 100 })
+      this.getWorkouts({ size: 100 }),
     ]);
 
     // Filter by date (this could be optimized with backend date filtering)
     const targetDate = new Date(date).toDateString();
-    
-    const waterIntakes = waterResponse.data?.content.filter(
-      item => new Date(item.date).toDateString() === targetDate
-    ) || [];
-    
-    const foodIntakes = foodResponse.data?.content.filter(
-      item => new Date(item.date).toDateString() === targetDate
-    ) || [];
-    
-    const workouts = workoutResponse.data?.content.filter(
-      item => new Date(item.date).toDateString() === targetDate
-    ) || [];
+
+    const waterIntakes =
+      waterResponse.data?.content.filter(
+        item => new Date(item.date).toDateString() === targetDate
+      ) || [];
+
+    const foodIntakes =
+      foodResponse.data?.content.filter(
+        item => new Date(item.date).toDateString() === targetDate
+      ) || [];
+
+    const workouts =
+      workoutResponse.data?.content.filter(
+        item => new Date(item.date).toDateString() === targetDate
+      ) || [];
 
     return {
       data: { waterIntakes, foodIntakes, workouts },
-      status: 200
+      status: 200,
     };
   }
 
   /**
    * Get today's health data
    */
-  static async getTodaysHealthData(): Promise<ApiResponse<{
-    waterIntakes: WaterIntake[];
-    foodIntakes: FoodIntake[];
-    workouts: Workout[];
-  }>> {
+  static async getTodaysHealthData(): Promise<
+    ApiResponse<{
+      waterIntakes: WaterIntake[];
+      foodIntakes: FoodIntake[];
+      workouts: Workout[];
+    }>
+  > {
     const today = new Date().toISOString().split('T')[0];
     return this.getHealthDataByDate(today);
   }
 
   // ==================== Health Score Methods ====================
-  
+
   /**
    * Get current daily health score
    */
@@ -207,7 +236,9 @@ export class HealthService {
   /**
    * Get health score for a specific date
    */
-  static async getHealthScoreByDate(date: string): Promise<ApiResponse<DailyHealthIndex>> {
+  static async getHealthScoreByDate(
+    date: string
+  ): Promise<ApiResponse<DailyHealthIndex>> {
     return HealthScoreService.getHealthScoreByDate(date);
   }
 }

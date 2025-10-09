@@ -5,17 +5,17 @@
 
 export { LoginForm, QuickLoginForm } from './LoginForm';
 export { RegisterForm, QuickRegisterForm } from './RegisterForm';
-export { 
-  AuthGuard, 
-  ProtectedRoute, 
-  PublicRoute, 
-  useAuthGuard 
+export {
+  AuthGuard,
+  ProtectedRoute,
+  PublicRoute,
+  useAuthGuard,
 } from './AuthGuard';
 
 // Re-export auth context hooks for convenience
-export { 
-  useAuth, 
-  useAuthStatus, 
+export {
+  useAuth,
+  useAuthStatus,
   useAuthActions,
-  AuthProvider 
+  AuthProvider,
 } from '../../contexts/AuthContext';

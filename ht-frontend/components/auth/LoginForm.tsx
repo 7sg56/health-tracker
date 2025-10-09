@@ -13,7 +13,13 @@ import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { LoadingButton } from '../ui/loading-button';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '../ui/card';
 import {
   Form,
   FormControl,
@@ -33,11 +39,11 @@ interface LoginFormProps {
   className?: string;
 }
 
-export function LoginForm({ 
-  onSuccess, 
-  onError, 
-  showCard = true, 
-  className 
+export function LoginForm({
+  onSuccess,
+  onError,
+  showCard = true,
+  className,
 }: LoginFormProps) {
   const { login, state } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
@@ -56,11 +62,15 @@ export function LoginForm({
       await login(data);
       onSuccess?.();
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Login failed';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Login failed';
       onError?.(errorMessage);
-      
+
       // Set form error if it's a validation error
-      if (errorMessage.includes('username') || errorMessage.includes('password')) {
+      if (
+        errorMessage.includes('username') ||
+        errorMessage.includes('password')
+      ) {
         form.setError('root', { message: errorMessage });
       }
     }
@@ -84,7 +94,7 @@ export function LoginForm({
                   placeholder="Enter your username"
                   autoComplete="username"
                   disabled={state.isLoading}
-                  className="h-11 sm:h-10 text-base sm:text-sm"
+                  className="h-11 text-base sm:h-10 sm:text-sm"
                   {...field}
                 />
               </FormControl>
@@ -106,17 +116,19 @@ export function LoginForm({
                     placeholder="Enter your password"
                     autoComplete="current-password"
                     disabled={state.isLoading}
-                    className="pr-10 h-11 sm:h-10 text-base sm:text-sm"
+                    className="h-11 pr-10 text-base sm:h-10 sm:text-sm"
                     {...field}
                   />
                   <Button
                     type="button"
                     variant="ghost"
                     size="icon-sm"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 text-muted-foreground hover:text-foreground"
+                    className="text-muted-foreground hover:text-foreground absolute top-1/2 right-2 h-6 w-6 -translate-y-1/2"
                     onClick={togglePasswordVisibility}
                     disabled={state.isLoading}
-                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    aria-label={
+                      showPassword ? 'Hide password' : 'Show password'
+                    }
                   >
                     {showPassword ? (
                       <EyeOff className="h-4 w-4" />
@@ -133,16 +145,14 @@ export function LoginForm({
 
         {/* Display general form errors */}
         {form.formState.errors.root && (
-          <div className="text-sm text-destructive">
+          <div className="text-destructive text-sm">
             {form.formState.errors.root.message}
           </div>
         )}
 
         {/* Display auth context errors */}
         {state.error && (
-          <div className="text-sm text-destructive">
-            {state.error}
-          </div>
+          <div className="text-destructive text-sm">{state.error}</div>
         )}
 
         <LoadingButton
@@ -171,9 +181,7 @@ export function LoginForm({
           Enter your credentials to access your health tracker
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        {formContent}
-      </CardContent>
+      <CardContent>{formContent}</CardContent>
     </Card>
   );
 }

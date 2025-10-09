@@ -3,17 +3,23 @@
 // Network error handling components with retry mechanisms
 
 import React, { useState, useCallback, useEffect } from 'react';
-import { 
-  Wifi, 
-  WifiOff, 
-  RefreshCw, 
-  AlertTriangle, 
+import {
+  Wifi,
+  WifiOff,
+  RefreshCw,
+  AlertTriangle,
   CheckCircle2,
   Clock,
-  Home
+  Home,
 } from 'lucide-react';
 import { Button } from './button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from './card';
 import { Alert, AlertDescription } from './alert';
 import { Badge } from './badge';
 import { Progress } from './progress';
@@ -43,14 +49,15 @@ export function NetworkErrorHandler({
   retryDelay = 1000,
   showProgress = true,
   variant = 'card',
-  className
+  className,
 }: NetworkErrorHandlerProps) {
   const [retryCount, setRetryCount] = useState(0);
   const [isRetrying, setIsRetrying] = useState(false);
   const [retryProgress, setRetryProgress] = useState(0);
   const [nextRetryIn, setNextRetryIn] = useState(0);
 
-  const isNetworkError = error instanceof NetworkError || 
+  const isNetworkError =
+    error instanceof NetworkError ||
     (error instanceof ApiError && error.status === 0);
 
   const canRetry = retryCount < maxRetries && onRetry;
@@ -68,12 +75,12 @@ export function NetworkErrorHandler({
       setRetryCount(0);
     } catch (retryError) {
       setRetryCount(prev => prev + 1);
-      
+
       // If we can still retry, schedule next attempt
       if (retryCount + 1 < maxRetries) {
         const delay = ErrorHandler.getRetryDelay(retryCount);
         setNextRetryIn(Math.ceil(delay / 1000));
-        
+
         // Start countdown
         const countdownInterval = setInterval(() => {
           setNextRetryIn(prev => {
@@ -130,9 +137,9 @@ export function NetworkErrorHandler({
 
   const getErrorIcon = () => {
     if (isNetworkError) {
-      return <WifiOff className="h-5 w-5 text-destructive" />;
+      return <WifiOff className="text-destructive h-5 w-5" />;
     }
-    return <AlertTriangle className="h-5 w-5 text-destructive" />;
+    return <AlertTriangle className="text-destructive h-5 w-5" />;
   };
 
   const renderRetryInfo = () => {
@@ -155,7 +162,7 @@ export function NetworkErrorHandler({
         {isRetrying && showProgress && (
           <div className="space-y-2">
             <Progress value={retryProgress} className="h-2" />
-            <p className="text-xs text-muted-foreground text-center">
+            <p className="text-muted-foreground text-center text-xs">
               Retrying connection...
             </p>
           </div>
@@ -177,9 +184,9 @@ export function NetworkErrorHandler({
           Cancel
         </Button>
       )}
-      <Button 
-        onClick={() => window.location.href = '/'} 
-        variant="outline" 
+      <Button
+        onClick={() => (window.location.href = '/')}
+        variant="outline"
         size="sm"
       >
         <Home className="mr-2 h-4 w-4" />
@@ -190,13 +197,13 @@ export function NetworkErrorHandler({
 
   if (variant === 'alert') {
     return (
-      <Alert className={cn("border-destructive/50", className)}>
+      <Alert className={cn('border-destructive/50', className)}>
         {getErrorIcon()}
         <AlertDescription>
           <div className="space-y-3">
             <div>
               <p className="font-medium">Connection Error</p>
-              <p className="text-sm text-muted-foreground mt-1">
+              <p className="text-muted-foreground mt-1 text-sm">
                 {getErrorMessage()}
               </p>
             </div>
@@ -210,17 +217,17 @@ export function NetworkErrorHandler({
 
   if (variant === 'inline') {
     return (
-      <div className={cn(
-        "flex items-start gap-3 p-4 rounded-lg border border-destructive/20 bg-destructive/5",
-        className
-      )}>
+      <div
+        className={cn(
+          'border-destructive/20 bg-destructive/5 flex items-start gap-3 rounded-lg border p-4',
+          className
+        )}
+      >
         {getErrorIcon()}
-        <div className="flex-1 min-w-0 space-y-3">
+        <div className="min-w-0 flex-1 space-y-3">
           <div>
-            <p className="font-medium text-sm">Connection Error</p>
-            <p className="text-sm text-muted-foreground">
-              {getErrorMessage()}
-            </p>
+            <p className="text-sm font-medium">Connection Error</p>
+            <p className="text-muted-foreground text-sm">{getErrorMessage()}</p>
           </div>
           {renderRetryInfo()}
           {renderActions()}
@@ -233,19 +240,15 @@ export function NetworkErrorHandler({
   return (
     <Card className={className}>
       <CardHeader className="text-center">
-        <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-destructive/10">
+        <div className="bg-destructive/10 mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full">
           {getErrorIcon()}
         </div>
         <CardTitle className="text-lg">Connection Error</CardTitle>
-        <CardDescription>
-          {getErrorMessage()}
-        </CardDescription>
+        <CardDescription>{getErrorMessage()}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {renderRetryInfo()}
-        <div className="flex justify-center">
-          {renderActions()}
-        </div>
+        <div className="flex justify-center">{renderActions()}</div>
       </CardContent>
     </Card>
   );
@@ -263,47 +266,48 @@ export function useNetworkRetry<T>(
     onSuccess?: (data: T) => void;
   } = {}
 ) {
-  const {
-    maxRetries = 3,
-    retryDelay = 1000,
-    onError,
-    onSuccess
-  } = options;
+  const { maxRetries = 3, retryDelay = 1000, onError, onSuccess } = options;
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<ApiError | null>(null);
   const [data, setData] = useState<T | null>(null);
   const [retryCount, setRetryCount] = useState(0);
 
-  const execute = useCallback(async (forceRetry = false) => {
-    if (isLoading && !forceRetry) return;
+  const execute = useCallback(
+    async (forceRetry = false) => {
+      if (isLoading && !forceRetry) return;
 
-    setIsLoading(true);
-    setError(null);
+      setIsLoading(true);
+      setError(null);
 
-    try {
-      const result = await operation();
-      setData(result);
-      setRetryCount(0);
-      onSuccess?.(result);
-    } catch (err) {
-      const apiError = ErrorHandler.handleError(err);
-      setError(apiError);
-      onError?.(apiError);
+      try {
+        const result = await operation();
+        setData(result);
+        setRetryCount(0);
+        onSuccess?.(result);
+      } catch (err) {
+        const apiError = ErrorHandler.handleError(err);
+        setError(apiError);
+        onError?.(apiError);
 
-      // Auto-retry for network errors
-      if (ErrorHandler.shouldRetry(apiError, retryCount) && retryCount < maxRetries) {
-        const delay = ErrorHandler.getRetryDelay(retryCount);
-        setRetryCount(prev => prev + 1);
-        
-        setTimeout(() => {
-          execute(true);
-        }, delay);
+        // Auto-retry for network errors
+        if (
+          ErrorHandler.shouldRetry(apiError, retryCount) &&
+          retryCount < maxRetries
+        ) {
+          const delay = ErrorHandler.getRetryDelay(retryCount);
+          setRetryCount(prev => prev + 1);
+
+          setTimeout(() => {
+            execute(true);
+          }, delay);
+        }
+      } finally {
+        setIsLoading(false);
       }
-    } finally {
-      setIsLoading(false);
-    }
-  }, [operation, isLoading, retryCount, maxRetries, onError, onSuccess]);
+    },
+    [operation, isLoading, retryCount, maxRetries, onError, onSuccess]
+  );
 
   const retry = useCallback(() => {
     setRetryCount(0);
@@ -325,7 +329,7 @@ export function useNetworkRetry<T>(
     error,
     data,
     retryCount,
-    canRetry: retryCount < maxRetries
+    canRetry: retryCount < maxRetries,
   };
 }
 
@@ -365,15 +369,19 @@ export function NetworkStatus({ className }: { className?: string }) {
   if (isOnline && !wasOffline) return null;
 
   return (
-    <Alert className={cn(
-      "fixed top-4 right-4 z-50 w-auto max-w-sm",
-      isOnline ? "border-green-500 bg-green-50" : "border-destructive bg-destructive/5",
-      className
-    )}>
+    <Alert
+      className={cn(
+        'fixed top-4 right-4 z-50 w-auto max-w-sm',
+        isOnline
+          ? 'border-green-500 bg-green-50'
+          : 'border-destructive bg-destructive/5',
+        className
+      )}
+    >
       {isOnline ? (
         <CheckCircle2 className="h-4 w-4 text-green-600" />
       ) : (
-        <WifiOff className="h-4 w-4 text-destructive" />
+        <WifiOff className="text-destructive h-4 w-4" />
       )}
       <AlertDescription className="text-sm">
         {isOnline ? (
@@ -389,11 +397,11 @@ export function NetworkStatus({ className }: { className?: string }) {
 /**
  * Offline fallback component
  */
-export function OfflineFallback({ 
+export function OfflineFallback({
   message = "You're currently offline",
-  description = "Please check your internet connection and try again.",
+  description = 'Please check your internet connection and try again.',
   onRetry,
-  className 
+  className,
 }: {
   message?: string;
   description?: string;
@@ -401,10 +409,10 @@ export function OfflineFallback({
   className?: string;
 }) {
   return (
-    <Card className={cn("text-center", className)}>
+    <Card className={cn('text-center', className)}>
       <CardHeader>
-        <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-muted">
-          <WifiOff className="h-6 w-6 text-muted-foreground" />
+        <div className="bg-muted mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full">
+          <WifiOff className="text-muted-foreground h-6 w-6" />
         </div>
         <CardTitle>{message}</CardTitle>
         <CardDescription>{description}</CardDescription>

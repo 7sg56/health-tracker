@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import * as React from "react";
+import * as React from 'react';
 import {
   BarChart,
   Bar,
@@ -18,36 +18,42 @@ import {
   PolarGrid,
   PolarAngleAxis,
   PolarRadiusAxis,
-  Radar
-} from "recharts";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { DailyHealthIndex, HealthScoreBreakdown } from "@/lib/types/health";
-import { 
-  format, 
-  subDays, 
-  subWeeks, 
+  Radar,
+} from 'recharts';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { DailyHealthIndex, HealthScoreBreakdown } from '@/lib/types/health';
+import {
+  format,
+  subDays,
+  subWeeks,
   subMonths,
   startOfWeek,
   endOfWeek,
   startOfMonth,
   endOfMonth,
   parseISO,
-  eachDayOfInterval
-} from "date-fns";
-import { 
-  TrendingUp, 
-  TrendingDown, 
+  eachDayOfInterval,
+} from 'date-fns';
+import {
+  TrendingUp,
+  TrendingDown,
   Minus,
   BarChart3,
   Activity,
   Target,
   Calendar,
   ArrowUpRight,
-  ArrowDownRight
-} from "lucide-react";
+  ArrowDownRight,
+} from 'lucide-react';
 
 interface ProgressComparisonChartProps {
   healthScores: DailyHealthIndex[];
@@ -73,10 +79,14 @@ export function ProgressComparisonChart({
   breakdowns = [],
   isLoading = false,
   className,
-  height = 400
+  height = 400,
 }: ProgressComparisonChartProps) {
-  const [comparisonType, setComparisonType] = React.useState<'weekly' | 'monthly' | 'quarterly'>('weekly');
-  const [chartView, setChartView] = React.useState<'bar' | 'line' | 'radar'>('bar');
+  const [comparisonType, setComparisonType] = React.useState<
+    'weekly' | 'monthly' | 'quarterly'
+  >('weekly');
+  const [chartView, setChartView] = React.useState<'bar' | 'line' | 'radar'>(
+    'bar'
+  );
 
   const comparisonData = React.useMemo(() => {
     const now = new Date();
@@ -92,8 +102,8 @@ export function ProgressComparisonChart({
         const weekScores = weekDays
           .map(day => {
             const dayString = format(day, 'yyyy-MM-dd');
-            return healthScores.find(score => 
-              format(parseISO(score.date), 'yyyy-MM-dd') === dayString
+            return healthScores.find(
+              score => format(parseISO(score.date), 'yyyy-MM-dd') === dayString
             );
           })
           .filter(Boolean) as DailyHealthIndex[];
@@ -101,28 +111,36 @@ export function ProgressComparisonChart({
         const weekBreakdowns = weekDays
           .map(day => {
             const dayString = format(day, 'yyyy-MM-dd');
-            const scoreIndex = healthScores.findIndex(score => 
-              format(parseISO(score.date), 'yyyy-MM-dd') === dayString
+            const scoreIndex = healthScores.findIndex(
+              score => format(parseISO(score.date), 'yyyy-MM-dd') === dayString
             );
             return scoreIndex >= 0 ? breakdowns[scoreIndex] : null;
           })
           .filter(Boolean) as HealthScoreBreakdown[];
 
-        const avgScore = weekScores.length > 0 
-          ? weekScores.reduce((sum, score) => sum + score.healthScore, 0) / weekScores.length 
-          : 0;
+        const avgScore =
+          weekScores.length > 0
+            ? weekScores.reduce((sum, score) => sum + score.healthScore, 0) /
+              weekScores.length
+            : 0;
 
-        const avgWater = weekBreakdowns.length > 0
-          ? weekBreakdowns.reduce((sum, b) => sum + b.water, 0) / weekBreakdowns.length
-          : 0;
+        const avgWater =
+          weekBreakdowns.length > 0
+            ? weekBreakdowns.reduce((sum, b) => sum + b.water, 0) /
+              weekBreakdowns.length
+            : 0;
 
-        const avgFood = weekBreakdowns.length > 0
-          ? weekBreakdowns.reduce((sum, b) => sum + b.food, 0) / weekBreakdowns.length
-          : 0;
+        const avgFood =
+          weekBreakdowns.length > 0
+            ? weekBreakdowns.reduce((sum, b) => sum + b.food, 0) /
+              weekBreakdowns.length
+            : 0;
 
-        const avgExercise = weekBreakdowns.length > 0
-          ? weekBreakdowns.reduce((sum, b) => sum + b.exercise, 0) / weekBreakdowns.length
-          : 0;
+        const avgExercise =
+          weekBreakdowns.length > 0
+            ? weekBreakdowns.reduce((sum, b) => sum + b.exercise, 0) /
+              weekBreakdowns.length
+            : 0;
 
         periods.push({
           period: i === 0 ? 'This Week' : `${i} Week${i > 1 ? 's' : ''} Ago`,
@@ -132,7 +150,7 @@ export function ProgressComparisonChart({
           exercise: Math.round(avgExercise),
           daysTracked: weekScores.length,
           totalDays: 7,
-          consistency: Math.round((weekScores.length / 7) * 100)
+          consistency: Math.round((weekScores.length / 7) * 100),
         });
       }
     } else if (comparisonType === 'monthly') {
@@ -140,13 +158,16 @@ export function ProgressComparisonChart({
       for (let i = 2; i >= 0; i--) {
         const monthStart = startOfMonth(subMonths(now, i));
         const monthEnd = endOfMonth(monthStart);
-        const monthDays = eachDayOfInterval({ start: monthStart, end: monthEnd });
+        const monthDays = eachDayOfInterval({
+          start: monthStart,
+          end: monthEnd,
+        });
 
         const monthScores = monthDays
           .map(day => {
             const dayString = format(day, 'yyyy-MM-dd');
-            return healthScores.find(score => 
-              format(parseISO(score.date), 'yyyy-MM-dd') === dayString
+            return healthScores.find(
+              score => format(parseISO(score.date), 'yyyy-MM-dd') === dayString
             );
           })
           .filter(Boolean) as DailyHealthIndex[];
@@ -154,28 +175,36 @@ export function ProgressComparisonChart({
         const monthBreakdowns = monthDays
           .map(day => {
             const dayString = format(day, 'yyyy-MM-dd');
-            const scoreIndex = healthScores.findIndex(score => 
-              format(parseISO(score.date), 'yyyy-MM-dd') === dayString
+            const scoreIndex = healthScores.findIndex(
+              score => format(parseISO(score.date), 'yyyy-MM-dd') === dayString
             );
             return scoreIndex >= 0 ? breakdowns[scoreIndex] : null;
           })
           .filter(Boolean) as HealthScoreBreakdown[];
 
-        const avgScore = monthScores.length > 0 
-          ? monthScores.reduce((sum, score) => sum + score.healthScore, 0) / monthScores.length 
-          : 0;
+        const avgScore =
+          monthScores.length > 0
+            ? monthScores.reduce((sum, score) => sum + score.healthScore, 0) /
+              monthScores.length
+            : 0;
 
-        const avgWater = monthBreakdowns.length > 0
-          ? monthBreakdowns.reduce((sum, b) => sum + b.water, 0) / monthBreakdowns.length
-          : 0;
+        const avgWater =
+          monthBreakdowns.length > 0
+            ? monthBreakdowns.reduce((sum, b) => sum + b.water, 0) /
+              monthBreakdowns.length
+            : 0;
 
-        const avgFood = monthBreakdowns.length > 0
-          ? monthBreakdowns.reduce((sum, b) => sum + b.food, 0) / monthBreakdowns.length
-          : 0;
+        const avgFood =
+          monthBreakdowns.length > 0
+            ? monthBreakdowns.reduce((sum, b) => sum + b.food, 0) /
+              monthBreakdowns.length
+            : 0;
 
-        const avgExercise = monthBreakdowns.length > 0
-          ? monthBreakdowns.reduce((sum, b) => sum + b.exercise, 0) / monthBreakdowns.length
-          : 0;
+        const avgExercise =
+          monthBreakdowns.length > 0
+            ? monthBreakdowns.reduce((sum, b) => sum + b.exercise, 0) /
+              monthBreakdowns.length
+            : 0;
 
         periods.push({
           period: i === 0 ? 'This Month' : format(monthStart, 'MMM yyyy'),
@@ -185,7 +214,9 @@ export function ProgressComparisonChart({
           exercise: Math.round(avgExercise),
           daysTracked: monthScores.length,
           totalDays: monthDays.length,
-          consistency: Math.round((monthScores.length / monthDays.length) * 100)
+          consistency: Math.round(
+            (monthScores.length / monthDays.length) * 100
+          ),
         });
       }
     } else {
@@ -193,13 +224,16 @@ export function ProgressComparisonChart({
       for (let i = 3; i >= 0; i--) {
         const quarterStart = startOfMonth(subMonths(now, i * 3 + 2));
         const quarterEnd = endOfMonth(subMonths(now, i * 3));
-        const quarterDays = eachDayOfInterval({ start: quarterStart, end: quarterEnd });
+        const quarterDays = eachDayOfInterval({
+          start: quarterStart,
+          end: quarterEnd,
+        });
 
         const quarterScores = quarterDays
           .map(day => {
             const dayString = format(day, 'yyyy-MM-dd');
-            return healthScores.find(score => 
-              format(parseISO(score.date), 'yyyy-MM-dd') === dayString
+            return healthScores.find(
+              score => format(parseISO(score.date), 'yyyy-MM-dd') === dayString
             );
           })
           .filter(Boolean) as DailyHealthIndex[];
@@ -207,30 +241,41 @@ export function ProgressComparisonChart({
         const quarterBreakdowns = quarterDays
           .map(day => {
             const dayString = format(day, 'yyyy-MM-dd');
-            const scoreIndex = healthScores.findIndex(score => 
-              format(parseISO(score.date), 'yyyy-MM-dd') === dayString
+            const scoreIndex = healthScores.findIndex(
+              score => format(parseISO(score.date), 'yyyy-MM-dd') === dayString
             );
             return scoreIndex >= 0 ? breakdowns[scoreIndex] : null;
           })
           .filter(Boolean) as HealthScoreBreakdown[];
 
-        const avgScore = quarterScores.length > 0 
-          ? quarterScores.reduce((sum, score) => sum + score.healthScore, 0) / quarterScores.length 
-          : 0;
+        const avgScore =
+          quarterScores.length > 0
+            ? quarterScores.reduce((sum, score) => sum + score.healthScore, 0) /
+              quarterScores.length
+            : 0;
 
-        const avgWater = quarterBreakdowns.length > 0
-          ? quarterBreakdowns.reduce((sum, b) => sum + b.water, 0) / quarterBreakdowns.length
-          : 0;
+        const avgWater =
+          quarterBreakdowns.length > 0
+            ? quarterBreakdowns.reduce((sum, b) => sum + b.water, 0) /
+              quarterBreakdowns.length
+            : 0;
 
-        const avgFood = quarterBreakdowns.length > 0
-          ? quarterBreakdowns.reduce((sum, b) => sum + b.food, 0) / quarterBreakdowns.length
-          : 0;
+        const avgFood =
+          quarterBreakdowns.length > 0
+            ? quarterBreakdowns.reduce((sum, b) => sum + b.food, 0) /
+              quarterBreakdowns.length
+            : 0;
 
-        const avgExercise = quarterBreakdowns.length > 0
-          ? quarterBreakdowns.reduce((sum, b) => sum + b.exercise, 0) / quarterBreakdowns.length
-          : 0;
+        const avgExercise =
+          quarterBreakdowns.length > 0
+            ? quarterBreakdowns.reduce((sum, b) => sum + b.exercise, 0) /
+              quarterBreakdowns.length
+            : 0;
 
-        const quarterName = i === 0 ? 'This Quarter' : `Q${Math.ceil((12 - i * 3) / 3)} ${format(quarterStart, 'yyyy')}`;
+        const quarterName =
+          i === 0
+            ? 'This Quarter'
+            : `Q${Math.ceil((12 - i * 3) / 3)} ${format(quarterStart, 'yyyy')}`;
 
         periods.push({
           period: quarterName,
@@ -240,7 +285,9 @@ export function ProgressComparisonChart({
           exercise: Math.round(avgExercise),
           daysTracked: quarterScores.length,
           totalDays: quarterDays.length,
-          consistency: Math.round((quarterScores.length / quarterDays.length) * 100)
+          consistency: Math.round(
+            (quarterScores.length / quarterDays.length) * 100
+          ),
         });
       }
     }
@@ -261,11 +308,32 @@ export function ProgressComparisonChart({
     const consistencyTrend = latest.consistency - previous.consistency;
 
     return {
-      score: { value: scoreTrend, direction: scoreTrend > 2 ? 'up' : scoreTrend < -2 ? 'down' : 'stable' },
-      water: { value: waterTrend, direction: waterTrend > 2 ? 'up' : waterTrend < -2 ? 'down' : 'stable' },
-      food: { value: foodTrend, direction: foodTrend > 2 ? 'up' : foodTrend < -2 ? 'down' : 'stable' },
-      exercise: { value: exerciseTrend, direction: exerciseTrend > 2 ? 'up' : exerciseTrend < -2 ? 'down' : 'stable' },
-      consistency: { value: consistencyTrend, direction: consistencyTrend > 2 ? 'up' : consistencyTrend < -2 ? 'down' : 'stable' }
+      score: {
+        value: scoreTrend,
+        direction: scoreTrend > 2 ? 'up' : scoreTrend < -2 ? 'down' : 'stable',
+      },
+      water: {
+        value: waterTrend,
+        direction: waterTrend > 2 ? 'up' : waterTrend < -2 ? 'down' : 'stable',
+      },
+      food: {
+        value: foodTrend,
+        direction: foodTrend > 2 ? 'up' : foodTrend < -2 ? 'down' : 'stable',
+      },
+      exercise: {
+        value: exerciseTrend,
+        direction:
+          exerciseTrend > 2 ? 'up' : exerciseTrend < -2 ? 'down' : 'stable',
+      },
+      consistency: {
+        value: consistencyTrend,
+        direction:
+          consistencyTrend > 2
+            ? 'up'
+            : consistencyTrend < -2
+              ? 'down'
+              : 'stable',
+      },
     };
   }, [comparisonData]);
 
@@ -273,9 +341,9 @@ export function ProgressComparisonChart({
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
-        <div className="bg-background border rounded-lg p-4 shadow-lg min-w-[200px]">
-          <p className="font-medium text-sm mb-2">{data.period}</p>
-          
+        <div className="bg-background min-w-[200px] rounded-lg border p-4 shadow-lg">
+          <p className="mb-2 text-sm font-medium">{data.period}</p>
+
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-sm">💧 Water:</span>
@@ -289,14 +357,17 @@ export function ProgressComparisonChart({
               <span className="text-sm">🏃 Exercise:</span>
               <span className="text-sm font-medium">{data.exercise}%</span>
             </div>
-            <div className="border-t pt-2 mt-2">
+            <div className="mt-2 border-t pt-2">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium">Health Score:</span>
-                <span className="text-lg font-bold text-primary">{data.healthScore}/100</span>
+                <span className="text-primary text-lg font-bold">
+                  {data.healthScore}/100
+                </span>
               </div>
             </div>
-            <div className="text-xs text-muted-foreground">
-              Consistency: {data.consistency}% ({data.daysTracked}/{data.totalDays} days)
+            <div className="text-muted-foreground text-xs">
+              Consistency: {data.consistency}% ({data.daysTracked}/
+              {data.totalDays} days)
             </div>
           </div>
         </div>
@@ -308,7 +379,7 @@ export function ProgressComparisonChart({
   const renderChart = () => {
     const commonProps = {
       data: comparisonData,
-      margin: { top: 5, right: 30, left: 20, bottom: 5 }
+      margin: { top: 5, right: 30, left: 20, bottom: 5 },
     };
 
     switch (chartView) {
@@ -320,13 +391,17 @@ export function ProgressComparisonChart({
             <YAxis domain={[0, 100]} className="text-xs" />
             <Tooltip content={<CustomTooltip />} />
             <Legend />
-            <ReferenceLine y={70} stroke="hsl(var(--muted-foreground))" strokeDasharray="2 2" />
+            <ReferenceLine
+              y={70}
+              stroke="hsl(var(--muted-foreground))"
+              strokeDasharray="2 2"
+            />
             <Line
               type="monotone"
               dataKey="water"
               stroke="#3b82f6"
               strokeWidth={2}
-              dot={{ fill: "#3b82f6", r: 4 }}
+              dot={{ fill: '#3b82f6', r: 4 }}
               name="Water"
             />
             <Line
@@ -334,7 +409,7 @@ export function ProgressComparisonChart({
               dataKey="food"
               stroke="#f59e0b"
               strokeWidth={2}
-              dot={{ fill: "#f59e0b", r: 4 }}
+              dot={{ fill: '#f59e0b', r: 4 }}
               name="Food"
             />
             <Line
@@ -342,7 +417,7 @@ export function ProgressComparisonChart({
               dataKey="exercise"
               stroke="#10b981"
               strokeWidth={2}
-              dot={{ fill: "#10b981", r: 4 }}
+              dot={{ fill: '#10b981', r: 4 }}
               name="Exercise"
             />
             <Line
@@ -350,12 +425,12 @@ export function ProgressComparisonChart({
               dataKey="healthScore"
               stroke="#dc2626"
               strokeWidth={3}
-              dot={{ fill: "#dc2626", r: 5 }}
+              dot={{ fill: '#dc2626', r: 5 }}
               name="Overall Score"
             />
           </ComposedChart>
         );
-      
+
       case 'radar':
         return (
           <ResponsiveContainer width="100%" height="100%">
@@ -392,7 +467,7 @@ export function ProgressComparisonChart({
             </RadarChart>
           </ResponsiveContainer>
         );
-      
+
       default:
         return (
           <ComposedChart {...commonProps}>
@@ -401,16 +476,35 @@ export function ProgressComparisonChart({
             <YAxis domain={[0, 100]} className="text-xs" />
             <Tooltip content={<CustomTooltip />} />
             <Legend />
-            <ReferenceLine y={70} stroke="hsl(var(--muted-foreground))" strokeDasharray="2 2" />
-            <Bar dataKey="water" fill="#3b82f6" name="Water" radius={[2, 2, 0, 0]} />
-            <Bar dataKey="food" fill="#f59e0b" name="Food" radius={[2, 2, 0, 0]} />
-            <Bar dataKey="exercise" fill="#10b981" name="Exercise" radius={[2, 2, 0, 0]} />
+            <ReferenceLine
+              y={70}
+              stroke="hsl(var(--muted-foreground))"
+              strokeDasharray="2 2"
+            />
+            <Bar
+              dataKey="water"
+              fill="#3b82f6"
+              name="Water"
+              radius={[2, 2, 0, 0]}
+            />
+            <Bar
+              dataKey="food"
+              fill="#f59e0b"
+              name="Food"
+              radius={[2, 2, 0, 0]}
+            />
+            <Bar
+              dataKey="exercise"
+              fill="#10b981"
+              name="Exercise"
+              radius={[2, 2, 0, 0]}
+            />
             <Line
               type="monotone"
               dataKey="healthScore"
               stroke="#dc2626"
               strokeWidth={3}
-              dot={{ fill: "#dc2626", r: 4 }}
+              dot={{ fill: '#dc2626', r: 4 }}
               name="Overall Score"
             />
           </ComposedChart>
@@ -423,16 +517,24 @@ export function ProgressComparisonChart({
       <Card className={className}>
         <CardHeader>
           <CardTitle>Progress Comparison</CardTitle>
-          <CardDescription>Compare your progress across different time periods</CardDescription>
+          <CardDescription>
+            Compare your progress across different time periods
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             <div className="flex gap-2">
               {[1, 2, 3].map(i => (
-                <div key={i} className="h-8 w-20 bg-muted animate-pulse rounded-md" />
+                <div
+                  key={i}
+                  className="bg-muted h-8 w-20 animate-pulse rounded-md"
+                />
               ))}
             </div>
-            <div className={`bg-muted animate-pulse rounded-md`} style={{ height }} />
+            <div
+              className={`bg-muted animate-pulse rounded-md`}
+              style={{ height }}
+            />
           </div>
         </CardContent>
       </Card>
@@ -445,16 +547,17 @@ export function ProgressComparisonChart({
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="flex items-center gap-2">
-              <BarChart3 className="w-5 h-5" />
+              <BarChart3 className="h-5 w-5" />
               Progress Comparison
             </CardTitle>
             <CardDescription>
-              Compare your health metrics across different {comparisonType} periods
+              Compare your health metrics across different {comparisonType}{' '}
+              periods
             </CardDescription>
           </div>
-          
+
           <div className="flex items-center gap-2">
-            <div className="flex border rounded-md">
+            <div className="flex rounded-md border">
               <Button
                 variant={comparisonType === 'weekly' ? 'default' : 'ghost'}
                 size="sm"
@@ -480,7 +583,7 @@ export function ProgressComparisonChart({
                 Quarterly
               </Button>
             </div>
-            <div className="flex border rounded-md">
+            <div className="flex rounded-md border">
               <Button
                 variant={chartView === 'bar' ? 'default' : 'ghost'}
                 size="sm"
@@ -513,61 +616,98 @@ export function ProgressComparisonChart({
         <div className="space-y-6">
           {/* Trend Analysis */}
           {trendAnalysis && (
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 p-4 bg-muted/50 rounded-lg">
+            <div className="bg-muted/50 grid grid-cols-2 gap-4 rounded-lg p-4 md:grid-cols-5">
               <div className="text-center">
-                <div className="flex items-center justify-center gap-1 mb-1">
-                  {trendAnalysis.score.direction === 'up' && <ArrowUpRight className="w-4 h-4 text-green-600" />}
-                  {trendAnalysis.score.direction === 'down' && <ArrowDownRight className="w-4 h-4 text-red-600" />}
-                  {trendAnalysis.score.direction === 'stable' && <Minus className="w-4 h-4 text-gray-600" />}
-                  <span className="text-lg font-bold text-primary">
-                    {trendAnalysis.score.value > 0 ? '+' : ''}{trendAnalysis.score.value}
+                <div className="mb-1 flex items-center justify-center gap-1">
+                  {trendAnalysis.score.direction === 'up' && (
+                    <ArrowUpRight className="h-4 w-4 text-green-600" />
+                  )}
+                  {trendAnalysis.score.direction === 'down' && (
+                    <ArrowDownRight className="h-4 w-4 text-red-600" />
+                  )}
+                  {trendAnalysis.score.direction === 'stable' && (
+                    <Minus className="h-4 w-4 text-gray-600" />
+                  )}
+                  <span className="text-primary text-lg font-bold">
+                    {trendAnalysis.score.value > 0 ? '+' : ''}
+                    {trendAnalysis.score.value}
                   </span>
                 </div>
-                <div className="text-xs text-muted-foreground">Overall Score</div>
+                <div className="text-muted-foreground text-xs">
+                  Overall Score
+                </div>
               </div>
               <div className="text-center">
-                <div className="flex items-center justify-center gap-1 mb-1">
-                  {trendAnalysis.water.direction === 'up' && <ArrowUpRight className="w-4 h-4 text-green-600" />}
-                  {trendAnalysis.water.direction === 'down' && <ArrowDownRight className="w-4 h-4 text-red-600" />}
-                  {trendAnalysis.water.direction === 'stable' && <Minus className="w-4 h-4 text-gray-600" />}
+                <div className="mb-1 flex items-center justify-center gap-1">
+                  {trendAnalysis.water.direction === 'up' && (
+                    <ArrowUpRight className="h-4 w-4 text-green-600" />
+                  )}
+                  {trendAnalysis.water.direction === 'down' && (
+                    <ArrowDownRight className="h-4 w-4 text-red-600" />
+                  )}
+                  {trendAnalysis.water.direction === 'stable' && (
+                    <Minus className="h-4 w-4 text-gray-600" />
+                  )}
                   <span className="text-lg font-bold text-blue-600">
-                    {trendAnalysis.water.value > 0 ? '+' : ''}{trendAnalysis.water.value}
+                    {trendAnalysis.water.value > 0 ? '+' : ''}
+                    {trendAnalysis.water.value}
                   </span>
                 </div>
-                <div className="text-xs text-muted-foreground">Water</div>
+                <div className="text-muted-foreground text-xs">Water</div>
               </div>
               <div className="text-center">
-                <div className="flex items-center justify-center gap-1 mb-1">
-                  {trendAnalysis.food.direction === 'up' && <ArrowUpRight className="w-4 h-4 text-green-600" />}
-                  {trendAnalysis.food.direction === 'down' && <ArrowDownRight className="w-4 h-4 text-red-600" />}
-                  {trendAnalysis.food.direction === 'stable' && <Minus className="w-4 h-4 text-gray-600" />}
+                <div className="mb-1 flex items-center justify-center gap-1">
+                  {trendAnalysis.food.direction === 'up' && (
+                    <ArrowUpRight className="h-4 w-4 text-green-600" />
+                  )}
+                  {trendAnalysis.food.direction === 'down' && (
+                    <ArrowDownRight className="h-4 w-4 text-red-600" />
+                  )}
+                  {trendAnalysis.food.direction === 'stable' && (
+                    <Minus className="h-4 w-4 text-gray-600" />
+                  )}
                   <span className="text-lg font-bold text-amber-600">
-                    {trendAnalysis.food.value > 0 ? '+' : ''}{trendAnalysis.food.value}
+                    {trendAnalysis.food.value > 0 ? '+' : ''}
+                    {trendAnalysis.food.value}
                   </span>
                 </div>
-                <div className="text-xs text-muted-foreground">Food</div>
+                <div className="text-muted-foreground text-xs">Food</div>
               </div>
               <div className="text-center">
-                <div className="flex items-center justify-center gap-1 mb-1">
-                  {trendAnalysis.exercise.direction === 'up' && <ArrowUpRight className="w-4 h-4 text-green-600" />}
-                  {trendAnalysis.exercise.direction === 'down' && <ArrowDownRight className="w-4 h-4 text-red-600" />}
-                  {trendAnalysis.exercise.direction === 'stable' && <Minus className="w-4 h-4 text-gray-600" />}
+                <div className="mb-1 flex items-center justify-center gap-1">
+                  {trendAnalysis.exercise.direction === 'up' && (
+                    <ArrowUpRight className="h-4 w-4 text-green-600" />
+                  )}
+                  {trendAnalysis.exercise.direction === 'down' && (
+                    <ArrowDownRight className="h-4 w-4 text-red-600" />
+                  )}
+                  {trendAnalysis.exercise.direction === 'stable' && (
+                    <Minus className="h-4 w-4 text-gray-600" />
+                  )}
                   <span className="text-lg font-bold text-green-600">
-                    {trendAnalysis.exercise.value > 0 ? '+' : ''}{trendAnalysis.exercise.value}
+                    {trendAnalysis.exercise.value > 0 ? '+' : ''}
+                    {trendAnalysis.exercise.value}
                   </span>
                 </div>
-                <div className="text-xs text-muted-foreground">Exercise</div>
+                <div className="text-muted-foreground text-xs">Exercise</div>
               </div>
               <div className="text-center">
-                <div className="flex items-center justify-center gap-1 mb-1">
-                  {trendAnalysis.consistency.direction === 'up' && <ArrowUpRight className="w-4 h-4 text-green-600" />}
-                  {trendAnalysis.consistency.direction === 'down' && <ArrowDownRight className="w-4 h-4 text-red-600" />}
-                  {trendAnalysis.consistency.direction === 'stable' && <Minus className="w-4 h-4 text-gray-600" />}
+                <div className="mb-1 flex items-center justify-center gap-1">
+                  {trendAnalysis.consistency.direction === 'up' && (
+                    <ArrowUpRight className="h-4 w-4 text-green-600" />
+                  )}
+                  {trendAnalysis.consistency.direction === 'down' && (
+                    <ArrowDownRight className="h-4 w-4 text-red-600" />
+                  )}
+                  {trendAnalysis.consistency.direction === 'stable' && (
+                    <Minus className="h-4 w-4 text-gray-600" />
+                  )}
                   <span className="text-lg font-bold text-purple-600">
-                    {trendAnalysis.consistency.value > 0 ? '+' : ''}{trendAnalysis.consistency.value}%
+                    {trendAnalysis.consistency.value > 0 ? '+' : ''}
+                    {trendAnalysis.consistency.value}%
                   </span>
                 </div>
-                <div className="text-xs text-muted-foreground">Consistency</div>
+                <div className="text-muted-foreground text-xs">Consistency</div>
               </div>
             </div>
           )}
@@ -580,20 +720,26 @@ export function ProgressComparisonChart({
           </div>
 
           {/* Period Summary */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
             {comparisonData.map((period, index) => (
-              <div key={period.period} className="p-4 border rounded-lg">
-                <div className="text-sm font-medium mb-2">{period.period}</div>
+              <div key={period.period} className="rounded-lg border p-4">
+                <div className="mb-2 text-sm font-medium">{period.period}</div>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground">Score:</span>
-                    <span className="text-sm font-bold">{period.healthScore}/100</span>
+                    <span className="text-muted-foreground text-xs">
+                      Score:
+                    </span>
+                    <span className="text-sm font-bold">
+                      {period.healthScore}/100
+                    </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground">Consistency:</span>
+                    <span className="text-muted-foreground text-xs">
+                      Consistency:
+                    </span>
                     <span className="text-sm">{period.consistency}%</span>
                   </div>
-                  <div className="text-xs text-muted-foreground">
+                  <div className="text-muted-foreground text-xs">
                     {period.daysTracked}/{period.totalDays} days tracked
                   </div>
                 </div>

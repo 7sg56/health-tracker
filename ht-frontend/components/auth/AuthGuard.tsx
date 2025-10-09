@@ -10,13 +10,13 @@ import { useRouter, usePathname } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 
 import { useAuth } from '../../contexts/AuthContext';
-import { 
-  isProtectedRoute, 
-  isPublicRoute, 
+import {
+  isProtectedRoute,
+  isPublicRoute,
   shouldRedirectRoute,
   buildReturnUrl,
   parseReturnUrl,
-  isValidReturnUrl 
+  isValidReturnUrl,
 } from '../../lib/utils/route-guards';
 
 interface AuthGuardProps {
@@ -30,9 +30,9 @@ interface AuthGuardProps {
 // Default loading component
 function DefaultLoadingFallback() {
   return (
-    <div className="flex items-center justify-center min-h-screen">
+    <div className="flex min-h-screen items-center justify-center">
       <div className="flex flex-col items-center gap-4">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <Loader2 className="text-primary h-8 w-8 animate-spin" />
         <p className="text-muted-foreground">Checking authentication...</p>
       </div>
     </div>
@@ -42,10 +42,14 @@ function DefaultLoadingFallback() {
 // Default unauthorized component
 function DefaultUnauthorizedFallback() {
   return (
-    <div className="flex items-center justify-center min-h-screen">
+    <div className="flex min-h-screen items-center justify-center">
       <div className="text-center">
-        <h1 className="text-2xl font-bold text-destructive mb-2">Access Denied</h1>
-        <p className="text-muted-foreground">You need to be logged in to access this page.</p>
+        <h1 className="text-destructive mb-2 text-2xl font-bold">
+          Access Denied
+        </h1>
+        <p className="text-muted-foreground">
+          You need to be logged in to access this page.
+        </p>
       </div>
     </div>
   );
@@ -87,7 +91,7 @@ export function AuthGuard({
       // Check if there's a return URL in the query params
       const urlParams = new URLSearchParams(window.location.search);
       const returnPath = parseReturnUrl(urlParams);
-      
+
       // Validate and use the return URL
       if (returnPath && isValidReturnUrl(returnPath)) {
         router.push(returnPath);
@@ -102,7 +106,16 @@ export function AuthGuard({
       // This would check user roles when implemented
       // For now, we'll skip this check
     }
-  }, [state.isLoading, state.isAuthenticated, state.user, requireAuth, redirectTo, router, pathname, allowedRoles]);
+  }, [
+    state.isLoading,
+    state.isAuthenticated,
+    state.user,
+    requireAuth,
+    redirectTo,
+    router,
+    pathname,
+    allowedRoles,
+  ]);
 
   // Show loading state
   if (state.isLoading) {
@@ -119,8 +132,8 @@ export function AuthGuard({
 }
 
 // Convenience wrapper for protecting authenticated routes
-export function ProtectedRoute({ 
-  children, 
+export function ProtectedRoute({
+  children,
   fallback,
   redirectTo,
 }: {
@@ -129,19 +142,15 @@ export function ProtectedRoute({
   redirectTo?: string;
 }) {
   return (
-    <AuthGuard 
-      requireAuth={true} 
-      fallback={fallback}
-      redirectTo={redirectTo}
-    >
+    <AuthGuard requireAuth={true} fallback={fallback} redirectTo={redirectTo}>
       {children}
     </AuthGuard>
   );
 }
 
 // Convenience wrapper for public routes (redirect if authenticated)
-export function PublicRoute({ 
-  children, 
+export function PublicRoute({
+  children,
   fallback,
   redirectTo = '/dashboard',
 }: {
@@ -150,11 +159,7 @@ export function PublicRoute({
   redirectTo?: string;
 }) {
   return (
-    <AuthGuard 
-      requireAuth={false} 
-      fallback={fallback}
-      redirectTo={redirectTo}
-    >
+    <AuthGuard requireAuth={false} fallback={fallback} redirectTo={redirectTo}>
       {children}
     </AuthGuard>
   );
@@ -163,7 +168,7 @@ export function PublicRoute({
 // Hook for checking authentication status in components
 export function useAuthGuard() {
   const { state } = useAuth();
-  
+
   return {
     isAuthenticated: state.isAuthenticated,
     isLoading: state.isLoading,

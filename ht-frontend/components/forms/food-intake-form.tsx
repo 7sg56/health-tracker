@@ -10,17 +10,17 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Form, 
-  FormControl, 
-  FormDescription, 
-  FormField, 
-  FormItem, 
-  FormLabel, 
-  FormMessage 
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -29,7 +29,10 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 
-import { foodIntakeSchema, type FoodIntakeFormData } from '@/lib/validations/health';
+import {
+  foodIntakeSchema,
+  type FoodIntakeFormData,
+} from '@/lib/validations/health';
 import { FoodIntakeRequest, FoodIntake } from '@/lib/types/health';
 import { z } from 'zod';
 
@@ -49,32 +52,32 @@ const FOOD_SUGGESTIONS = [
   { name: 'Banana', calories: 105, category: 'Fruits' },
   { name: 'Orange', calories: 62, category: 'Fruits' },
   { name: 'Grapes (1 cup)', calories: 104, category: 'Fruits' },
-  
+
   // Proteins
   { name: 'Chicken Breast (100g)', calories: 165, category: 'Proteins' },
   { name: 'Salmon (100g)', calories: 208, category: 'Proteins' },
   { name: 'Egg', calories: 70, category: 'Proteins' },
   { name: 'Greek Yogurt (1 cup)', calories: 150, category: 'Proteins' },
   { name: 'Tuna (100g)', calories: 132, category: 'Proteins' },
-  
+
   // Grains & Carbs
   { name: 'Rice (1 cup)', calories: 205, category: 'Grains' },
   { name: 'Bread Slice', calories: 80, category: 'Grains' },
   { name: 'Oatmeal (1 cup)', calories: 150, category: 'Grains' },
   { name: 'Pasta (1 cup)', calories: 220, category: 'Grains' },
   { name: 'Quinoa (1 cup)', calories: 222, category: 'Grains' },
-  
+
   // Vegetables
   { name: 'Broccoli (1 cup)', calories: 25, category: 'Vegetables' },
   { name: 'Spinach (1 cup)', calories: 7, category: 'Vegetables' },
   { name: 'Carrots (1 cup)', calories: 52, category: 'Vegetables' },
   { name: 'Bell Pepper (1 cup)', calories: 30, category: 'Vegetables' },
-  
+
   // Nuts & Seeds
   { name: 'Almonds (28g)', calories: 164, category: 'Nuts & Seeds' },
   { name: 'Walnuts (28g)', calories: 185, category: 'Nuts & Seeds' },
   { name: 'Peanut Butter (2 tbsp)', calories: 188, category: 'Nuts & Seeds' },
-  
+
   // Dairy
   { name: 'Milk (1 cup)', calories: 149, category: 'Dairy' },
   { name: 'Cheese Slice', calories: 113, category: 'Dairy' },
@@ -90,30 +93,42 @@ const MEAL_TYPES = [
   { value: 'other', label: 'Other' },
 ];
 
-export function FoodIntakeForm({ 
-  onSubmit, 
-  initialData, 
-  mode = 'create', 
-  isLoading = false, 
+export function FoodIntakeForm({
+  onSubmit,
+  initialData,
+  mode = 'create',
+  isLoading = false,
   error,
-  onCancel 
+  onCancel,
 }: FoodIntakeFormProps) {
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [filteredSuggestions, setFilteredSuggestions] = useState(FOOD_SUGGESTIONS);
+  const [filteredSuggestions, setFilteredSuggestions] =
+    useState(FOOD_SUGGESTIONS);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  
+
   const form = useForm<FoodIntakeFormData & { mealType?: string }>({
-    resolver: zodResolver(foodIntakeSchema.extend({
-      mealType: z.string().optional()
-    })),
+    mode: 'onChange',
+    reValidateMode: 'onChange',
+    resolver: zodResolver(
+      foodIntakeSchema.extend({
+        mealType: z.string().optional(),
+      })
+    ),
     defaultValues: {
       foodItem: initialData?.foodItem || '',
       calories: initialData?.calories || 0,
-      mealType: 'other'
-    }
+      mealType: 'other',
+    },
   });
 
-  const { control, handleSubmit, setValue, watch, reset, formState: { errors, isSubmitting, isValid } } = form;
+  const {
+    control,
+    handleSubmit,
+    setValue,
+    watch,
+    reset,
+    formState: { errors, isSubmitting, isValid },
+  } = form;
   const watchedFoodItem = watch('foodItem');
   const watchedCalories = watch('calories');
   const watchedMealType = watch('mealType');
@@ -121,27 +136,31 @@ export function FoodIntakeForm({
   // Filter suggestions based on food item input and category
   useEffect(() => {
     let filtered = FOOD_SUGGESTIONS;
-    
+
     if (selectedCategory && selectedCategory !== 'all') {
-      filtered = filtered.filter(suggestion => suggestion.category === selectedCategory);
+      filtered = filtered.filter(
+        suggestion => suggestion.category === selectedCategory
+      );
     }
-    
+
     if (watchedFoodItem) {
       filtered = filtered.filter(suggestion =>
         suggestion.name.toLowerCase().includes(watchedFoodItem.toLowerCase())
       );
     }
-    
+
     setFilteredSuggestions(filtered);
   }, [watchedFoodItem, selectedCategory]);
 
-  const handleSuggestionClick = (suggestion: typeof FOOD_SUGGESTIONS[0]) => {
+  const handleSuggestionClick = (suggestion: (typeof FOOD_SUGGESTIONS)[0]) => {
     setValue('foodItem', suggestion.name);
     setValue('calories', suggestion.calories);
     setShowSuggestions(false);
   };
 
-  const onFormSubmit = async (data: FoodIntakeFormData & { mealType?: string }) => {
+  const onFormSubmit = async (
+    data: FoodIntakeFormData & { mealType?: string }
+  ) => {
     try {
       // Extract only the required fields for the API
       const { foodItem, calories } = data;
@@ -192,14 +211,17 @@ export function FoodIntakeForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Meal Type</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
                     <FormControl>
-                      <SelectTrigger>
+                      <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select meal type" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {MEAL_TYPES.map((type) => (
+                      {MEAL_TYPES.map(type => (
                         <SelectItem key={type.value} value={type.value}>
                           {type.label}
                         </SelectItem>
@@ -219,13 +241,16 @@ export function FoodIntakeForm({
             {/* Food Category Filter */}
             <div className="space-y-2">
               <FormLabel>Food Category (Optional)</FormLabel>
-              <Select value={selectedCategory || undefined} onValueChange={setSelectedCategory}>
-                <SelectTrigger>
+              <Select
+                value={selectedCategory || undefined}
+                onValueChange={setSelectedCategory}
+              >
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="Filter by category" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Categories</SelectItem>
-                  {categories.map((category) => (
+                  {categories.map(category => (
                     <SelectItem key={category} value={category}>
                       {category}
                     </SelectItem>
@@ -254,40 +279,47 @@ export function FoodIntakeForm({
                         }}
                         className="pr-10"
                       />
-                      <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                        <Search className="h-4 w-4 text-muted-foreground" />
+                      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                        <Search className="text-muted-foreground h-4 w-4" />
                       </div>
-                      
+
                       {/* Enhanced Suggestions Dropdown */}
                       {showSuggestions && filteredSuggestions.length > 0 && (
-                        <div className="absolute z-50 w-full mt-1 bg-popover border rounded-md shadow-lg max-h-64 overflow-y-auto">
+                        <div className="bg-popover absolute z-50 mt-1 max-h-64 w-full overflow-y-auto rounded-md border shadow-lg">
                           <div className="p-2">
-                            <p className="text-xs text-muted-foreground mb-2">
+                            <p className="text-muted-foreground mb-2 text-xs">
                               Suggestions ({filteredSuggestions.length})
                             </p>
-                            {filteredSuggestions.slice(0, 12).map((suggestion, index) => (
-                              <button
-                                key={index}
-                                type="button"
-                                className="w-full px-3 py-2 text-left hover:bg-muted transition-colors rounded-sm flex items-center justify-between group"
-                                onClick={() => handleSuggestionClick(suggestion)}
-                              >
-                                <div className="flex-1 min-w-0">
-                                  <span className="text-sm font-medium truncate block">
-                                    {suggestion.name}
-                                  </span>
-                                  <span className="text-xs text-muted-foreground">
-                                    {suggestion.category}
-                                  </span>
-                                </div>
-                                <div className="flex items-center gap-2 ml-2">
-                                  <Badge variant="secondary" className="text-xs">
-                                    {suggestion.calories} cal
-                                  </Badge>
-                                  <Calculator className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-                                </div>
-                              </button>
-                            ))}
+                            {filteredSuggestions
+                              .slice(0, 12)
+                              .map((suggestion, index) => (
+                                <button
+                                  key={index}
+                                  type="button"
+                                  className="hover:bg-muted group flex w-full items-center justify-between rounded-sm px-3 py-2 text-left transition-colors"
+                                  onClick={() =>
+                                    handleSuggestionClick(suggestion)
+                                  }
+                                >
+                                  <div className="min-w-0 flex-1">
+                                    <span className="block truncate text-sm font-medium">
+                                      {suggestion.name}
+                                    </span>
+                                    <span className="text-muted-foreground text-xs">
+                                      {suggestion.category}
+                                    </span>
+                                  </div>
+                                  <div className="ml-2 flex items-center gap-2">
+                                    <Badge
+                                      variant="secondary"
+                                      className="text-xs"
+                                    >
+                                      {suggestion.calories} cal
+                                    </Badge>
+                                    <Calculator className="text-muted-foreground h-3 w-3 opacity-0 transition-opacity group-hover:opacity-100" />
+                                  </div>
+                                </button>
+                              ))}
                           </div>
                         </div>
                       )}
@@ -316,12 +348,16 @@ export function FoodIntakeForm({
                         max="5000"
                         placeholder="Enter calories (1-5000)"
                         {...field}
-                        onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                        onChange={e =>
+                          field.onChange(parseInt(e.target.value) || 0)
+                        }
                         disabled={isFormLoading}
                         className="pr-16"
                       />
-                      <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                        <span className="text-sm text-muted-foreground">cal</span>
+                      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                        <span className="text-muted-foreground text-sm">
+                          cal
+                        </span>
                       </div>
                     </div>
                   </FormControl>
@@ -335,9 +371,9 @@ export function FoodIntakeForm({
 
             {/* Current Selection Preview */}
             {watchedFoodItem && watchedCalories > 0 && (
-              <div className="p-4 bg-muted/50 rounded-lg border border-dashed">
-                <div className="flex items-center gap-2 mb-2">
-                  <Clock className="h-4 w-4 text-muted-foreground" />
+              <div className="bg-muted/50 rounded-lg border border-dashed p-4">
+                <div className="mb-2 flex items-center gap-2">
+                  <Clock className="text-muted-foreground h-4 w-4" />
                   <span className="text-sm font-medium">Preview</span>
                 </div>
                 <div className="space-y-1">
@@ -345,40 +381,50 @@ export function FoodIntakeForm({
                     <span className="font-medium">{watchedFoodItem}</span>
                     {watchedMealType && watchedMealType !== 'other' && (
                       <Badge variant="outline" className="ml-2 text-xs">
-                        {MEAL_TYPES.find(t => t.value === watchedMealType)?.label}
+                        {
+                          MEAL_TYPES.find(t => t.value === watchedMealType)
+                            ?.label
+                        }
                       </Badge>
                     )}
                   </p>
-                  <p className="text-sm text-muted-foreground">
-                    <span className="font-medium text-orange-600">{watchedCalories} calories</span>
+                  <p className="text-muted-foreground text-sm">
+                    <span className="font-medium text-orange-600">
+                      {watchedCalories} calories
+                    </span>
                   </p>
                 </div>
               </div>
             )}
 
             {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-3 pt-2">
+            <div className="flex flex-col gap-3 pt-2 sm:flex-row">
               <LoadingButton
                 type="submit"
                 loading={isFormLoading}
                 loadingText={isEditMode ? 'Updating...' : 'Adding...'}
-                disabled={!isValid || !watchedFoodItem || !watchedCalories || watchedCalories <= 0}
+                disabled={
+                  !isValid ||
+                  !watchedFoodItem ||
+                  !watchedCalories ||
+                  watchedCalories <= 0
+                }
                 className="flex-1"
                 size="lg"
               >
                 {isEditMode ? (
                   <>
-                    <Edit3 className="h-4 w-4 mr-2" />
+                    <Edit3 className="mr-2 h-4 w-4" />
                     Update Food Intake
                   </>
                 ) : (
                   <>
-                    <Plus className="h-4 w-4 mr-2" />
+                    <Plus className="mr-2 h-4 w-4" />
                     Add Food Intake
                   </>
                 )}
               </LoadingButton>
-              
+
               {(isEditMode || onCancel) && (
                 <Button
                   type="button"

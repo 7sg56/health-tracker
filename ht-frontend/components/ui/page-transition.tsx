@@ -1,21 +1,27 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
+import * as React from 'react';
+import { usePathname } from 'next/navigation';
+import { cn } from '@/lib/utils';
 
 interface PageTransitionProps {
   children: React.ReactNode;
   className?: string;
   delay?: number;
-  variant?: "fade" | "slide-up" | "slide-down" | "slide-left" | "slide-right" | "scale";
+  variant?:
+    | 'fade'
+    | 'slide-up'
+    | 'slide-down'
+    | 'slide-left'
+    | 'slide-right'
+    | 'scale';
 }
 
-export function PageTransition({ 
-  children, 
+export function PageTransition({
+  children,
   className,
   delay = 0,
-  variant = "slide-up"
+  variant = 'slide-up',
 }: PageTransitionProps) {
   const [isVisible, setIsVisible] = React.useState(false);
   const pathname = usePathname();
@@ -23,7 +29,7 @@ export function PageTransition({
   React.useEffect(() => {
     // Reset animation on route change
     setIsVisible(false);
-    
+
     const timer = setTimeout(() => {
       setIsVisible(true);
     }, delay + 50); // Small delay to ensure reset
@@ -32,30 +38,26 @@ export function PageTransition({
   }, [delay, pathname]);
 
   const variantClasses = {
-    fade: isVisible 
-      ? "opacity-100" 
-      : "opacity-0",
-    "slide-up": isVisible 
-      ? "opacity-100 translate-y-0" 
-      : "opacity-0 translate-y-4",
-    "slide-down": isVisible 
-      ? "opacity-100 translate-y-0" 
-      : "opacity-0 -translate-y-4",
-    "slide-left": isVisible 
-      ? "opacity-100 translate-x-0" 
-      : "opacity-0 translate-x-4",
-    "slide-right": isVisible 
-      ? "opacity-100 translate-x-0" 
-      : "opacity-0 -translate-x-4",
-    scale: isVisible 
-      ? "opacity-100 scale-100" 
-      : "opacity-0 scale-95"
+    fade: isVisible ? 'opacity-100' : 'opacity-0',
+    'slide-up': isVisible
+      ? 'opacity-100 translate-y-0'
+      : 'opacity-0 translate-y-4',
+    'slide-down': isVisible
+      ? 'opacity-100 translate-y-0'
+      : 'opacity-0 -translate-y-4',
+    'slide-left': isVisible
+      ? 'opacity-100 translate-x-0'
+      : 'opacity-0 translate-x-4',
+    'slide-right': isVisible
+      ? 'opacity-100 translate-x-0'
+      : 'opacity-0 -translate-x-4',
+    scale: isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95',
   };
 
   return (
     <div
       className={cn(
-        "transition-all duration-500 ease-out will-change-transform",
+        'transition-all duration-500 ease-out will-change-transform',
         variantClasses[variant],
         className
       )}
@@ -66,28 +68,28 @@ export function PageTransition({
 }
 
 // Enhanced page transition with route-specific animations
-export function RoutePageTransition({ 
-  children, 
-  className 
-}: { 
-  children: React.ReactNode; 
+export function RoutePageTransition({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
   className?: string;
 }) {
   const pathname = usePathname();
-  
+
   // Different animations for different routes
-  const getVariantForRoute = (path: string): PageTransitionProps["variant"] => {
-    if (path.includes("/dashboard") && path !== "/dashboard") {
-      return "slide-left"; // Sub-pages slide from right
+  const getVariantForRoute = (path: string): PageTransitionProps['variant'] => {
+    if (path.includes('/dashboard') && path !== '/dashboard') {
+      return 'slide-left'; // Sub-pages slide from right
     }
-    if (path === "/dashboard") {
-      return "fade"; // Main dashboard fades in
+    if (path === '/dashboard') {
+      return 'fade'; // Main dashboard fades in
     }
-    return "slide-up"; // Default animation
+    return 'slide-up'; // Default animation
   };
 
   return (
-    <PageTransition 
+    <PageTransition
       variant={getVariantForRoute(pathname)}
       className={className}
     >
@@ -103,11 +105,11 @@ interface FadeInProps {
   className?: string;
 }
 
-export function FadeIn({ 
-  children, 
-  delay = 0, 
+export function FadeIn({
+  children,
+  delay = 0,
   duration = 300,
-  className 
+  className,
 }: FadeInProps) {
   const [isVisible, setIsVisible] = React.useState(false);
 
@@ -122,13 +124,13 @@ export function FadeIn({
   return (
     <div
       className={cn(
-        "transition-opacity ease-out",
-        isVisible ? "opacity-100" : "opacity-0",
+        'transition-opacity ease-out',
+        isVisible ? 'opacity-100' : 'opacity-0',
         className
       )}
-      style={{ 
+      style={{
         transitionDuration: `${duration}ms`,
-        transitionDelay: `${delay}ms`
+        transitionDelay: `${delay}ms`,
       }}
     >
       {children}
@@ -138,18 +140,18 @@ export function FadeIn({
 
 interface SlideInProps {
   children: React.ReactNode;
-  direction?: "up" | "down" | "left" | "right";
+  direction?: 'up' | 'down' | 'left' | 'right';
   delay?: number;
   duration?: number;
   className?: string;
 }
 
-export function SlideIn({ 
-  children, 
-  direction = "up",
-  delay = 0, 
+export function SlideIn({
+  children,
+  direction = 'up',
+  delay = 0,
   duration = 300,
-  className 
+  className,
 }: SlideInProps) {
   const [isVisible, setIsVisible] = React.useState(false);
 
@@ -162,23 +164,23 @@ export function SlideIn({
   }, [delay]);
 
   const directionClasses = {
-    up: isVisible ? "translate-y-0" : "translate-y-4",
-    down: isVisible ? "translate-y-0" : "-translate-y-4",
-    left: isVisible ? "translate-x-0" : "translate-x-4",
-    right: isVisible ? "translate-x-0" : "-translate-x-4",
+    up: isVisible ? 'translate-y-0' : 'translate-y-4',
+    down: isVisible ? 'translate-y-0' : '-translate-y-4',
+    left: isVisible ? 'translate-x-0' : 'translate-x-4',
+    right: isVisible ? 'translate-x-0' : '-translate-x-4',
   };
 
   return (
     <div
       className={cn(
-        "transition-all ease-out",
-        isVisible ? "opacity-100" : "opacity-0",
+        'transition-all ease-out',
+        isVisible ? 'opacity-100' : 'opacity-0',
         directionClasses[direction],
         className
       )}
-      style={{ 
+      style={{
         transitionDuration: `${duration}ms`,
-        transitionDelay: `${delay}ms`
+        transitionDelay: `${delay}ms`,
       }}
     >
       {children}
@@ -192,17 +194,15 @@ interface StaggeredChildrenProps {
   className?: string;
 }
 
-export function StaggeredChildren({ 
-  children, 
+export function StaggeredChildren({
+  children,
   staggerDelay = 100,
-  className 
+  className,
 }: StaggeredChildrenProps) {
   return (
     <div className={className}>
       {React.Children.map(children, (child, index) => (
-        <FadeIn delay={index * staggerDelay}>
-          {child}
-        </FadeIn>
+        <FadeIn delay={index * staggerDelay}>{child}</FadeIn>
       ))}
     </div>
   );

@@ -8,7 +8,13 @@ import { Dumbbell, Plus, Edit3, Clock, Flame } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 
@@ -46,32 +52,35 @@ const WORKOUT_SUGGESTIONS = [
 // Quick duration presets in minutes
 const DURATION_PRESETS = [15, 30, 45, 60, 90];
 
-export function WorkoutForm({ 
-  onSubmit, 
-  initialData, 
-  mode = 'create', 
-  isLoading = false, 
+export function WorkoutForm({
+  onSubmit,
+  initialData,
+  mode = 'create',
+  isLoading = false,
   error,
-  onCancel 
+  onCancel,
 }: WorkoutFormProps) {
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [filteredSuggestions, setFilteredSuggestions] = useState(WORKOUT_SUGGESTIONS);
-  const [estimatedCalories, setEstimatedCalories] = useState<number | null>(null);
-  
+  const [filteredSuggestions, setFilteredSuggestions] =
+    useState(WORKOUT_SUGGESTIONS);
+  const [estimatedCalories, setEstimatedCalories] = useState<number | null>(
+    null
+  );
+
   const {
     register,
     handleSubmit,
     setValue,
     watch,
     reset,
-    formState: { errors, isSubmitting }
+    formState: { errors, isSubmitting },
   } = useForm<WorkoutFormData>({
     resolver: zodResolver(workoutSchema),
     defaultValues: {
       activity: initialData?.activity || '',
       durationMin: initialData?.durationMin || 0,
-      caloriesBurned: initialData?.caloriesBurned || undefined
-    }
+      caloriesBurned: initialData?.caloriesBurned || undefined,
+    },
   });
 
   const watchedActivity = watch('activity');
@@ -97,9 +106,11 @@ export function WorkoutForm({
         s => s.name.toLowerCase() === watchedActivity.toLowerCase()
       );
       if (suggestion) {
-        const estimated = Math.round(suggestion.caloriesPerMin * watchedDuration);
+        const estimated = Math.round(
+          suggestion.caloriesPerMin * watchedDuration
+        );
         setEstimatedCalories(estimated);
-        
+
         // Auto-fill calories if not manually set
         if (!watchedCalories) {
           setValue('caloriesBurned', estimated);
@@ -112,10 +123,12 @@ export function WorkoutForm({
     }
   }, [watchedActivity, watchedDuration, watchedCalories, setValue]);
 
-  const handleSuggestionClick = (suggestion: typeof WORKOUT_SUGGESTIONS[0]) => {
+  const handleSuggestionClick = (
+    suggestion: (typeof WORKOUT_SUGGESTIONS)[0]
+  ) => {
     setValue('activity', suggestion.name);
     setShowSuggestions(false);
-    
+
     // Auto-calculate calories if duration is set
     if (watchedDuration > 0) {
       const estimated = Math.round(suggestion.caloriesPerMin * watchedDuration);
@@ -152,19 +165,18 @@ export function WorkoutForm({
   const isEditMode = mode === 'edit';
 
   return (
-    <Card className="shadow-sm hover:shadow-md transition-shadow">
+    <Card className="shadow-sm transition-shadow hover:shadow-md">
       <CardHeader className="pb-4">
         <CardTitle className="flex items-center gap-2">
-          <div className="flex items-center justify-center w-8 h-8 bg-purple-100 dark:bg-purple-900/20 rounded-lg">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-100 dark:bg-purple-900/20">
             <Dumbbell className="h-4 w-4 text-purple-600" />
           </div>
           {isEditMode ? 'Edit Workout' : 'Log New Workout'}
         </CardTitle>
         <CardDescription>
-          {isEditMode 
-            ? 'Update your workout details' 
-            : 'Track your exercise session and calories burned'
-          }
+          {isEditMode
+            ? 'Update your workout details'
+            : 'Track your exercise session and calories burned'}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -192,17 +204,19 @@ export function WorkoutForm({
                   // Delay hiding suggestions to allow clicks
                   setTimeout(() => setShowSuggestions(false), 200);
                 }}
-                aria-describedby={errors.activity ? "activity-error" : undefined}
+                aria-describedby={
+                  errors.activity ? 'activity-error' : undefined
+                }
               />
-              
+
               {/* Suggestions Dropdown */}
               {showSuggestions && filteredSuggestions.length > 0 && (
-                <div className="absolute z-10 w-full mt-1 bg-popover border rounded-md shadow-lg max-h-48 overflow-y-auto">
+                <div className="bg-popover absolute z-10 mt-1 max-h-48 w-full overflow-y-auto rounded-md border shadow-lg">
                   {filteredSuggestions.slice(0, 8).map((suggestion, index) => (
                     <button
                       key={index}
                       type="button"
-                      className="w-full px-3 py-2 text-left hover:bg-muted transition-colors flex items-center justify-between"
+                      className="hover:bg-muted flex w-full items-center justify-between px-3 py-2 text-left transition-colors"
                       onClick={() => handleSuggestionClick(suggestion)}
                     >
                       <span className="text-sm">{suggestion.name}</span>
@@ -215,7 +229,7 @@ export function WorkoutForm({
               )}
             </div>
             {errors.activity && (
-              <p id="activity-error" className="text-sm text-destructive">
+              <p id="activity-error" className="text-destructive text-sm">
                 {errors.activity.message}
               </p>
             )}
@@ -226,14 +240,14 @@ export function WorkoutForm({
             <Label htmlFor="durationMin" className="text-sm font-medium">
               Duration (Minutes)
             </Label>
-            
+
             {/* Duration Preset Buttons */}
-            <div className="flex flex-wrap gap-2 mb-3">
-              {DURATION_PRESETS.map((duration) => (
+            <div className="mb-3 flex flex-wrap gap-2">
+              {DURATION_PRESETS.map(duration => (
                 <Button
                   key={duration}
                   type="button"
-                  variant={watchedDuration === duration ? "default" : "outline"}
+                  variant={watchedDuration === duration ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => handleDurationPresetClick(duration)}
                   disabled={isFormLoading}
@@ -244,7 +258,7 @@ export function WorkoutForm({
                 </Button>
               ))}
             </div>
-            
+
             <div className="relative">
               <Input
                 id="durationMin"
@@ -255,14 +269,16 @@ export function WorkoutForm({
                 {...register('durationMin', { valueAsNumber: true })}
                 disabled={isFormLoading}
                 className="pr-16"
-                aria-describedby={errors.durationMin ? "duration-error" : undefined}
+                aria-describedby={
+                  errors.durationMin ? 'duration-error' : undefined
+                }
               />
-              <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                <span className="text-sm text-muted-foreground">min</span>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                <span className="text-muted-foreground text-sm">min</span>
               </div>
             </div>
             {errors.durationMin && (
-              <p id="duration-error" className="text-sm text-destructive">
+              <p id="duration-error" className="text-destructive text-sm">
                 {errors.durationMin.message}
               </p>
             )}
@@ -274,7 +290,7 @@ export function WorkoutForm({
               Calories Burned (Optional)
             </Label>
             {estimatedCalories && (
-              <p className="text-xs text-muted-foreground">
+              <p className="text-muted-foreground text-xs">
                 Estimated: {estimatedCalories} calories
               </p>
             )}
@@ -288,14 +304,16 @@ export function WorkoutForm({
                 {...register('caloriesBurned', { valueAsNumber: true })}
                 disabled={isFormLoading}
                 className="pr-16"
-                aria-describedby={errors.caloriesBurned ? "calories-error" : undefined}
+                aria-describedby={
+                  errors.caloriesBurned ? 'calories-error' : undefined
+                }
               />
-              <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                <span className="text-sm text-muted-foreground">cal</span>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                <span className="text-muted-foreground text-sm">cal</span>
               </div>
             </div>
             {errors.caloriesBurned && (
-              <p id="calories-error" className="text-sm text-destructive">
+              <p id="calories-error" className="text-destructive text-sm">
                 {errors.caloriesBurned.message}
               </p>
             )}
@@ -303,32 +321,39 @@ export function WorkoutForm({
 
           {/* Enhanced Current Selection Display */}
           {watchedActivity && watchedDuration > 0 && (
-            <Card className="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-950/20 dark:to-blue-950/20 border-purple-200 dark:border-purple-800">
+            <Card className="border-purple-200 bg-gradient-to-r from-purple-50 to-blue-50 dark:border-purple-800 dark:from-purple-950/20 dark:to-blue-950/20">
               <CardContent className="p-4">
-                <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                   <div className="flex items-center gap-2">
-                    <div className="flex items-center justify-center w-8 h-8 bg-purple-100 dark:bg-purple-900/20 rounded-lg">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-100 dark:bg-purple-900/20">
                       <Dumbbell className="h-4 w-4 text-purple-600" />
                     </div>
-                    <span className="font-semibold text-foreground">{watchedActivity}</span>
+                    <span className="text-foreground font-semibold">
+                      {watchedActivity}
+                    </span>
                   </div>
-                  
+
                   <div className="flex items-center gap-4 text-sm">
                     <div className="flex items-center gap-1">
                       <Clock className="h-4 w-4 text-blue-500" />
-                      <span className="font-medium text-foreground">{watchedDuration} min</span>
+                      <span className="text-foreground font-medium">
+                        {watchedDuration} min
+                      </span>
                     </div>
                     {watchedCalories && (
                       <div className="flex items-center gap-1">
                         <Flame className="h-4 w-4 text-orange-500" />
-                        <span className="font-medium text-foreground">{watchedCalories} cal</span>
+                        <span className="text-foreground font-medium">
+                          {watchedCalories} cal
+                        </span>
                       </div>
                     )}
-                    {estimatedCalories && watchedCalories !== estimatedCalories && (
-                      <Badge variant="outline" className="text-xs">
-                        Est: {estimatedCalories} cal
-                      </Badge>
-                    )}
+                    {estimatedCalories &&
+                      watchedCalories !== estimatedCalories && (
+                        <Badge variant="outline" className="text-xs">
+                          Est: {estimatedCalories} cal
+                        </Badge>
+                      )}
                   </div>
                 </div>
               </CardContent>
@@ -336,11 +361,16 @@ export function WorkoutForm({
           )}
 
           {/* Enhanced Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 pt-2">
+          <div className="flex flex-col gap-3 pt-2 sm:flex-row">
             <Button
               type="submit"
-              disabled={isFormLoading || !watchedActivity || !watchedDuration || watchedDuration <= 0}
-              className="flex-1 h-11 font-medium transition-all hover:scale-[1.02] active:scale-[0.98]"
+              disabled={
+                isFormLoading ||
+                !watchedActivity ||
+                !watchedDuration ||
+                watchedDuration <= 0
+              }
+              className="h-11 flex-1 font-medium transition-all hover:scale-[1.02] active:scale-[0.98]"
               size="lg"
             >
               {isFormLoading ? (
@@ -359,7 +389,7 @@ export function WorkoutForm({
                 </>
               )}
             </Button>
-            
+
             {(isEditMode || onCancel) && (
               <Button
                 type="button"

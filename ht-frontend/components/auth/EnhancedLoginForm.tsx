@@ -10,7 +10,13 @@ import { Eye, EyeOff, AlertCircle } from 'lucide-react';
 
 import { LoadingButton } from '../ui/loading-button';
 import { Button } from '../ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '../ui/card';
 import { Alert, AlertDescription } from '../ui/alert';
 import { EnhancedInputField } from '../ui/enhanced-form-field';
 import { EnhancedErrorBoundary } from '../ui/enhanced-error-boundary';
@@ -31,12 +37,12 @@ interface EnhancedLoginFormProps {
 }
 
 // Auth is dormant; provide a minimal stub to avoid build errors
-export function EnhancedLoginForm({ 
-  onSuccess, 
-  onError, 
-  showCard = true, 
+export function EnhancedLoginForm({
+  onSuccess,
+  onError,
+  showCard = true,
   className,
-  enableRealTimeValidation = true
+  enableRealTimeValidation = true,
 }: EnhancedLoginFormProps) {
   const login = async (_data: any) => ({ ok: true });
   const toast = useToast();
@@ -119,7 +125,7 @@ export function EnhancedLoginForm({
           showValidationState={enableRealTimeValidation}
           debounceMs={300}
         />
-        
+
         {/* Password visibility toggle */}
         <div className="flex justify-end">
           <Button
@@ -128,7 +134,7 @@ export function EnhancedLoginForm({
             size="sm"
             onClick={togglePasswordVisibility}
             disabled={isSubmitting}
-            className="text-xs text-muted-foreground hover:text-foreground"
+            className="text-muted-foreground hover:text-foreground text-xs"
           >
             {showPassword ? (
               <>
@@ -149,8 +155,12 @@ export function EnhancedLoginForm({
       {hasFieldError('username') || hasFieldError('password') ? (
         <ValidationError
           errors={{
-            ...(hasFieldError('username') && { username: getFieldError('username')! }),
-            ...(hasFieldError('password') && { password: getFieldError('password')! }),
+            ...(hasFieldError('username') && {
+              username: getFieldError('username')!,
+            }),
+            ...(hasFieldError('password') && {
+              password: getFieldError('password')!,
+            }),
           }}
           title="Please correct the following errors:"
         />
@@ -162,7 +172,7 @@ export function EnhancedLoginForm({
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
             <div className="font-medium">Sign in failed</div>
-            <div className="text-sm mt-1">{submitError}</div>
+            <div className="mt-1 text-sm">{submitError}</div>
           </AlertDescription>
         </Alert>
       )}
@@ -178,7 +188,7 @@ export function EnhancedLoginForm({
         >
           Sign In
         </LoadingButton>
-        
+
         {submitError && (
           <Button
             type="button"
@@ -194,16 +204,20 @@ export function EnhancedLoginForm({
 
       {/* Development helper */}
       {process.env.NODE_ENV === 'development' && (
-        <details className="text-xs text-muted-foreground">
+        <details className="text-muted-foreground text-xs">
           <summary className="cursor-pointer">Debug Info</summary>
-          <pre className="mt-2 p-2 bg-muted rounded text-xs overflow-auto">
-            {JSON.stringify({
-              isValid: form.formState.isValid,
-              isDirty: form.formState.isDirty,
-              isSubmitting,
-              errors: form.formState.errors,
-              touchedFields: form.formState.touchedFields,
-            }, null, 2)}
+          <pre className="bg-muted mt-2 overflow-auto rounded p-2 text-xs">
+            {JSON.stringify(
+              {
+                isValid: form.formState.isValid,
+                isDirty: form.formState.isDirty,
+                isSubmitting,
+                errors: form.formState.errors,
+                touchedFields: form.formState.touchedFields,
+              },
+              null,
+              2
+            )}
           </pre>
         </details>
       )}
@@ -227,9 +241,7 @@ export function EnhancedLoginForm({
             Enter your credentials to access your health tracker
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          {formContent}
-        </CardContent>
+        <CardContent>{formContent}</CardContent>
       </Card>
     </EnhancedErrorBoundary>
   );
@@ -238,7 +250,9 @@ export function EnhancedLoginForm({
 /**
  * Simplified enhanced login form without card wrapper
  */
-export function QuickEnhancedLoginForm(props: Omit<EnhancedLoginFormProps, 'showCard'>) {
+export function QuickEnhancedLoginForm(
+  props: Omit<EnhancedLoginFormProps, 'showCard'>
+) {
   return <EnhancedLoginForm {...props} showCard={false} />;
 }
 
@@ -247,11 +261,6 @@ export function QuickEnhancedLoginForm(props: Omit<EnhancedLoginFormProps, 'show
  */
 export function AsyncValidatedLoginForm(props: EnhancedLoginFormProps) {
   const { asyncValidators } = require('../../lib/validations/form-validators');
-  
-  return (
-    <EnhancedLoginForm 
-      {...props} 
-      enableRealTimeValidation={true}
-    />
-  );
+
+  return <EnhancedLoginForm {...props} enableRealTimeValidation={true} />;
 }

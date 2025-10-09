@@ -12,11 +12,11 @@ This module provides a comprehensive navigation system for the HealthTracker fro
 ## Quick Start
 
 ```typescript
-import { 
-  createNavigationConfig, 
+import {
+  createNavigationConfig,
   useNavigation,
   DEFAULT_USER_PROFILE,
-  DEFAULT_HEALTH_SUMMARY 
+  DEFAULT_HEALTH_SUMMARY
 } from '@/lib/navigation';
 
 // Create navigation configuration
@@ -56,20 +56,21 @@ function MyComponent() {
 
 The system includes all required navigation items for the HealthTracker application:
 
-| Item | ID | Route | Icon | Badge | Shortcut |
-|------|----|----|------|-------|----------|
-| Dashboard | `dashboard` | `/dashboard` | Home | - | ⌘D |
-| Water Intake | `water` | `/dashboard/water` | Droplets | Daily | ⌘W |
-| Food Intake | `food` | `/dashboard/food` | Utensils | Track | ⌘F |
-| Workouts | `workout` | `/dashboard/workout` | Dumbbell | Fit | ⌘E |
-| Health Score | `health-score` | `/dashboard/health-score` | Heart | - | ⌘H |
-| Profile | `profile` | `/dashboard/profile` | User | - | ⌘P |
+| Item         | ID             | Route                     | Icon     | Badge | Shortcut |
+| ------------ | -------------- | ------------------------- | -------- | ----- | -------- |
+| Dashboard    | `dashboard`    | `/dashboard`              | Home     | -     | ⌘D       |
+| Water Intake | `water`        | `/dashboard/water`        | Droplets | Daily | ⌘W       |
+| Food Intake  | `food`         | `/dashboard/food`         | Utensils | Track | ⌘F       |
+| Workouts     | `workout`      | `/dashboard/workout`      | Dumbbell | Fit   | ⌘E       |
+| Health Score | `health-score` | `/dashboard/health-score` | Heart    | -     | ⌘H       |
+| Profile      | `profile`      | `/dashboard/profile`      | User     | -     | ⌘P       |
 
 ## API Reference
 
 ### Types
 
 #### NavigationItem
+
 ```typescript
 interface NavigationItem {
   id: string;
@@ -85,6 +86,7 @@ interface NavigationItem {
 ```
 
 #### NavigationConfig
+
 ```typescript
 interface NavigationConfig {
   items: NavigationItem[];
@@ -98,6 +100,7 @@ interface NavigationConfig {
 ### Configuration Functions
 
 #### createNavigationConfig(basePath, options)
+
 Creates a complete navigation configuration.
 
 ```typescript
@@ -114,13 +117,14 @@ const config = createNavigationConfig('/dashboard', {
     waterIntake: { current: 1.2, goal: 2.5, unit: 'L' },
     calories: { current: 1450, goal: 2000, unit: 'kcal' },
     exercise: { current: 25, goal: 60, unit: 'min' },
-  }
+  },
 });
 ```
 
 ### Utility Functions
 
 #### isNavigationItemActive(item, pathname, exact?)
+
 Determines if a navigation item is active based on the current pathname.
 
 ```typescript
@@ -128,6 +132,7 @@ const isActive = isNavigationItemActive(item, '/dashboard/water', false);
 ```
 
 #### updateNavigationActiveStates(items, pathname)
+
 Updates navigation items with active states.
 
 ```typescript
@@ -135,6 +140,7 @@ const updatedItems = updateNavigationActiveStates(navigationItems, pathname);
 ```
 
 #### findActiveNavigationItem(items, pathname)
+
 Finds the currently active navigation item.
 
 ```typescript
@@ -142,6 +148,7 @@ const activeItem = findActiveNavigationItem(navigationItems, pathname);
 ```
 
 #### generateBreadcrumbs(config, pathname)
+
 Generates breadcrumb items from navigation config and current path.
 
 ```typescript
@@ -149,6 +156,7 @@ const breadcrumbs = generateBreadcrumbs(navigationConfig, pathname);
 ```
 
 #### validateNavigationConfig(config)
+
 Validates navigation configuration for errors.
 
 ```typescript
@@ -158,6 +166,7 @@ const { isValid, errors } = validateNavigationConfig(config);
 ### Hooks
 
 #### useNavigation(config, handlers?)
+
 Main navigation hook for managing navigation state and interactions.
 
 ```typescript
@@ -169,15 +178,16 @@ const {
   navigate,
   toggleMobile,
   isActive,
-  getItemById
+  getItemById,
 } = useNavigation(navigationConfig, {
-  onNavigate: (item) => console.log('Navigating to:', item.label),
-  onMobileToggle: (open) => console.log('Mobile nav:', open),
+  onNavigate: item => console.log('Navigating to:', item.label),
+  onMobileToggle: open => console.log('Mobile nav:', open),
   onLogout: () => console.log('Logging out'),
 });
 ```
 
 #### useNavigationShortcuts(items, onNavigate)
+
 Enables keyboard shortcuts for navigation.
 
 ```typescript
@@ -185,15 +195,12 @@ useNavigationShortcuts(navigationItems, navigate);
 ```
 
 #### useNavigationPreferences()
+
 Manages user navigation preferences.
 
 ```typescript
-const {
-  preferences,
-  updatePreferences,
-  toggleSidebar,
-  toggleBadges
-} = useNavigationPreferences();
+const { preferences, updatePreferences, toggleSidebar, toggleBadges } =
+  useNavigationPreferences();
 ```
 
 ## Requirements Compliance
@@ -201,26 +208,29 @@ const {
 This navigation system meets all requirements from the frontend sidebar redesign specification:
 
 ### Requirement 4.1-4.6: Navigation Items
+
 - ✅ Displays navigation items for Home (Dashboard), Water, Food, Workout, and Profile
 - ✅ Provides correct routing to each section
 - ✅ Includes proper icons and badges
 - ✅ Supports keyboard shortcuts
 
 ### Active State Detection
+
 - ✅ Automatically detects and highlights active navigation items
 - ✅ Supports exact and partial path matching
 - ✅ Handles nested routes correctly
 
 ### Responsive Design
+
 - ✅ Mobile navigation toggle support
 - ✅ Responsive layout utilities
 - ✅ Touch-friendly interactions
 
 ### Accessibility
+
 - ✅ Proper ARIA labels and descriptions
 - ✅ Keyboard navigation support
 - ✅ Screen reader compatibility
-
 
 ## Examples
 

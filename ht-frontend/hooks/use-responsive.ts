@@ -32,7 +32,7 @@ export function useResponsive(): UseResponsiveReturn {
     isMobile,
     isTablet,
     isDesktop,
-    screenWidth
+    screenWidth,
   };
 }
 
@@ -61,7 +61,9 @@ export function useIsTouchDevice(): boolean {
 
   useEffect(() => {
     const checkTouchDevice = () => {
-      setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
+      setIsTouchDevice(
+        'ontouchstart' in window || navigator.maxTouchPoints > 0
+      );
     };
 
     checkTouchDevice();

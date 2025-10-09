@@ -3,9 +3,12 @@
  * Traps focus within a container for modal dialogs and dropdowns
  */
 
-import * as React from "react";
-import { useFocusTrap } from "@/hooks/use-keyboard-navigation";
-import { FocusManager, announceToScreenReader } from "@/lib/utils/accessibility";
+import * as React from 'react';
+import { useFocusTrap } from '@/hooks/use-keyboard-navigation';
+import {
+  FocusManager,
+  announceToScreenReader,
+} from '@/lib/utils/accessibility';
 
 interface FocusTrapProps {
   children: React.ReactNode;
@@ -19,16 +22,16 @@ interface FocusTrapProps {
   'aria-describedby'?: string;
 }
 
-export function FocusTrap({ 
-  children, 
-  isActive = true, 
+export function FocusTrap({
+  children,
+  isActive = true,
   restoreFocus = true,
   autoFocus = true,
   className,
   onActivate,
   onDeactivate,
   'aria-label': ariaLabel,
-  'aria-describedby': ariaDescribedBy
+  'aria-describedby': ariaDescribedBy,
 }: FocusTrapProps) {
   const previousActiveElement = React.useRef<HTMLElement | null>(null);
   const containerRef = React.useRef<HTMLDivElement>(null);
@@ -40,7 +43,7 @@ export function FocusTrap({
       if (restoreFocus) {
         previousActiveElement.current = document.activeElement as HTMLElement;
       }
-      
+
       // Focus the first focusable element in the trap
       if (autoFocus && containerRef.current) {
         const focusableElements = containerRef.current.querySelectorAll(
@@ -51,9 +54,9 @@ export function FocusTrap({
           firstElement.focus();
         }
       }
-      
+
       onActivate?.();
-      
+
       // Announce to screen readers
       if (ariaLabel) {
         announceToScreenReader(`${ariaLabel} opened`, 'polite');
@@ -63,9 +66,9 @@ export function FocusTrap({
       if (restoreFocus && previousActiveElement.current) {
         previousActiveElement.current.focus();
       }
-      
+
       onDeactivate?.();
-      
+
       // Announce to screen readers
       if (ariaLabel) {
         announceToScreenReader(`${ariaLabel} closed`, 'polite');
@@ -74,10 +77,13 @@ export function FocusTrap({
   }, [isActive, restoreFocus, autoFocus, onActivate, onDeactivate, ariaLabel]);
 
   // Combine refs
-  const combinedRef = React.useCallback((node: HTMLDivElement) => {
-    containerRef.current = node;
-    setContainerRef(node);
-  }, [setContainerRef]);
+  const combinedRef = React.useCallback(
+    (node: HTMLDivElement) => {
+      containerRef.current = node;
+      setContainerRef(node);
+    },
+    [setContainerRef]
+  );
 
   return (
     <div
@@ -86,7 +92,7 @@ export function FocusTrap({
       data-focus-trap={isActive}
       aria-label={ariaLabel}
       aria-describedby={ariaDescribedBy}
-      role={ariaLabel ? "dialog" : undefined}
+      role={ariaLabel ? 'dialog' : undefined}
       aria-modal={isActive}
     >
       {children}
@@ -102,10 +108,10 @@ interface ModalFocusTrapProps extends FocusTrapProps {
   onEscape?: () => void;
 }
 
-export function ModalFocusTrap({ 
-  children, 
-  onEscape, 
-  ...props 
+export function ModalFocusTrap({
+  children,
+  onEscape,
+  ...props
 }: ModalFocusTrapProps) {
   React.useEffect(() => {
     if (!props.isActive) return;
@@ -121,9 +127,5 @@ export function ModalFocusTrap({
     return () => document.removeEventListener('keydown', handleEscape);
   }, [props.isActive, onEscape]);
 
-  return (
-    <FocusTrap {...props}>
-      {children}
-    </FocusTrap>
-  );
+  return <FocusTrap {...props}>{children}</FocusTrap>;
 }

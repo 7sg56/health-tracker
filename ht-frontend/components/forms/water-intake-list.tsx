@@ -8,13 +8,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogDescription, 
-  DialogFooter, 
-  DialogHeader, 
-  DialogTitle 
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from '@/components/ui/dialog';
 import {
   DropdownMenu,
@@ -36,7 +36,10 @@ import { Progress } from '@/components/ui/progress';
 
 import { WaterIntake } from '@/lib/types/health';
 import { Pagination, SimplePagination } from '@/components/ui/pagination';
-import { InfiniteScroll, LoadMoreButton } from '@/components/ui/infinite-scroll';
+import {
+  InfiniteScroll,
+  LoadMoreButton,
+} from '@/components/ui/infinite-scroll';
 
 interface WaterIntakeListProps {
   waterIntakes: WaterIntake[];
@@ -65,12 +68,12 @@ interface DeleteConfirmationProps {
   isDeleting: boolean;
 }
 
-function DeleteConfirmationDialog({ 
-  isOpen, 
-  onClose, 
-  onConfirm, 
-  waterIntake, 
-  isDeleting 
+function DeleteConfirmationDialog({
+  isOpen,
+  onClose,
+  onConfirm,
+  waterIntake,
+  isDeleting,
 }: DeleteConfirmationProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -80,12 +83,16 @@ function DeleteConfirmationDialog({
           <DialogDescription>
             Are you sure you want to delete this water intake entry?
             {waterIntake && (
-              <div className="mt-2 p-2 bg-muted rounded-md">
+              <div className="bg-muted mt-2 rounded-md p-2">
                 <p className="text-sm">
                   <strong>Amount:</strong> {waterIntake.amountLtr}L
                 </p>
                 <p className="text-sm">
-                  <strong>Time:</strong> {format(new Date(waterIntake.createdAt), 'MMM d, yyyy h:mm a')}
+                  <strong>Time:</strong>{' '}
+                  {format(
+                    new Date(waterIntake.createdAt),
+                    'MMM d, yyyy h:mm a'
+                  )}
                 </p>
               </div>
             )}
@@ -95,7 +102,11 @@ function DeleteConfirmationDialog({
           <Button variant="outline" onClick={onClose} disabled={isDeleting}>
             Cancel
           </Button>
-          <Button variant="destructive" onClick={onConfirm} disabled={isDeleting}>
+          <Button
+            variant="destructive"
+            onClick={onConfirm}
+            disabled={isDeleting}
+          >
             {isDeleting ? (
               <>
                 <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
@@ -114,13 +125,13 @@ function DeleteConfirmationDialog({
   );
 }
 
-function WaterIntakeTableRow({ 
-  waterIntake, 
-  onDelete, 
-  showDate = true 
-}: { 
-  waterIntake: WaterIntake; 
-  onDelete: (id: number) => Promise<void>; 
+function WaterIntakeTableRow({
+  waterIntake,
+  onDelete,
+  showDate = true,
+}: {
+  waterIntake: WaterIntake;
+  onDelete: (id: number) => Promise<void>;
   showDate?: boolean;
 }) {
   const [isDeleting, setIsDeleting] = useState(false);
@@ -146,7 +157,9 @@ function WaterIntakeTableRow({
     return format(date, 'h:mm a');
   };
 
-  const getAmountVariant = (amount: number): "default" | "secondary" | "destructive" | "outline" => {
+  const getAmountVariant = (
+    amount: number
+  ): 'default' | 'secondary' | 'destructive' | 'outline' => {
     if (amount >= 2.0) return 'default'; // Green for large amounts
     if (amount >= 1.0) return 'secondary'; // Blue for medium amounts
     return 'outline'; // Gray for small amounts
@@ -170,12 +183,12 @@ function WaterIntakeTableRow({
           </div>
         </TableCell>
         <TableCell>
-          <span className="text-sm text-muted-foreground">
+          <span className="text-muted-foreground text-sm">
             {formatTime(waterIntake.createdAt)}
           </span>
         </TableCell>
         <TableCell>
-          <span className="text-sm text-muted-foreground">
+          <span className="text-muted-foreground text-sm">
             {waterIntake.date}
           </span>
         </TableCell>
@@ -253,10 +266,10 @@ function WaterIntakeTableSkeleton() {
   );
 }
 
-export function WaterIntakeList({ 
-  waterIntakes, 
-  onDelete, 
-  isLoading = false, 
+export function WaterIntakeList({
+  waterIntakes,
+  onDelete,
+  isLoading = false,
   error,
   showDate = true,
   currentPage = 0,
@@ -267,10 +280,13 @@ export function WaterIntakeList({
   onPageChange,
   onLoadMore,
   paginationType = 'none',
-  isMobile = false
+  isMobile = false,
 }: WaterIntakeListProps) {
   // Calculate total water intake for the day
-  const totalWater = waterIntakes.reduce((sum, intake) => sum + intake.amountLtr, 0);
+  const totalWater = waterIntakes.reduce(
+    (sum, intake) => sum + intake.amountLtr,
+    0
+  );
   const dailyGoal = 2.0; // 2 liters daily goal
   const progressPercentage = Math.min((totalWater / dailyGoal) * 100, 100);
 
@@ -343,7 +359,7 @@ export function WaterIntakeList({
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {waterIntakes.map((waterIntake) => (
+                    {waterIntakes.map(waterIntake => (
                       <WaterIntakeTableRow
                         key={waterIntake.id}
                         waterIntake={waterIntake}
@@ -365,7 +381,7 @@ export function WaterIntakeList({
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {waterIntakes.map((waterIntake) => (
+                  {waterIntakes.map(waterIntake => (
                     <WaterIntakeTableRow
                       key={waterIntake.id}
                       waterIntake={waterIntake}
@@ -378,27 +394,29 @@ export function WaterIntakeList({
             )}
 
             {/* Pagination Controls */}
-            {paginationType === 'pagination' && onPageChange && totalPages > 1 && (
-              <div className="mt-6">
-                {isMobile ? (
-                  <SimplePagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onPageChange={onPageChange}
-                    isLoading={isLoading}
-                  />
-                ) : (
-                  <Pagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    totalElements={totalElements}
-                    pageSize={pageSize}
-                    onPageChange={onPageChange}
-                    isLoading={isLoading}
-                  />
-                )}
-              </div>
-            )}
+            {paginationType === 'pagination' &&
+              onPageChange &&
+              totalPages > 1 && (
+                <div className="mt-6">
+                  {isMobile ? (
+                    <SimplePagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      onPageChange={onPageChange}
+                      isLoading={isLoading}
+                    />
+                  ) : (
+                    <Pagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      totalElements={totalElements}
+                      pageSize={pageSize}
+                      onPageChange={onPageChange}
+                      isLoading={isLoading}
+                    />
+                  )}
+                </div>
+              )}
 
             {/* Load More Button */}
             {paginationType === 'loadMore' && onLoadMore && (

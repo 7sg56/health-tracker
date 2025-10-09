@@ -13,29 +13,25 @@ const HOME_TO_DASHBOARD_REDIRECTS: Record<string, string> = {
   '/home/foodIntake': '/dashboard/food',
   '/home/workout': '/dashboard/workout',
   '/home/profile': '/dashboard/profile',
-' /home/health-score': '/dashboard',
+  ' /home/health-score': '/dashboard',
   '/home/demo-search': '/dashboard',
 };
 
 // Define public routes that should redirect authenticated users
-const LEGACY_AUTH_ROUTES = [
-  '/auth/login',
-  '/auth/register',
-];
+const LEGACY_AUTH_ROUTES = ['/auth/login', '/auth/register'];
 
 /**
  * Check if a path matches any of the public route patterns
  */
 function isLegacyAuthRoute(pathname: string): boolean {
-  return LEGACY_AUTH_ROUTES.some(route => 
-    pathname === route || pathname.startsWith(`${route}/`)
+  return LEGACY_AUTH_ROUTES.some(
+    route => pathname === route || pathname.startsWith(`${route}/`)
   );
 }
 
-
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  
+
   // Skip middleware for static files, API routes, and Next.js internals
   if (
     pathname.startsWith('/_next/') ||
@@ -49,13 +45,16 @@ export function middleware(request: NextRequest) {
 
   // Handle /home to /dashboard redirects first (before auth checks)
   if (HOME_TO_DASHBOARD_REDIRECTS[pathname]) {
-    const redirectUrl = new URL(HOME_TO_DASHBOARD_REDIRECTS[pathname], request.url);
-    
+    const redirectUrl = new URL(
+      HOME_TO_DASHBOARD_REDIRECTS[pathname],
+      request.url
+    );
+
     // Preserve query parameters
     if (request.nextUrl.search) {
       redirectUrl.search = request.nextUrl.search;
     }
-    
+
     return NextResponse.redirect(redirectUrl, 301); // Permanent redirect
   }
 

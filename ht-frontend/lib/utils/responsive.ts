@@ -113,7 +113,9 @@ export function getResponsiveTextSize(
 /**
  * Touch-friendly button size utility
  */
-export function getTouchFriendlySize(isMobile: boolean): 'sm' | 'default' | 'lg' {
+export function getTouchFriendlySize(
+  isMobile: boolean
+): 'sm' | 'default' | 'lg' {
   return isMobile ? 'lg' : 'default';
 }
 

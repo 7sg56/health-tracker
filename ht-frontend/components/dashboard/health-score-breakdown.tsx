@@ -1,10 +1,23 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { HealthScoreBreakdown } from "@/lib/types/health";
+import * as React from 'react';
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
+  Legend,
+} from 'recharts';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { HealthScoreBreakdown } from '@/lib/types/health';
 
 interface HealthScoreBreakdownProps {
   breakdown: HealthScoreBreakdown | null;
@@ -15,8 +28,8 @@ interface HealthScoreBreakdownProps {
 
 const COLORS = {
   water: '#3b82f6',
-  food: '#f59e0b', 
-  exercise: '#10b981'
+  food: '#f59e0b',
+  exercise: '#10b981',
 };
 
 export function HealthScoreBreakdownComponent({
@@ -27,7 +40,7 @@ export function HealthScoreBreakdownComponent({
 }: HealthScoreBreakdownProps) {
   const chartData = React.useMemo(() => {
     if (!breakdown) return [];
-    
+
     return [
       { name: 'Water', value: breakdown.water, color: COLORS.water },
       { name: 'Food', value: breakdown.food, color: COLORS.food },
@@ -35,11 +48,21 @@ export function HealthScoreBreakdownComponent({
     ];
   }, [breakdown]);
 
-  const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: Array<{ name: string; value: number; payload: { color: string } }> }) => {
+  const CustomTooltip = ({
+    active,
+    payload,
+  }: {
+    active?: boolean;
+    payload?: Array<{
+      name: string;
+      value: number;
+      payload: { color: string };
+    }>;
+  }) => {
     if (active && payload && payload.length) {
       const data = payload[0];
       return (
-        <div className="bg-background border rounded-lg p-3 shadow-lg">
+        <div className="bg-background rounded-lg border p-3 shadow-lg">
           <p className="font-medium">{data.name}</p>
           <p style={{ color: data.payload.color }} className="text-sm">
             Score: {data.value}%
@@ -60,11 +83,14 @@ export function HealthScoreBreakdownComponent({
         <CardContent>
           <div className="space-y-4">
             {showChart && (
-              <div className="h-[200px] bg-muted animate-pulse rounded-md" />
+              <div className="bg-muted h-[200px] animate-pulse rounded-md" />
             )}
             <div className="space-y-3">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="h-12 bg-muted animate-pulse rounded-md" />
+              {[1, 2, 3].map(i => (
+                <div
+                  key={i}
+                  className="bg-muted h-12 animate-pulse rounded-md"
+                />
               ))}
             </div>
           </div>
@@ -81,9 +107,9 @@ export function HealthScoreBreakdownComponent({
           <CardDescription>Individual component scores</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="text-center py-8">
-            <div className="text-4xl mb-2">📈</div>
-            <div className="text-sm text-muted-foreground">
+          <div className="py-8 text-center">
+            <div className="mb-2 text-4xl">📈</div>
+            <div className="text-muted-foreground text-sm">
               No breakdown data available
             </div>
           </div>
@@ -96,7 +122,9 @@ export function HealthScoreBreakdownComponent({
     <Card className={className}>
       <CardHeader>
         <CardTitle>Score Breakdown</CardTitle>
-        <CardDescription>Individual component scores contributing to your health score</CardDescription>
+        <CardDescription>
+          Individual component scores contributing to your health score
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
@@ -128,14 +156,14 @@ export function HealthScoreBreakdownComponent({
           {/* Detailed Breakdown */}
           <div className="space-y-4">
             <h4 className="text-sm font-medium">Component Details</h4>
-            
+
             <div className="space-y-4">
               {/* Water */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <div 
-                      className="w-3 h-3 rounded-full" 
+                    <div
+                      className="h-3 w-3 rounded-full"
                       style={{ backgroundColor: COLORS.water }}
                     />
                     <span className="text-sm font-medium">💧 Water Intake</span>
@@ -143,10 +171,12 @@ export function HealthScoreBreakdownComponent({
                   <span className="text-sm font-bold">{breakdown.water}%</span>
                 </div>
                 <Progress value={breakdown.water} className="h-2" />
-                <div className="text-xs text-muted-foreground">
-                  {breakdown.water >= 80 ? "Excellent hydration!" : 
-                   breakdown.water >= 60 ? "Good hydration level" : 
-                   "Need more water intake"}
+                <div className="text-muted-foreground text-xs">
+                  {breakdown.water >= 80
+                    ? 'Excellent hydration!'
+                    : breakdown.water >= 60
+                      ? 'Good hydration level'
+                      : 'Need more water intake'}
                 </div>
               </div>
 
@@ -154,8 +184,8 @@ export function HealthScoreBreakdownComponent({
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <div 
-                      className="w-3 h-3 rounded-full" 
+                    <div
+                      className="h-3 w-3 rounded-full"
                       style={{ backgroundColor: COLORS.food }}
                     />
                     <span className="text-sm font-medium">🍎 Nutrition</span>
@@ -163,10 +193,12 @@ export function HealthScoreBreakdownComponent({
                   <span className="text-sm font-bold">{breakdown.food}%</span>
                 </div>
                 <Progress value={breakdown.food} className="h-2" />
-                <div className="text-xs text-muted-foreground">
-                  {breakdown.food >= 80 ? "Great calorie balance!" : 
-                   breakdown.food >= 60 ? "Good nutritional intake" : 
-                   "Consider adjusting calorie intake"}
+                <div className="text-muted-foreground text-xs">
+                  {breakdown.food >= 80
+                    ? 'Great calorie balance!'
+                    : breakdown.food >= 60
+                      ? 'Good nutritional intake'
+                      : 'Consider adjusting calorie intake'}
                 </div>
               </div>
 
@@ -174,31 +206,37 @@ export function HealthScoreBreakdownComponent({
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <div 
-                      className="w-3 h-3 rounded-full" 
+                    <div
+                      className="h-3 w-3 rounded-full"
                       style={{ backgroundColor: COLORS.exercise }}
                     />
                     <span className="text-sm font-medium">🏃 Exercise</span>
                   </div>
-                  <span className="text-sm font-bold">{breakdown.exercise}%</span>
+                  <span className="text-sm font-bold">
+                    {breakdown.exercise}%
+                  </span>
                 </div>
                 <Progress value={breakdown.exercise} className="h-2" />
-                <div className="text-xs text-muted-foreground">
-                  {breakdown.exercise >= 80 ? "Excellent activity level!" : 
-                   breakdown.exercise >= 60 ? "Good exercise routine" : 
-                   "More physical activity recommended"}
+                <div className="text-muted-foreground text-xs">
+                  {breakdown.exercise >= 80
+                    ? 'Excellent activity level!'
+                    : breakdown.exercise >= 60
+                      ? 'Good exercise routine'
+                      : 'More physical activity recommended'}
                 </div>
               </div>
             </div>
           </div>
 
           {/* Overall Score */}
-          <div className="pt-4 border-t">
+          <div className="border-t pt-4">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">Overall Health Score</span>
-              <span className="text-lg font-bold text-primary">{breakdown.total}%</span>
+              <span className="text-primary text-lg font-bold">
+                {breakdown.total}%
+              </span>
             </div>
-            <Progress value={breakdown.total} className="h-3 mt-2" />
+            <Progress value={breakdown.total} className="mt-2 h-3" />
           </div>
         </div>
       </CardContent>

@@ -1,30 +1,30 @@
 import { usePathname } from 'next/navigation';
 import { useMemo } from 'react';
-import type { 
-  NavigationItem, 
-  NavigationConfig, 
-  NavigationState, 
+import type {
+  NavigationItem,
+  NavigationConfig,
+  NavigationState,
   BreadcrumbItem,
-  NavigationGroup 
+  NavigationGroup,
 } from '@/lib/types/navigation';
 
 /**
  * Determines if a navigation item is active based on the current pathname
  */
 export function isNavigationItemActive(
-  item: NavigationItem, 
+  item: NavigationItem,
   pathname: string,
   exact: boolean = false
 ): boolean {
   if (exact) {
     return pathname === item.href;
   }
-  
+
   // For dashboard root, only match exact path to avoid always being active
   if (item.href.endsWith('/dashboard') && !item.href.includes('/dashboard/')) {
     return pathname === item.href || pathname === item.href + '/';
   }
-  
+
   // For other paths, match if pathname starts with item href
   return pathname === item.href || pathname.startsWith(item.href + '/');
 }
@@ -63,17 +63,19 @@ export function findActiveNavigationItem(
   pathname: string
 ): NavigationItem | undefined {
   // First try exact match
-  let activeItem = items.find(item => isNavigationItemActive(item, pathname, true));
-  
+  let activeItem = items.find(item =>
+    isNavigationItemActive(item, pathname, true)
+  );
+
   // If no exact match, find the best partial match (longest matching path)
   if (!activeItem) {
     const matches = items
       .filter(item => isNavigationItemActive(item, pathname, false))
       .sort((a, b) => b.href.length - a.href.length);
-    
+
     activeItem = matches[0];
   }
-  
+
   return activeItem;
 }
 
@@ -85,7 +87,7 @@ export function generateBreadcrumbs(
   pathname: string
 ): BreadcrumbItem[] {
   const breadcrumbs: BreadcrumbItem[] = [];
-  
+
   // Always start with dashboard/home
   const basePath = navigationConfig.basePath;
   if (pathname !== basePath) {
@@ -95,10 +97,10 @@ export function generateBreadcrumbs(
       isCurrentPage: false,
     });
   }
-  
+
   // Find the active navigation item
   const activeItem = findActiveNavigationItem(navigationConfig.items, pathname);
-  
+
   if (activeItem && activeItem.href !== basePath) {
     breadcrumbs.push({
       label: activeItem.label,
@@ -106,15 +108,19 @@ export function generateBreadcrumbs(
       isCurrentPage: true,
     });
   }
-  
+
   // Handle sub-pages (e.g., /dashboard/water/add)
   if (pathname !== activeItem?.href && activeItem) {
-    const pathSegments = pathname.replace(activeItem.href, '').split('/').filter(Boolean);
-    
+    const pathSegments = pathname
+      .replace(activeItem.href, '')
+      .split('/')
+      .filter(Boolean);
+
     pathSegments.forEach((segment, index) => {
-      const segmentPath = activeItem.href + '/' + pathSegments.slice(0, index + 1).join('/');
+      const segmentPath =
+        activeItem.href + '/' + pathSegments.slice(0, index + 1).join('/');
       const isLast = index === pathSegments.length - 1;
-      
+
       breadcrumbs.push({
         label: formatSegmentLabel(segment),
         href: segmentPath,
@@ -122,7 +128,7 @@ export function generateBreadcrumbs(
       });
     });
   }
-  
+
   return breadcrumbs;
 }
 
@@ -143,12 +149,15 @@ export function useNavigationState(
   navigationConfig: NavigationConfig
 ): NavigationState {
   const pathname = usePathname();
-  
+
   return useMemo(() => {
-    const updatedItems = updateNavigationActiveStates(navigationConfig.items, pathname);
+    const updatedItems = updateNavigationActiveStates(
+      navigationConfig.items,
+      pathname
+    );
     const activeItem = findActiveNavigationItem(updatedItems, pathname);
     const breadcrumbs = generateBreadcrumbs(navigationConfig, pathname);
-    
+
     return {
       activeItemId: activeItem?.id,
       activePath: pathname,
@@ -161,11 +170,9 @@ export function useNavigationState(
 /**
  * Hook for getting navigation items with active states
  */
-export function useNavigationItems(
-  items: NavigationItem[]
-): NavigationItem[] {
+export function useNavigationItems(items: NavigationItem[]): NavigationItem[] {
   const pathname = usePathname();
-  
+
   return useMemo(() => {
     return updateNavigationActiveStates(items, pathname);
   }, [items, pathname]);
@@ -178,7 +185,7 @@ export function useNavigationGroups(
   groups: NavigationGroup[]
 ): NavigationGroup[] {
   const pathname = usePathname();
-  
+
   return useMemo(() => {
     return updateNavigationGroupActiveStates(groups, pathname);
   }, [groups, pathname]);
@@ -204,7 +211,7 @@ export function sortNavigationItems(
   if (sortFn) {
     return [...items].sort(sortFn);
   }
-  
+
   // Default sort by priority (if available) or by label
   return [...items].sort((a, b) => {
     // You could implement priority-based sorting here
@@ -219,14 +226,17 @@ export function groupNavigationItems(
   items: NavigationItem[],
   groupFn: (item: NavigationItem) => string
 ): Record<string, NavigationItem[]> {
-  return items.reduce((groups, item) => {
-    const groupKey = groupFn(item);
-    if (!groups[groupKey]) {
-      groups[groupKey] = [];
-    }
-    groups[groupKey].push(item);
-    return groups;
-  }, {} as Record<string, NavigationItem[]>);
+  return items.reduce(
+    (groups, item) => {
+      const groupKey = groupFn(item);
+      if (!groups[groupKey]) {
+        groups[groupKey] = [];
+      }
+      groups[groupKey].push(item);
+      return groups;
+    },
+    {} as Record<string, NavigationItem[]>
+  );
 }
 
 /**
@@ -237,33 +247,41 @@ export function validateNavigationConfig(config: NavigationConfig): {
   errors: string[];
 } {
   const errors: string[] = [];
-  
+
   // Check for duplicate IDs
   const ids = config.items.map(item => item.id);
   const duplicateIds = ids.filter((id, index) => ids.indexOf(id) !== index);
   if (duplicateIds.length > 0) {
     errors.push(`Duplicate navigation item IDs: ${duplicateIds.join(', ')}`);
   }
-  
+
   // Check for duplicate hrefs
   const hrefs = config.items.map(item => item.href);
-  const duplicateHrefs = hrefs.filter((href, index) => hrefs.indexOf(href) !== index);
+  const duplicateHrefs = hrefs.filter(
+    (href, index) => hrefs.indexOf(href) !== index
+  );
   if (duplicateHrefs.length > 0) {
-    errors.push(`Duplicate navigation item hrefs: ${duplicateHrefs.join(', ')}`);
+    errors.push(
+      `Duplicate navigation item hrefs: ${duplicateHrefs.join(', ')}`
+    );
   }
-  
+
   // Check for empty labels
   const emptyLabels = config.items.filter(item => !item.label.trim());
   if (emptyLabels.length > 0) {
-    errors.push(`Navigation items with empty labels: ${emptyLabels.map(item => item.id).join(', ')}`);
+    errors.push(
+      `Navigation items with empty labels: ${emptyLabels.map(item => item.id).join(', ')}`
+    );
   }
-  
+
   // Check for invalid hrefs
   const invalidHrefs = config.items.filter(item => !item.href.startsWith('/'));
   if (invalidHrefs.length > 0) {
-    errors.push(`Navigation items with invalid hrefs: ${invalidHrefs.map(item => item.id).join(', ')}`);
+    errors.push(
+      `Navigation items with invalid hrefs: ${invalidHrefs.map(item => item.id).join(', ')}`
+    );
   }
-  
+
   return {
     isValid: errors.length === 0,
     errors,
@@ -274,7 +292,8 @@ export function validateNavigationConfig(config: NavigationConfig): {
  * Creates a navigation item with default values
  */
 export function createNavigationItem(
-  partial: Partial<NavigationItem> & Pick<NavigationItem, 'id' | 'label' | 'href' | 'icon'>
+  partial: Partial<NavigationItem> &
+    Pick<NavigationItem, 'id' | 'label' | 'href' | 'icon'>
 ): NavigationItem {
   return {
     isActive: false,
@@ -294,7 +313,7 @@ export function mergeNavigationConfigs(
     groups: [],
     basePath: '/dashboard',
   };
-  
+
   configs.forEach(config => {
     if (config.items) {
       merged.items.push(...config.items);
@@ -312,6 +331,6 @@ export function mergeNavigationConfigs(
       merged.basePath = config.basePath;
     }
   });
-  
+
   return merged;
 }

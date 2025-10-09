@@ -1,14 +1,14 @@
 // Enhanced form hooks with real-time validation and error handling
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { 
-  useForm, 
-  UseFormReturn, 
-  FieldValues, 
-  FieldPath, 
+import {
+  useForm,
+  UseFormReturn,
+  FieldValues,
+  FieldPath,
   DefaultValues,
   SubmitHandler,
-  SubmitErrorHandler
+  SubmitErrorHandler,
 } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -77,19 +77,22 @@ export function useEnhancedForm<T extends FieldValues>(
   /**
    * Handle API errors and map them to form fields
    */
-  const handleApiError = useCallback((error: ApiError) => {
-    if (error.hasFieldErrors()) {
-      const fieldErrors = error.getFieldErrors();
-      Object.entries(fieldErrors).forEach(([field, message]) => {
-        setError(field as FieldPath<T>, {
-          type: 'server',
-          message,
+  const handleApiError = useCallback(
+    (error: ApiError) => {
+      if (error.hasFieldErrors()) {
+        const fieldErrors = error.getFieldErrors();
+        Object.entries(fieldErrors).forEach(([field, message]) => {
+          setError(field as FieldPath<T>, {
+            type: 'server',
+            message,
+          });
         });
-      });
-    } else {
-      setSubmitError(error.getUserMessage());
-    }
-  }, [setError]);
+      } else {
+        setSubmitError(error.getUserMessage());
+      }
+    },
+    [setError]
+  );
 
   /**
    * Enhanced submit handler with error handling and user feedback
@@ -107,7 +110,7 @@ export function useEnhancedForm<T extends FieldValues>(
         focusOnError = true,
       } = options;
 
-      const submitHandler: SubmitHandler<T> = async (data) => {
+      const submitHandler: SubmitHandler<T> = async data => {
         setIsSubmitting(true);
         setSubmitError(null);
         setSubmitSuccess(false);
@@ -115,17 +118,17 @@ export function useEnhancedForm<T extends FieldValues>(
 
         try {
           const result = await onSubmit(data);
-          
+
           setSubmitSuccess(true);
-          
+
           if (showSuccessToast) {
             toast.success(successMessage);
           }
-          
+
           if (resetOnSuccess) {
             reset();
           }
-          
+
           return result;
         } catch (error) {
           const apiError = GlobalErrorHandler.handleFormError(
@@ -133,27 +136,29 @@ export function useEnhancedForm<T extends FieldValues>(
             'Form Submission',
             { showToast: showErrorToast }
           );
-          
+
           handleApiError(apiError);
-          
+
           if (focusOnError && shouldFocusError) {
             // Focus on first error field
             const firstErrorField = Object.keys(errors)[0];
             if (firstErrorField) {
-              const element = document.querySelector(`[name="${firstErrorField}"]`) as HTMLElement;
+              const element = document.querySelector(
+                `[name="${firstErrorField}"]`
+              ) as HTMLElement;
               element?.focus();
             }
           }
-          
+
           throw apiError;
         } finally {
           setIsSubmitting(false);
         }
       };
 
-      const errorHandler: SubmitErrorHandler<T> = (errors) => {
+      const errorHandler: SubmitErrorHandler<T> = errors => {
         console.warn('Form validation errors:', errors);
-        
+
         if (showErrorToast) {
           const firstError = Object.values(errors)[0];
           if (firstError?.message) {
@@ -190,58 +195,75 @@ export function useEnhancedForm<T extends FieldValues>(
   /**
    * Reset form with optional new default values
    */
-  const resetForm = useCallback((newDefaultValues?: DefaultValues<T>) => {
-    reset(newDefaultValues || defaultValues);
-    setSubmitError(null);
-    setSubmitSuccess(false);
-  }, [reset, defaultValues]);
+  const resetForm = useCallback(
+    (newDefaultValues?: DefaultValues<T>) => {
+      reset(newDefaultValues || defaultValues);
+      setSubmitError(null);
+      setSubmitSuccess(false);
+    },
+    [reset, defaultValues]
+  );
 
   /**
    * Set field error manually
    */
-  const setFieldError = useCallback((
-    field: FieldPath<T>,
-    message: string,
-    type: string = 'manual'
-  ) => {
-    setError(field, { type, message });
-  }, [setError]);
+  const setFieldError = useCallback(
+    (field: FieldPath<T>, message: string, type: string = 'manual') => {
+      setError(field, { type, message });
+    },
+    [setError]
+  );
 
   /**
    * Clear specific field error
    */
-  const clearFieldError = useCallback((field: FieldPath<T>) => {
-    clearErrors(field);
-  }, [clearErrors]);
+  const clearFieldError = useCallback(
+    (field: FieldPath<T>) => {
+      clearErrors(field);
+    },
+    [clearErrors]
+  );
 
   /**
    * Check if a specific field has an error
    */
-  const hasFieldError = useCallback((field: FieldPath<T>): boolean => {
-    return !!errors[field];
-  }, [errors]);
+  const hasFieldError = useCallback(
+    (field: FieldPath<T>): boolean => {
+      return !!errors[field];
+    },
+    [errors]
+  );
 
   /**
    * Get error message for a specific field
    */
-  const getFieldError = useCallback((field: FieldPath<T>): string | undefined => {
-    return errors[field]?.message;
-  }, [errors]);
+  const getFieldError = useCallback(
+    (field: FieldPath<T>): string | undefined => {
+      return errors[field]?.message;
+    },
+    [errors]
+  );
 
   /**
    * Check if field is touched
    */
-  const isFieldTouched = useCallback((field: FieldPath<T>): boolean => {
-    return !!touchedFields[field];
-  }, [touchedFields]);
+  const isFieldTouched = useCallback(
+    (field: FieldPath<T>): boolean => {
+      return !!touchedFields[field];
+    },
+    [touchedFields]
+  );
 
   /**
    * Validate specific field
    */
-  const validateField = useCallback(async (field: FieldPath<T>): Promise<boolean> => {
-    const result = await form.trigger(field);
-    return result;
-  }, [form]);
+  const validateField = useCallback(
+    async (field: FieldPath<T>): Promise<boolean> => {
+      const result = await form.trigger(field);
+      return result;
+    },
+    [form]
+  );
 
   /**
    * Validate entire form
@@ -254,7 +276,7 @@ export function useEnhancedForm<T extends FieldValues>(
   return {
     // React Hook Form instance
     form,
-    
+
     // Form state
     errors,
     isValid,
@@ -263,7 +285,7 @@ export function useEnhancedForm<T extends FieldValues>(
     submitError,
     submitSuccess,
     touchedFields,
-    
+
     // Enhanced methods
     createSubmitHandler,
     clearAllErrors,
@@ -276,7 +298,7 @@ export function useEnhancedForm<T extends FieldValues>(
     validateField,
     validateForm,
     handleApiError,
-    
+
     // Utilities
     watch,
   };
@@ -288,7 +310,11 @@ export function useEnhancedForm<T extends FieldValues>(
 export function useRealTimeValidation<T extends FieldValues>(
   form: UseFormReturn<T>,
   field: FieldPath<T>,
-  validator?: (value: any) => Promise<{ isValid: boolean; error?: string }> | { isValid: boolean; error?: string },
+  validator?: (
+    value: any
+  ) =>
+    | Promise<{ isValid: boolean; error?: string }>
+    | { isValid: boolean; error?: string },
   debounceMs = 300
 ) {
   const [isValidating, setIsValidating] = useState(false);
@@ -299,46 +325,49 @@ export function useRealTimeValidation<T extends FieldValues>(
   const fieldError = form.formState.errors[field];
   const isTouched = form.formState.touchedFields[field];
 
-  const validate = useCallback(async (value: any, immediate = false) => {
-    if (!validator || !isTouched) return;
+  const validate = useCallback(
+    async (value: any, immediate = false) => {
+      if (!validator || !isTouched) return;
 
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
-    }
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
 
-    const performValidation = async () => {
-      setIsValidating(true);
-      try {
-        const result = await validator(value);
-        
-        if (result.isValid) {
-          setCustomError(undefined);
-          form.clearErrors(field);
-        } else {
-          setCustomError(result.error);
+      const performValidation = async () => {
+        setIsValidating(true);
+        try {
+          const result = await validator(value);
+
+          if (result.isValid) {
+            setCustomError(undefined);
+            form.clearErrors(field);
+          } else {
+            setCustomError(result.error);
+            form.setError(field, {
+              type: 'custom',
+              message: result.error,
+            });
+          }
+        } catch (error) {
+          const errorMessage = 'Validation error';
+          setCustomError(errorMessage);
           form.setError(field, {
             type: 'custom',
-            message: result.error,
+            message: errorMessage,
           });
+        } finally {
+          setIsValidating(false);
         }
-      } catch (error) {
-        const errorMessage = 'Validation error';
-        setCustomError(errorMessage);
-        form.setError(field, {
-          type: 'custom',
-          message: errorMessage,
-        });
-      } finally {
-        setIsValidating(false);
-      }
-    };
+      };
 
-    if (immediate) {
-      await performValidation();
-    } else {
-      debounceRef.current = setTimeout(performValidation, debounceMs);
-    }
-  }, [validator, field, form, isTouched, debounceMs]);
+      if (immediate) {
+        await performValidation();
+      } else {
+        debounceRef.current = setTimeout(performValidation, debounceMs);
+      }
+    },
+    [validator, field, form, isTouched, debounceMs]
+  );
 
   useEffect(() => {
     if (isTouched && fieldValue !== undefined) {
@@ -366,7 +395,10 @@ export function useRealTimeValidation<T extends FieldValues>(
 /**
  * Hook for form submission with optimistic updates
  */
-export function useOptimisticFormSubmission<T extends FieldValues, TResult = unknown>() {
+export function useOptimisticFormSubmission<
+  T extends FieldValues,
+  TResult = unknown,
+>() {
   const [optimisticData, setOptimisticData] = useState<TResult | null>(null);
   const [isOptimistic, setIsOptimistic] = useState(false);
   const previousDataRef = React.useRef<TResult | null>(null);
@@ -379,25 +411,28 @@ export function useOptimisticFormSubmission<T extends FieldValues, TResult = unk
     ): Promise<{ success: boolean; data?: TResult; error?: ApiError }> => {
       // Store previous data for rollback
       previousDataRef.current = optimisticData;
-      
+
       // Apply optimistic update
       setOptimisticData(optimisticResult);
       setIsOptimistic(true);
 
       try {
         const result = await submitFn(formData);
-        
+
         // Update with actual result
         setOptimisticData(result);
         setIsOptimistic(false);
-        
+
         return { success: true, data: result };
       } catch (error) {
         // Rollback on error
         setOptimisticData(previousDataRef.current);
         setIsOptimistic(false);
-        
-        const apiError = error instanceof ApiError ? error : new ApiError(500, 'Submission failed');
+
+        const apiError =
+          error instanceof ApiError
+            ? error
+            : new ApiError(500, 'Submission failed');
         return { success: false, error: apiError };
       }
     },
@@ -426,27 +461,36 @@ export function useFormArray<T extends FieldValues>(
   name: FieldPath<T>
 ) {
   const { control } = form;
-  
+
   // This would typically use useFieldArray from react-hook-form
   // but for now we'll provide a basic implementation
-  
-  const addItem = useCallback((item: any) => {
-    const currentValue = form.getValues(name) || [];
-    form.setValue(name, [...currentValue, item] as any);
-  }, [form, name]);
 
-  const removeItem = useCallback((index: number) => {
-    const currentValue = form.getValues(name) || [];
-    const newValue = currentValue.filter((_: any, i: number) => i !== index);
-    form.setValue(name, newValue as any);
-  }, [form, name]);
+  const addItem = useCallback(
+    (item: any) => {
+      const currentValue = form.getValues(name) || [];
+      form.setValue(name, [...currentValue, item] as any);
+    },
+    [form, name]
+  );
 
-  const updateItem = useCallback((index: number, item: any) => {
-    const currentValue = form.getValues(name) || [];
-    const newValue = [...currentValue];
-    newValue[index] = item;
-    form.setValue(name, newValue as any);
-  }, [form, name]);
+  const removeItem = useCallback(
+    (index: number) => {
+      const currentValue = form.getValues(name) || [];
+      const newValue = currentValue.filter((_: any, i: number) => i !== index);
+      form.setValue(name, newValue as any);
+    },
+    [form, name]
+  );
+
+  const updateItem = useCallback(
+    (index: number, item: any) => {
+      const currentValue = form.getValues(name) || [];
+      const newValue = [...currentValue];
+      newValue[index] = item;
+      form.setValue(name, newValue as any);
+    },
+    [form, name]
+  );
 
   return {
     addItem,

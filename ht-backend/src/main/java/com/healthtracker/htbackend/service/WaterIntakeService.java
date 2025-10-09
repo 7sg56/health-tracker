@@ -105,6 +105,26 @@ public class WaterIntakeService {
     }
 
     /**
+     * Get a specific water intake entry by ID with ownership validation.
+     *
+     * @param id the ID of the water intake entry
+     * @param userId the ID of the user requesting the entry
+     * @return WaterIntakeResponseDto
+     * @throws ResourceNotFoundException if water intake entry is not found
+     * @throws ForbiddenException if user doesn't own the entry
+     */
+    public WaterIntakeResponseDto getWaterIntakeById(Long id, Long userId) {
+        WaterIntake waterIntake = waterIntakeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Water intake entry not found"));
+
+        if (!waterIntake.getUser().getId().equals(userId)) {
+            throw new ForbiddenException("You can only access your own water intake entries");
+        }
+
+        return mapToWaterIntakeResponseDto(waterIntake);
+    }
+
+    /**
      * Delete a water intake entry with ownership validation.
      * Only allows users to delete their own entries.
      * 

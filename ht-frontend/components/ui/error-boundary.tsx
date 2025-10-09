@@ -5,7 +5,13 @@
 import React, { Component, ReactNode } from 'react';
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
 import { Button } from './button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from './card';
 import { handleReactError, type ErrorInfo } from '@/lib/errors/error-handler';
 
 interface ErrorBoundaryState {
@@ -25,7 +31,10 @@ interface ErrorBoundaryProps {
 /**
  * Error boundary component that catches JavaScript errors anywhere in the child component tree
  */
-export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+export class ErrorBoundary extends Component<
+  ErrorBoundaryProps,
+  ErrorBoundaryState
+> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = { hasError: false };
@@ -43,7 +52,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     // Log the error
     handleReactError(error, errorInfo);
-    
+
     // Update state with error info
     this.setState({
       errorInfo,
@@ -72,41 +81,42 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
       // Default error UI
       return (
-        <div className="min-h-screen flex items-center justify-center p-4 bg-background">
+        <div className="bg-background flex min-h-screen items-center justify-center p-4">
           <Card className="w-full max-w-md">
             <CardHeader className="text-center">
-              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
-                <AlertTriangle className="h-6 w-6 text-destructive" />
+              <div className="bg-destructive/10 mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full">
+                <AlertTriangle className="text-destructive h-6 w-6" />
               </div>
               <CardTitle className="text-xl">Something went wrong</CardTitle>
               <CardDescription>
-                We encountered an unexpected error. This has been logged and we&apos;ll look into it.
+                We encountered an unexpected error. This has been logged and
+                we&apos;ll look into it.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {this.props.showDetails && this.state.error && (
-                <div className="rounded-md bg-muted p-3">
-                  <p className="text-sm font-medium text-muted-foreground mb-2">
+                <div className="bg-muted rounded-md p-3">
+                  <p className="text-muted-foreground mb-2 text-sm font-medium">
                     Error Details:
                   </p>
-                  <p className="text-xs font-mono text-muted-foreground break-all">
+                  <p className="text-muted-foreground font-mono text-xs break-all">
                     {this.state.error.message}
                   </p>
                   {this.state.errorId && (
-                    <p className="text-xs text-muted-foreground mt-2">
+                    <p className="text-muted-foreground mt-2 text-xs">
                       Error ID: {this.state.errorId}
                     </p>
                   )}
                 </div>
               )}
-              
+
               <div className="flex flex-col gap-2">
                 <Button onClick={this.handleRetry} className="w-full">
                   <RefreshCw className="mr-2 h-4 w-4" />
                   Try Again
                 </Button>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   onClick={this.handleGoHome}
                   className="w-full"
                 >
@@ -151,7 +161,7 @@ export function withErrorBoundary<P extends object>(
   );
 
   WrappedComponent.displayName = `withErrorBoundary(${Component.displayName || Component.name})`;
-  
+
   return WrappedComponent;
 }
 
@@ -165,18 +175,18 @@ interface ErrorFallbackProps {
   showRetry?: boolean;
 }
 
-export function ErrorFallback({ 
-  error, 
-  resetError, 
+export function ErrorFallback({
+  error,
+  resetError,
   message = 'Something went wrong',
-  showRetry = true 
+  showRetry = true,
 }: ErrorFallbackProps) {
   return (
     <div className="flex flex-col items-center justify-center p-6 text-center">
-      <AlertTriangle className="h-8 w-8 text-destructive mb-3" />
-      <h3 className="text-lg font-semibold mb-2">{message}</h3>
+      <AlertTriangle className="text-destructive mb-3 h-8 w-8" />
+      <h3 className="mb-2 text-lg font-semibold">{message}</h3>
       {error && (
-        <p className="text-sm text-muted-foreground mb-4 max-w-md">
+        <p className="text-muted-foreground mb-4 max-w-md text-sm">
           {error.message}
         </p>
       )}
@@ -193,11 +203,11 @@ export function ErrorFallback({
 /**
  * Async error boundary for handling promise rejections
  */
-export function AsyncErrorBoundary({ 
-  children, 
-  fallback 
-}: { 
-  children: ReactNode; 
+export function AsyncErrorBoundary({
+  children,
+  fallback,
+}: {
+  children: ReactNode;
   fallback?: (error: Error) => ReactNode;
 }) {
   const [error, setError] = React.useState<Error | null>(null);
@@ -208,9 +218,12 @@ export function AsyncErrorBoundary({
     };
 
     window.addEventListener('unhandledrejection', handleUnhandledRejection);
-    
+
     return () => {
-      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+      window.removeEventListener(
+        'unhandledrejection',
+        handleUnhandledRejection
+      );
     };
   }, []);
 
@@ -218,10 +231,10 @@ export function AsyncErrorBoundary({
     if (fallback) {
       return <>{fallback(error)}</>;
     }
-    
+
     return (
-      <ErrorFallback 
-        error={error} 
+      <ErrorFallback
+        error={error}
         resetError={() => setError(null)}
         message="An async operation failed"
       />

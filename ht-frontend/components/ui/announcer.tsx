@@ -3,8 +3,8 @@
  * Provides screen reader announcements for dynamic content changes
  */
 
-import * as React from "react";
-import { useAnnouncer } from "@/hooks/use-keyboard-navigation";
+import * as React from 'react';
+import { useAnnouncer } from '@/hooks/use-keyboard-navigation';
 
 interface AnnouncerProps {
   message?: string;
@@ -12,10 +12,10 @@ interface AnnouncerProps {
   clearDelay?: number;
 }
 
-export function Announcer({ 
-  message, 
-  priority = 'polite', 
-  clearDelay = 1000 
+export function Announcer({
+  message,
+  priority = 'polite',
+  clearDelay = 1000,
 }: AnnouncerProps) {
   const announce = useAnnouncer();
 
@@ -40,12 +40,12 @@ interface LiveRegionProps {
   className?: string;
 }
 
-export function LiveRegion({ 
-  children, 
-  priority = 'polite', 
+export function LiveRegion({
+  children,
+  priority = 'polite',
   atomic = true,
   relevant = 'all',
-  className 
+  className,
 }: LiveRegionProps) {
   return (
     <div
@@ -70,11 +70,11 @@ interface StatusMessageProps {
   className?: string;
 }
 
-export function StatusMessage({ 
-  message, 
-  type = 'info', 
+export function StatusMessage({
+  message,
+  type = 'info',
   visible = false,
-  className 
+  className,
 }: StatusMessageProps) {
   const priority = type === 'error' ? 'assertive' : 'polite';
 
@@ -82,11 +82,7 @@ export function StatusMessage({
     <>
       <Announcer message={message} priority={priority} />
       {visible && (
-        <div
-          role="status"
-          aria-live={priority}
-          className={className}
-        >
+        <div role="status" aria-live={priority} className={className}>
           {message}
         </div>
       )}
@@ -104,10 +100,10 @@ interface LoadingAnnouncerProps {
   completeMessage?: string;
 }
 
-export function LoadingAnnouncer({ 
-  isLoading, 
-  loadingMessage = 'Loading...', 
-  completeMessage = 'Loading complete' 
+export function LoadingAnnouncer({
+  isLoading,
+  loadingMessage = 'Loading...',
+  completeMessage = 'Loading complete',
 }: LoadingAnnouncerProps) {
   const [previousLoading, setPreviousLoading] = React.useState(isLoading);
 

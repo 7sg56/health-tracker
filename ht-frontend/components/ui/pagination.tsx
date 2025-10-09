@@ -33,20 +33,17 @@ function PaginationButton({
   isLoading = false,
   children,
   variant = 'outline',
-  disabled = false
+  disabled = false,
 }: PaginationButtonProps) {
   const isActive = page === currentPage;
-  
+
   return (
     <Button
       variant={isActive ? 'default' : variant}
       size="sm"
       onClick={() => onPageChange(page)}
       disabled={disabled || isLoading || isActive}
-      className={cn(
-        'h-8 w-8 p-0',
-        isActive && 'pointer-events-none'
-      )}
+      className={cn('h-8 w-8 p-0', isActive && 'pointer-events-none')}
     >
       {children}
     </Button>
@@ -56,7 +53,7 @@ function PaginationButton({
 function PaginationEllipsis() {
   return (
     <div className="flex h-8 w-8 items-center justify-center">
-      <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
+      <MoreHorizontal className="text-muted-foreground h-4 w-4" />
     </div>
   );
 }
@@ -69,7 +66,7 @@ export function Pagination({
   onPageChange,
   isLoading = false,
   showInfo = true,
-  className
+  className,
 }: PaginationProps) {
   if (totalPages <= 1) {
     return null;
@@ -82,7 +79,7 @@ export function Pagination({
   const getPageNumbers = () => {
     const pages: (number | 'ellipsis')[] = [];
     const maxVisiblePages = 7;
-    
+
     if (totalPages <= maxVisiblePages) {
       // Show all pages if total is small
       for (let i = 0; i < totalPages; i++) {
@@ -91,7 +88,7 @@ export function Pagination({
     } else {
       // Always show first page
       pages.push(0);
-      
+
       if (currentPage <= 3) {
         // Show pages 0, 1, 2, 3, 4, ..., last
         for (let i = 1; i <= 4; i++) {
@@ -121,7 +118,7 @@ export function Pagination({
         pages.push(totalPages - 1);
       }
     }
-    
+
     return pages;
   };
 
@@ -130,11 +127,11 @@ export function Pagination({
   return (
     <div className={cn('flex flex-col gap-2', className)}>
       {showInfo && (
-        <div className="text-sm text-muted-foreground text-center">
+        <div className="text-muted-foreground text-center text-sm">
           Showing {startItem} to {endItem} of {totalElements} entries
         </div>
       )}
-      
+
       <div className="flex items-center justify-center gap-1">
         {/* Previous button */}
         <Button
@@ -150,7 +147,7 @@ export function Pagination({
 
         {/* Page numbers */}
         <div className="flex items-center gap-1">
-          {pageNumbers.map((page, index) => (
+          {pageNumbers.map((page, index) =>
             page === 'ellipsis' ? (
               <PaginationEllipsis key={`ellipsis-${index}`} />
             ) : (
@@ -164,7 +161,7 @@ export function Pagination({
                 {page + 1}
               </PaginationButton>
             )
-          ))}
+          )}
         </div>
 
         {/* Next button */}
@@ -197,7 +194,7 @@ export function SimplePagination({
   totalPages,
   onPageChange,
   isLoading = false,
-  className
+  className,
 }: SimplePaginationProps) {
   if (totalPages <= 1) {
     return null;
@@ -216,7 +213,7 @@ export function SimplePagination({
         Previous
       </Button>
 
-      <span className="text-sm text-muted-foreground">
+      <span className="text-muted-foreground text-sm">
         Page {currentPage + 1} of {totalPages}
       </span>
 

@@ -4,12 +4,7 @@
  */
 
 import { apiClient } from './client';
-import { 
-  ApiResponse, 
-  User, 
-  LoginRequest, 
-  RegisterRequest 
-} from '../types';
+import { ApiResponse, User, LoginRequest, RegisterRequest } from '../types';
 
 export class AuthService {
   /**
@@ -31,12 +26,12 @@ export class AuthService {
    */
   static async logout(): Promise<ApiResponse<void>> {
     const result = await apiClient.post<void>('/api/auth/logout');
-    
+
     // Clear session info on successful logout
     if (result.status === 200) {
       apiClient.clearSession();
     }
-    
+
     return result;
   }
 
@@ -50,7 +45,9 @@ export class AuthService {
   /**
    * Check if user session is valid
    */
-  static async checkSession(): Promise<ApiResponse<{ valid: boolean; user?: User }>> {
+  static async checkSession(): Promise<
+    ApiResponse<{ valid: boolean; user?: User }>
+  > {
     return apiClient.get<{ valid: boolean; user?: User }>('/api/auth/session');
   }
 

@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { cn } from "@/lib/utils";
-import { Progress } from "./progress";
-import { LoadingSpinner } from "./loading-spinner";
+import * as React from 'react';
+import { cn } from '@/lib/utils';
+import { Progress } from './progress';
+import { LoadingSpinner } from './loading-spinner';
 
 interface ProgressIndicatorProps {
   progress?: number;
   message?: string;
   showPercentage?: boolean;
-  variant?: "default" | "success" | "warning" | "destructive";
-  size?: "sm" | "default" | "lg";
+  variant?: 'default' | 'success' | 'warning' | 'destructive';
+  size?: 'sm' | 'default' | 'lg';
   className?: string;
 }
 
@@ -18,9 +18,9 @@ export function ProgressIndicator({
   progress,
   message,
   showPercentage = false,
-  variant = "default",
-  size = "default",
-  className
+  variant = 'default',
+  size = 'default',
+  className,
 }: ProgressIndicatorProps) {
   const [animatedProgress, setAnimatedProgress] = React.useState(0);
 
@@ -34,20 +34,20 @@ export function ProgressIndicator({
   }, [progress]);
 
   const sizeClasses = {
-    sm: "h-1",
-    default: "h-2",
-    lg: "h-3"
+    sm: 'h-1',
+    default: 'h-2',
+    lg: 'h-3',
   };
 
   const variantClasses = {
-    default: "bg-primary",
-    success: "bg-green-600",
-    warning: "bg-amber-600",
-    destructive: "bg-red-600"
+    default: 'bg-primary',
+    success: 'bg-green-600',
+    warning: 'bg-amber-600',
+    destructive: 'bg-red-600',
   };
 
   return (
-    <div className={cn("space-y-2", className)}>
+    <div className={cn('space-y-2', className)}>
       {message && (
         <div className="flex items-center justify-between text-sm">
           <span className="text-muted-foreground">{message}</span>
@@ -56,15 +56,23 @@ export function ProgressIndicator({
           )}
         </div>
       )}
-      
-      <div className={cn("w-full bg-muted rounded-full overflow-hidden", sizeClasses[size])}>
-        <div 
+
+      <div
+        className={cn(
+          'bg-muted w-full overflow-hidden rounded-full',
+          sizeClasses[size]
+        )}
+      >
+        <div
           className={cn(
-            "h-full transition-all duration-500 ease-out",
+            'h-full transition-all duration-500 ease-out',
             variantClasses[variant]
           )}
-          style={{ 
-            width: progress !== undefined ? `${Math.min(100, Math.max(0, animatedProgress))}%` : '0%'
+          style={{
+            width:
+              progress !== undefined
+                ? `${Math.min(100, Math.max(0, animatedProgress))}%`
+                : '0%',
           }}
         />
       </div>
@@ -76,7 +84,7 @@ interface CircularProgressProps {
   progress?: number;
   size?: number;
   strokeWidth?: number;
-  variant?: "default" | "success" | "warning" | "destructive";
+  variant?: 'default' | 'success' | 'warning' | 'destructive';
   showPercentage?: boolean;
   className?: string;
 }
@@ -85,9 +93,9 @@ export function CircularProgress({
   progress = 0,
   size = 64,
   strokeWidth = 4,
-  variant = "default",
+  variant = 'default',
   showPercentage = false,
-  className
+  className,
 }: CircularProgressProps) {
   const [animatedProgress, setAnimatedProgress] = React.useState(0);
   const radius = (size - strokeWidth) / 2;
@@ -102,19 +110,20 @@ export function CircularProgress({
   }, [progress]);
 
   const variantClasses = {
-    default: "stroke-primary",
-    success: "stroke-green-600",
-    warning: "stroke-amber-600",
-    destructive: "stroke-red-600"
+    default: 'stroke-primary',
+    success: 'stroke-green-600',
+    warning: 'stroke-amber-600',
+    destructive: 'stroke-red-600',
   };
 
   return (
-    <div className={cn("relative inline-flex items-center justify-center", className)}>
-      <svg
-        width={size}
-        height={size}
-        className="transform -rotate-90"
-      >
+    <div
+      className={cn(
+        'relative inline-flex items-center justify-center',
+        className
+      )}
+    >
+      <svg width={size} height={size} className="-rotate-90 transform">
         {/* Background circle */}
         <circle
           cx={size / 2}
@@ -135,10 +144,13 @@ export function CircularProgress({
           strokeDasharray={circumference}
           strokeDashoffset={offset}
           strokeLinecap="round"
-          className={cn("transition-all duration-500 ease-out", variantClasses[variant])}
+          className={cn(
+            'transition-all duration-500 ease-out',
+            variantClasses[variant]
+          )}
         />
       </svg>
-      
+
       {showPercentage && (
         <div className="absolute inset-0 flex items-center justify-center">
           <span className="text-sm font-medium">
@@ -165,7 +177,7 @@ export function LoadingState({
   message,
   children,
   overlay = false,
-  className
+  className,
 }: LoadingStateProps) {
   if (!isLoading) {
     return <>{children}</>;
@@ -173,21 +185,17 @@ export function LoadingState({
 
   if (overlay) {
     return (
-      <div className={cn("relative", className)}>
+      <div className={cn('relative', className)}>
         {children}
-        <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-10">
+        <div className="bg-background/80 absolute inset-0 z-10 flex items-center justify-center backdrop-blur-sm">
           <div className="flex flex-col items-center gap-4 p-6">
             {progress !== undefined ? (
-              <CircularProgress 
-                progress={progress} 
-                showPercentage 
-                size={48}
-              />
+              <CircularProgress progress={progress} showPercentage size={48} />
             ) : (
               <LoadingSpinner size="lg" />
             )}
             {message && (
-              <p className="text-sm text-muted-foreground text-center">
+              <p className="text-muted-foreground text-center text-sm">
                 {message}
               </p>
             )}
@@ -198,17 +206,19 @@ export function LoadingState({
   }
 
   return (
-    <div className={cn("flex flex-col items-center justify-center p-8", className)}>
+    <div
+      className={cn('flex flex-col items-center justify-center p-8', className)}
+    >
       {progress !== undefined ? (
         <div className="w-full max-w-xs space-y-4">
-          <CircularProgress 
-            progress={progress} 
-            showPercentage 
+          <CircularProgress
+            progress={progress}
+            showPercentage
             size={64}
             className="mx-auto"
           />
-          <ProgressIndicator 
-            progress={progress} 
+          <ProgressIndicator
+            progress={progress}
             message={message}
             showPercentage
           />
@@ -217,7 +227,7 @@ export function LoadingState({
         <>
           <LoadingSpinner size="xl" className="mb-4" />
           {message && (
-            <p className="text-sm text-muted-foreground text-center">
+            <p className="text-muted-foreground text-center text-sm">
               {message}
             </p>
           )}

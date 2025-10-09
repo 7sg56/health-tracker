@@ -1,6 +1,6 @@
-@import "tailwindcss";
-@import "tw-animate-css";
-@import "../styles/accessibility.css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import '../styles/accessibility.css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -79,7 +79,7 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
-  
+
   /* Health Tracker Custom Variables */
   --health-primary: 14 165 233; /* rgb(14, 165, 233) - sky-500 */
   --health-success: 34 197 94; /* rgb(34, 197, 94) - green-500 */
@@ -128,8 +128,9 @@
   }
   body {
     @apply bg-background text-foreground;
-    transition: background-color var(--animation-duration, 0.2s) ease-in-out,
-                color var(--animation-duration, 0.2s) ease-in-out;
+    transition:
+      background-color var(--animation-duration, 0.2s) ease-in-out,
+      color var(--animation-duration, 0.2s) ease-in-out;
   }
 }
 
@@ -163,9 +164,10 @@
 
   /* Theme transition animations */
   .theme-transition {
-    transition: background-color var(--animation-duration, 0.2s) ease-in-out,
-                color var(--animation-duration, 0.2s) ease-in-out,
-                border-color var(--animation-duration, 0.2s) ease-in-out;
+    transition:
+      background-color var(--animation-duration, 0.2s) ease-in-out,
+      color var(--animation-duration, 0.2s) ease-in-out,
+      border-color var(--animation-duration, 0.2s) ease-in-out;
   }
 
   /* Health status colors */
@@ -173,17 +175,17 @@
     background-color: rgb(var(--health-success));
     color: white;
   }
-  
+
   .health-status-good {
     background-color: rgb(var(--health-primary));
     color: white;
   }
-  
+
   .health-status-fair {
     background-color: rgb(var(--health-warning));
     color: white;
   }
-  
+
   .health-status-poor {
     background-color: rgb(var(--health-danger));
     color: white;
@@ -191,7 +193,7 @@
 
   /* Theme-aware focus styles */
   .focus-visible {
-    @apply outline-2 outline-offset-2 outline-ring;
+    @apply outline-ring outline-2 outline-offset-2;
   }
 
   /* Enhanced accessibility for high contrast */
@@ -206,7 +208,7 @@
   :root:not(.reduce-motion-override) {
     --animation-duration: 0.01ms;
   }
-  
+
   :root:not(.reduce-motion-override) *,
   :root:not(.reduce-motion-override) *::before,
   :root:not(.reduce-motion-override) *::after {
@@ -221,7 +223,7 @@
     --border: oklch(0.3 0 0);
     --ring: oklch(0.2 0 0);
   }
-  
+
   .dark:root:not(.high-contrast-override) {
     --border: oklch(0.7 0 0);
     --ring: oklch(0.8 0 0);

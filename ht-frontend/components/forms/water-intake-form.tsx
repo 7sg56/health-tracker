@@ -20,7 +20,10 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 
-import { waterIntakeSchema, type WaterIntakeFormData } from '@/lib/validations/health';
+import {
+  waterIntakeSchema,
+  type WaterIntakeFormData,
+} from '@/lib/validations/health';
 import { WaterIntakeRequest } from '@/lib/types/health';
 
 interface WaterIntakeFormProps {
@@ -32,12 +35,16 @@ interface WaterIntakeFormProps {
 // Quick preset amounts in liters
 const PRESET_AMOUNTS = [0.25, 0.5, 1.0, 1.5, 2.0];
 
-export function WaterIntakeForm({ onSubmit, isLoading = false, error }: WaterIntakeFormProps) {
+export function WaterIntakeForm({
+  onSubmit,
+  isLoading = false,
+  error,
+}: WaterIntakeFormProps) {
   const form = useForm<WaterIntakeFormData>({
     resolver: zodResolver(waterIntakeSchema),
     defaultValues: {
-      amountLtr: 0.5
-    }
+      amountLtr: 0.5,
+    },
   });
 
   const currentAmount = form.watch('amountLtr');
@@ -68,8 +75,8 @@ export function WaterIntakeForm({ onSubmit, isLoading = false, error }: WaterInt
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form 
-            onSubmit={form.handleSubmit(onFormSubmit)} 
+          <form
+            onSubmit={form.handleSubmit(onFormSubmit)}
             className="space-y-4"
             aria-label="Water intake form"
           >
@@ -82,20 +89,20 @@ export function WaterIntakeForm({ onSubmit, isLoading = false, error }: WaterInt
             {/* Quick Preset Buttons */}
             <fieldset className="space-y-2">
               <legend className="text-sm font-medium">Quick Add</legend>
-              <div 
-                className="grid grid-cols-3 sm:grid-cols-5 gap-2"
+              <div
+                className="grid grid-cols-3 gap-2 sm:grid-cols-5"
                 role="group"
                 aria-label="Preset water amounts"
               >
-                {PRESET_AMOUNTS.map((amount) => (
+                {PRESET_AMOUNTS.map(amount => (
                   <Button
                     key={amount}
                     type="button"
-                    variant={currentAmount === amount ? "default" : "outline"}
+                    variant={currentAmount === amount ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => handlePresetClick(amount)}
                     disabled={isFormLoading}
-                    className="flex items-center gap-1 h-10 sm:h-9 text-xs sm:text-sm"
+                    className="flex h-10 items-center gap-1 text-xs sm:h-9 sm:text-sm"
                     aria-label={`Add ${amount} liters`}
                     aria-pressed={currentAmount === amount}
                   >
@@ -124,17 +131,17 @@ export function WaterIntakeForm({ onSubmit, isLoading = false, error }: WaterInt
                         disabled={isFormLoading}
                         className="pr-12"
                         {...field}
-                        onChange={(e) => {
+                        onChange={e => {
                           const value = e.target.value;
                           const numValue = parseFloat(value);
                           field.onChange(isNaN(numValue) ? 0 : numValue);
                         }}
                       />
-                      <div 
-                        className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none"
+                      <div
+                        className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3"
                         aria-hidden="true"
                       >
-                        <span className="text-sm text-muted-foreground">L</span>
+                        <span className="text-muted-foreground text-sm">L</span>
                       </div>
                     </div>
                   </FormControl>
@@ -148,13 +155,16 @@ export function WaterIntakeForm({ onSubmit, isLoading = false, error }: WaterInt
 
             {/* Current Selection Display */}
             {currentAmount > 0 && (
-              <div 
-                className="p-3 bg-muted/50 rounded-md"
+              <div
+                className="bg-muted/50 rounded-md p-3"
                 role="status"
                 aria-live="polite"
               >
-                <p className="text-sm text-muted-foreground">
-                  Selected amount: <span className="font-medium text-foreground">{currentAmount}L</span>
+                <p className="text-muted-foreground text-sm">
+                  Selected amount:{' '}
+                  <span className="text-foreground font-medium">
+                    {currentAmount}L
+                  </span>
                 </p>
               </div>
             )}
@@ -167,11 +177,13 @@ export function WaterIntakeForm({ onSubmit, isLoading = false, error }: WaterInt
               disabled={!currentAmount || currentAmount <= 0}
               className="w-full"
               icon={<Plus className="h-4 w-4" />}
-              aria-describedby={currentAmount <= 0 ? "submit-disabled-reason" : undefined}
+              aria-describedby={
+                currentAmount <= 0 ? 'submit-disabled-reason' : undefined
+              }
             >
               Add Water Intake
             </LoadingButton>
-            
+
             {currentAmount <= 0 && (
               <p id="submit-disabled-reason" className="sr-only">
                 Please select or enter a valid water amount to continue

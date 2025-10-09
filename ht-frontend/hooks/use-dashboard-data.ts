@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useCallback } from "react";
-import { HealthService } from "@/lib/api/health";
-import { HealthScoreService } from "@/lib/api/health-score";
-import { 
-  WaterIntake, 
-  FoodIntake, 
-  Workout, 
-  DailyHealthIndex, 
-  HealthScoreBreakdown 
-} from "@/lib/types/health";
+import { useState, useEffect, useCallback } from 'react';
+import { HealthService } from '@/lib/api/health';
+import { HealthScoreService } from '@/lib/api/health-score';
+import {
+  WaterIntake,
+  FoodIntake,
+  Workout,
+  DailyHealthIndex,
+  HealthScoreBreakdown,
+} from '@/lib/types/health';
 
 interface DashboardData {
   waterIntakes: WaterIntake[];
@@ -37,19 +37,16 @@ export function useDashboardData() {
       setData(prev => ({ ...prev, isLoading: true, error: null }));
 
       // Fetch all data in parallel
-      const [
-        healthDataResponse,
-        healthScoreResponse
-      ] = await Promise.all([
+      const [healthDataResponse, healthScoreResponse] = await Promise.all([
         HealthService.getTodaysHealthData(),
-        HealthScoreService.getCurrentHealthScore()
+        HealthScoreService.getCurrentHealthScore(),
       ]);
 
       // Handle health data
       const healthData = healthDataResponse.data || {
         waterIntakes: [],
         foodIntakes: [],
-        workouts: []
+        workouts: [],
       };
 
       // Handle health score
@@ -57,7 +54,11 @@ export function useDashboardData() {
 
       // Calculate breakdown if we have health data
       let breakdown: HealthScoreBreakdown | null = null;
-      if (healthData.waterIntakes.length > 0 || healthData.foodIntakes.length > 0 || healthData.workouts.length > 0) {
+      if (
+        healthData.waterIntakes.length > 0 ||
+        healthData.foodIntakes.length > 0 ||
+        healthData.workouts.length > 0
+      ) {
         breakdown = HealthScoreService.calculateHealthScoreBreakdown(
           healthData.waterIntakes,
           healthData.foodIntakes,
@@ -74,13 +75,15 @@ export function useDashboardData() {
         isLoading: false,
         error: null,
       });
-
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error);
       setData(prev => ({
         ...prev,
         isLoading: false,
-        error: error instanceof Error ? error.message : 'Failed to load dashboard data'
+        error:
+          error instanceof Error
+            ? error.message
+            : 'Failed to load dashboard data',
       }));
     }
   }, []);
@@ -91,7 +94,7 @@ export function useDashboardData() {
       const response = await HealthScoreService.getCurrentHealthScore();
       setData(prev => ({
         ...prev,
-        healthScore: response.data || null
+        healthScore: response.data || null,
       }));
     } catch (error) {
       console.error('Failed to refresh health score:', error);
@@ -104,7 +107,7 @@ export function useDashboardData() {
       const healthData = response.data || {
         waterIntakes: [],
         foodIntakes: [],
-        workouts: []
+        workouts: [],
       };
 
       // Recalculate breakdown
@@ -119,7 +122,7 @@ export function useDashboardData() {
         waterIntakes: healthData.waterIntakes,
         foodIntakes: healthData.foodIntakes,
         workouts: healthData.workouts,
-        breakdown
+        breakdown,
       }));
     } catch (error) {
       console.error('Failed to refresh health data:', error);

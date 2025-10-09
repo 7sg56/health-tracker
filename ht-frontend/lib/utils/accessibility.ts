@@ -56,14 +56,14 @@ class AriaLiveRegionManager {
 
   announce(message: string, priority: 'polite' | 'assertive' = 'polite'): void {
     const region = this.getRegion(priority);
-    
+
     // Clear previous message
     region.textContent = '';
-    
+
     // Use setTimeout to ensure screen readers pick up the change
     setTimeout(() => {
       region.textContent = message;
-      
+
       // Clear after announcement to allow for re-announcements
       setTimeout(() => {
         region.textContent = '';
@@ -171,8 +171,6 @@ export function trapFocus(container: HTMLElement): () => void {
   };
 }
 
-
-
 /**
  * Check if reduced motion is preferred
  */
@@ -183,7 +181,9 @@ export function prefersReducedMotion(): boolean {
 /**
  * Get appropriate ARIA role for a button based on its function
  */
-export function getButtonRole(type: 'button' | 'submit' | 'menu' | 'menuitem'): string {
+export function getButtonRole(
+  type: 'button' | 'submit' | 'menu' | 'menuitem'
+): string {
   const roleMap = {
     button: 'button',
     submit: 'button',
@@ -197,22 +197,29 @@ export function getButtonRole(type: 'button' | 'submit' | 'menu' | 'menuitem'): 
 /**
  * Create ARIA describedby relationship
  */
-export function createAriaDescribedBy(elementId: string, descriptionIds: string[]): string {
+export function createAriaDescribedBy(
+  elementId: string,
+  descriptionIds: string[]
+): string {
   return descriptionIds.filter(id => id).join(' ');
 }
 
 /**
  * Validate color contrast ratio (simplified check)
  */
-export function hasGoodContrast(foreground: string, background: string): boolean {
+export function hasGoodContrast(
+  foreground: string,
+  background: string
+): boolean {
   // This is a simplified implementation
   // In a real app, you'd use a proper color contrast library
   const fgLuminance = getLuminance(foreground);
   const bgLuminance = getLuminance(background);
-  
-  const contrast = (Math.max(fgLuminance, bgLuminance) + 0.05) / 
-                  (Math.min(fgLuminance, bgLuminance) + 0.05);
-  
+
+  const contrast =
+    (Math.max(fgLuminance, bgLuminance) + 0.05) /
+    (Math.min(fgLuminance, bgLuminance) + 0.05);
+
   return contrast >= 4.5; // WCAG AA standard
 }
 
@@ -226,19 +233,23 @@ function getLuminance(color: string): number {
   const r = parseInt(hex.substr(0, 2), 16) / 255;
   const g = parseInt(hex.substr(2, 2), 16) / 255;
   const b = parseInt(hex.substr(4, 2), 16) / 255;
-  
+
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
 /**
  * Skip link component helper
  */
-export function createSkipLink(targetId: string, text: string = 'Skip to main content'): HTMLElement {
+export function createSkipLink(
+  targetId: string,
+  text: string = 'Skip to main content'
+): HTMLElement {
   const skipLink = document.createElement('a');
   skipLink.href = `#${targetId}`;
   skipLink.textContent = text;
-  skipLink.className = 'sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md';
-  
+  skipLink.className =
+    'sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md';
+
   return skipLink;
 }
 
@@ -261,7 +272,10 @@ export const KeyboardKeys = {
 /**
  * Check if a key event matches expected keys
  */
-export function isKeyPressed(event: KeyboardEvent, keys: string | string[]): boolean {
+export function isKeyPressed(
+  event: KeyboardEvent,
+  keys: string | string[]
+): boolean {
   const targetKeys = Array.isArray(keys) ? keys : [keys];
   return targetKeys.includes(event.key);
 }
@@ -285,16 +299,24 @@ export const AriaAttributes = {
   busy: (isBusy: boolean) => ({ 'aria-busy': isBusy }),
   invalid: (isInvalid: boolean) => ({ 'aria-invalid': isInvalid }),
   required: (isRequired: boolean) => ({ 'aria-required': isRequired }),
-  current: (type: 'page' | 'step' | 'location' | 'date' | 'time' | boolean) => ({ 'aria-current': type }),
+  current: (
+    type: 'page' | 'step' | 'location' | 'date' | 'time' | boolean
+  ) => ({ 'aria-current': type }),
   level: (level: number) => ({ 'aria-level': level }),
   setSize: (size: number) => ({ 'aria-setsize': size }),
   posInSet: (position: number) => ({ 'aria-posinset': position }),
-  hasPopup: (type: 'menu' | 'listbox' | 'tree' | 'grid' | 'dialog' | boolean) => ({ 'aria-haspopup': type }),
+  hasPopup: (
+    type: 'menu' | 'listbox' | 'tree' | 'grid' | 'dialog' | boolean
+  ) => ({ 'aria-haspopup': type }),
   modal: (isModal: boolean) => ({ 'aria-modal': isModal }),
   multiline: (isMultiline: boolean) => ({ 'aria-multiline': isMultiline }),
-  orientation: (orientation: 'horizontal' | 'vertical') => ({ 'aria-orientation': orientation }),
+  orientation: (orientation: 'horizontal' | 'vertical') => ({
+    'aria-orientation': orientation,
+  }),
   readonly: (isReadonly: boolean) => ({ 'aria-readonly': isReadonly }),
-  sort: (sort: 'ascending' | 'descending' | 'none' | 'other') => ({ 'aria-sort': sort }),
+  sort: (sort: 'ascending' | 'descending' | 'none' | 'other') => ({
+    'aria-sort': sort,
+  }),
   valueNow: (value: number) => ({ 'aria-valuenow': value }),
   valueMin: (value: number) => ({ 'aria-valuemin': value }),
   valueMax: (value: number) => ({ 'aria-valuemax': value }),
@@ -363,8 +385,10 @@ export class FocusManager {
   static focusNext(container?: HTMLElement): boolean {
     const root = container || document.body;
     const focusableElements = getFocusableElements(root);
-    const currentIndex = focusableElements.indexOf(document.activeElement as HTMLElement);
-    
+    const currentIndex = focusableElements.indexOf(
+      document.activeElement as HTMLElement
+    );
+
     if (currentIndex >= 0 && currentIndex < focusableElements.length - 1) {
       focusableElements[currentIndex + 1].focus();
       return true;
@@ -378,8 +402,10 @@ export class FocusManager {
   static focusPrevious(container?: HTMLElement): boolean {
     const root = container || document.body;
     const focusableElements = getFocusableElements(root);
-    const currentIndex = focusableElements.indexOf(document.activeElement as HTMLElement);
-    
+    const currentIndex = focusableElements.indexOf(
+      document.activeElement as HTMLElement
+    );
+
     if (currentIndex > 0) {
       focusableElements[currentIndex - 1].focus();
       return true;
@@ -400,7 +426,7 @@ export const ScreenReaderUtils = {
     const ariaLabelledBy = element.getAttribute('aria-labelledby');
     const title = element.getAttribute('title');
     const textContent = element.textContent?.trim();
-    
+
     return !!(ariaLabel || ariaLabelledBy || title || textContent);
   },
 
@@ -429,14 +455,14 @@ export const ScreenReaderUtils = {
   hasProperRole(element: HTMLElement): boolean {
     const role = element.getAttribute('role');
     const tagName = element.tagName.toLowerCase();
-    
+
     // Elements that should have explicit roles
     const shouldHaveRole = ['div', 'span', 'section', 'article'];
-    
+
     if (shouldHaveRole.includes(tagName)) {
       return !!role;
     }
-    
+
     return true; // Semantic elements are fine without explicit roles
   },
 
@@ -446,22 +472,27 @@ export const ScreenReaderUtils = {
   validateAriaAttributes(element: HTMLElement): string[] {
     const errors: string[] = [];
     const attributes = element.attributes;
-    
+
     for (let i = 0; i < attributes.length; i++) {
       const attr = attributes[i];
       if (attr.name.startsWith('aria-')) {
         // Check for common ARIA attribute errors
-        if (attr.name === 'aria-labelledby' || attr.name === 'aria-describedby') {
+        if (
+          attr.name === 'aria-labelledby' ||
+          attr.name === 'aria-describedby'
+        ) {
           const ids = attr.value.split(' ');
           for (const id of ids) {
             if (!document.getElementById(id.trim())) {
-              errors.push(`Referenced element with id "${id}" not found for ${attr.name}`);
+              errors.push(
+                `Referenced element with id "${id}" not found for ${attr.name}`
+              );
             }
           }
         }
       }
     }
-    
+
     return errors;
   },
 
@@ -470,18 +501,22 @@ export const ScreenReaderUtils = {
    */
   isKeyboardAccessible(element: HTMLElement): boolean {
     const tabIndex = element.getAttribute('tabindex');
-    const isInteractive = ['button', 'a', 'input', 'select', 'textarea'].includes(
-      element.tagName.toLowerCase()
-    );
+    const isInteractive = [
+      'button',
+      'a',
+      'input',
+      'select',
+      'textarea',
+    ].includes(element.tagName.toLowerCase());
     const hasRole = element.getAttribute('role');
     const interactiveRoles = ['button', 'link', 'menuitem', 'tab', 'option'];
-    
+
     if (isInteractive) return true;
     if (tabIndex === '0' || (tabIndex && parseInt(tabIndex) >= 0)) return true;
     if (hasRole && interactiveRoles.includes(hasRole)) return true;
-    
+
     return false;
-  }
+  },
 };
 
 /**
@@ -509,10 +544,11 @@ export const AccessibilityTester = {
     errors.push(...ariaErrors);
 
     // Check keyboard accessibility for interactive elements
-    const isInteractive = element.onclick || 
-                         element.getAttribute('role') === 'button' ||
-                         ['button', 'a', 'input'].includes(element.tagName.toLowerCase());
-    
+    const isInteractive =
+      element.onclick ||
+      element.getAttribute('role') === 'button' ||
+      ['button', 'a', 'input'].includes(element.tagName.toLowerCase());
+
     if (isInteractive && !ScreenReaderUtils.isKeyboardAccessible(element)) {
       errors.push('Interactive element is not keyboard accessible');
     }
@@ -521,8 +557,13 @@ export const AccessibilityTester = {
     const computedStyle = window.getComputedStyle(element);
     const color = computedStyle.color;
     const backgroundColor = computedStyle.backgroundColor;
-    
-    if (color && backgroundColor && color !== 'rgba(0, 0, 0, 0)' && backgroundColor !== 'rgba(0, 0, 0, 0)') {
+
+    if (
+      color &&
+      backgroundColor &&
+      color !== 'rgba(0, 0, 0, 0)' &&
+      backgroundColor !== 'rgba(0, 0, 0, 0)'
+    ) {
       if (!hasGoodContrast(color, backgroundColor)) {
         warnings.push('Potential color contrast issue');
       }
@@ -531,7 +572,7 @@ export const AccessibilityTester = {
     return {
       passed: errors.length === 0,
       errors,
-      warnings
+      warnings,
     };
   },
 
@@ -560,12 +601,16 @@ export const AccessibilityTester = {
       return {
         element: element as HTMLElement,
         errors: result.errors,
-        warnings: result.warnings
+        warnings: result.warnings,
       };
     });
 
-    const elementsWithErrors = elementResults.filter(r => r.errors.length > 0).length;
-    const elementsWithWarnings = elementResults.filter(r => r.warnings.length > 0).length;
+    const elementsWithErrors = elementResults.filter(
+      r => r.errors.length > 0
+    ).length;
+    const elementsWithWarnings = elementResults.filter(
+      r => r.warnings.length > 0
+    ).length;
 
     return {
       passed: elementsWithErrors === 0,
@@ -573,8 +618,8 @@ export const AccessibilityTester = {
       summary: {
         totalElements: elementResults.length,
         elementsWithErrors,
-        elementsWithWarnings
-      }
+        elementsWithWarnings,
+      },
     };
-  }
+  },
 };

@@ -3,13 +3,8 @@ import { z } from 'zod';
 // Authentication validation schemas matching backend constraints
 
 export const loginSchema = z.object({
-  username: z
-    .string()
-    .min(1, 'Username is required')
-    .trim(),
-  password: z
-    .string()
-    .min(1, 'Password is required'),
+  username: z.string().min(1, 'Username is required').trim(),
+  password: z.string().min(1, 'Password is required'),
 });
 
 export const registerSchema = z.object({
@@ -56,6 +51,7 @@ export const authValidationMessages = {
   password: {
     required: 'Password is required',
     minLength: 'Password must be at least 8 characters',
-    pattern: 'Password must contain at least one uppercase letter, one lowercase letter, and one number',
+    pattern:
+      'Password must contain at least one uppercase letter, one lowercase letter, and one number',
   },
 } as const;

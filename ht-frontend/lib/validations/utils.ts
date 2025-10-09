@@ -8,12 +8,12 @@ import { z } from 'zod';
  */
 export function formatZodErrors(error: z.ZodError): Record<string, string> {
   const formattedErrors: Record<string, string> = {};
-  
-  error.issues.forEach((err) => {
+
+  error.issues.forEach(err => {
     const path = err.path.join('.');
     formattedErrors[path] = err.message;
   });
-  
+
   return formattedErrors;
 }
 
@@ -23,13 +23,15 @@ export function formatZodErrors(error: z.ZodError): Record<string, string> {
 export function safeValidate<T>(
   schema: z.ZodSchema<T>,
   data: unknown
-): { success: true; data: T } | { success: false; errors: Record<string, string> } {
+):
+  | { success: true; data: T }
+  | { success: false; errors: Record<string, string> } {
   const result = schema.safeParse(data);
-  
+
   if (result.success) {
     return { success: true, data: result.data };
   }
-  
+
   return {
     success: false,
     errors: formatZodErrors(result.error),
@@ -49,8 +51,8 @@ export function validateField<T>(
     return { isValid: true };
   } catch (error) {
     if (error instanceof z.ZodError) {
-      const fieldError = error.issues.find(err => 
-        err.path.length === 0 || err.path[0] === fieldName
+      const fieldError = error.issues.find(
+        err => err.path.length === 0 || err.path[0] === fieldName
       );
       return {
         isValid: false,
@@ -76,8 +78,10 @@ export function createFieldValidator<T extends z.ZodRawShape>(
       try {
         // Create a temporary object to validate just this field
         const tempData = { [fieldName]: value };
-        const result = schema.pick({ [fieldName]: true } as Record<string, true>).safeParse(tempData);
-        
+        const result = schema
+          .pick({ [fieldName]: true } as Record<string, true>)
+          .safeParse(tempData);
+
         if (result.success) {
           return { isValid: true };
         } else {
@@ -88,7 +92,7 @@ export function createFieldValidator<T extends z.ZodRawShape>(
         return { isValid: false, error: 'Validation error' };
       }
     },
-    
+
     validatePartial: (data: Partial<z.infer<z.ZodObject<T>>>) => {
       const partialSchema = schema.partial();
       return safeValidate(partialSchema, data);
@@ -118,16 +122,16 @@ export function formatBackendErrors(
   backendError: BackendErrorResponse
 ): Record<string, string> {
   const formattedErrors: Record<string, string> = {};
-  
+
   if (backendError.details && Array.isArray(backendError.details)) {
-    backendError.details.forEach((detail) => {
+    backendError.details.forEach(detail => {
       formattedErrors[detail.field] = detail.message;
     });
   } else if (backendError.message) {
     // If no field-specific errors, use general message
     formattedErrors.general = backendError.message;
   }
-  
+
   return formattedErrors;
 }
 
@@ -182,7 +186,7 @@ export function validateNumericInput(
 ): { isValid: boolean; value?: number; error?: string } {
   // Convert string to number if needed
   const numericValue = typeof value === 'string' ? parseFloat(value) : value;
-  
+
   // Check if conversion resulted in NaN
   if (isNaN(numericValue)) {
     return {
@@ -190,10 +194,10 @@ export function validateNumericInput(
       error: 'Must be a valid number',
     };
   }
-  
+
   // Validate with schema
   const result = validateField(schema, 'value', numericValue);
-  
+
   return {
     isValid: result.isValid,
     value: result.isValid ? numericValue : undefined,
@@ -209,7 +213,7 @@ export function createDebouncedValidator<T>(
   delay: number = 300
 ) {
   let timeoutId: NodeJS.Timeout;
-  
+
   return (
     value: T,
     callback: (result: { isValid: boolean; error?: string }) => void

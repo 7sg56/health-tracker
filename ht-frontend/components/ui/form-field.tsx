@@ -1,11 +1,17 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { cn } from "@/lib/utils";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import * as React from 'react';
+import { cn } from '@/lib/utils';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface FormFieldProps {
   label?: string;
@@ -27,7 +33,7 @@ export function FormField({
   const fieldId = React.useId();
 
   return (
-    <div className={cn("space-y-2", className)}>
+    <div className={cn('space-y-2', className)}>
       {label && (
         <Label htmlFor={fieldId} className="text-sm font-medium">
           {label}
@@ -37,21 +43,26 @@ export function FormField({
       <div className="relative">
         {React.cloneElement(children as React.ReactElement<any>, {
           id: fieldId,
-          "aria-describedby": description ? `${fieldId}-description` : undefined,
-          "aria-invalid": !!error,
+          'aria-describedby': description
+            ? `${fieldId}-description`
+            : undefined,
+          'aria-invalid': !!error,
           className: cn(
             (children as React.ReactElement<any>).props?.className,
-            error && "border-destructive focus-visible:ring-destructive"
+            error && 'border-destructive focus-visible:ring-destructive'
           ),
         })}
       </div>
       {description && (
-        <p id={`${fieldId}-description`} className="text-sm text-muted-foreground">
+        <p
+          id={`${fieldId}-description`}
+          className="text-muted-foreground text-sm"
+        >
           {description}
         </p>
       )}
       {error && (
-        <p className="text-sm text-destructive font-medium" role="alert">
+        <p className="text-destructive text-sm font-medium" role="alert">
           {error}
         </p>
       )}
@@ -90,7 +101,8 @@ export function InputField({
   );
 }
 
-interface TextareaFieldProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+interface TextareaFieldProps
+  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   label?: string;
   error?: string;
   description?: string;
@@ -155,9 +167,7 @@ export function SelectField({
         <SelectTrigger>
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
-        <SelectContent>
-          {children}
-        </SelectContent>
+        <SelectContent>{children}</SelectContent>
       </Select>
     </FormField>
   );

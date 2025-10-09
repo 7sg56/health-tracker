@@ -6,11 +6,18 @@
  * Includes data synchronization, caching, and optimistic updates
  */
 
-import React, { createContext, useContext, useReducer, useCallback, useEffect, useRef } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useReducer,
+  useCallback,
+  useEffect,
+  useRef,
+} from 'react';
 import { HealthService } from '../lib/api/health';
 import { HealthScoreService } from '../lib/api/health-score';
-import { 
-  HealthState, 
+import {
+  HealthState,
   HealthAction,
   WaterIntake,
   WaterIntakeRequest,
@@ -18,7 +25,7 @@ import {
   FoodIntakeRequest,
   Workout,
   WorkoutRequest,
-  DailyHealthIndex
+  DailyHealthIndex,
 } from '../lib/types/health';
 import { useAuth } from './AuthContext';
 
@@ -74,13 +81,23 @@ const initialHealthState: EnhancedHealthState = {
 };
 
 // Enhanced health actions
-type EnhancedHealthAction = HealthAction 
-  | { type: 'SET_CACHE'; payload: { key: keyof EnhancedHealthState['cache']; data: any } }
+type EnhancedHealthAction =
+  | HealthAction
+  | {
+      type: 'SET_CACHE';
+      payload: { key: keyof EnhancedHealthState['cache']; data: any };
+    }
   | { type: 'INVALIDATE_CACHE'; payload?: keyof EnhancedHealthState['cache'] }
   | { type: 'SET_SYNC_STATUS'; payload: boolean }
   | { type: 'SET_LAST_SYNC_TIME'; payload: number }
-  | { type: 'ADD_OPTIMISTIC_UPDATE'; payload: { type: 'water' | 'food' | 'workout'; data: any } }
-  | { type: 'REMOVE_OPTIMISTIC_UPDATE'; payload: { type: 'water' | 'food' | 'workout'; id: number } }
+  | {
+      type: 'ADD_OPTIMISTIC_UPDATE';
+      payload: { type: 'water' | 'food' | 'workout'; data: any };
+    }
+  | {
+      type: 'REMOVE_OPTIMISTIC_UPDATE';
+      payload: { type: 'water' | 'food' | 'workout'; id: number };
+    }
   | { type: 'CLEAR_OPTIMISTIC_UPDATES' };
 
 // Helper function to create cache entry
@@ -100,7 +117,10 @@ function isCacheValid<T>(cache: CacheEntry<T> | null): boolean {
 }
 
 // Health reducer
-function healthReducer(state: EnhancedHealthState, action: EnhancedHealthAction): EnhancedHealthState {
+function healthReducer(
+  state: EnhancedHealthState,
+  action: EnhancedHealthAction
+): EnhancedHealthState {
   switch (action.type) {
     case 'HEALTH_LOADING':
       return {
@@ -142,12 +162,16 @@ function healthReducer(state: EnhancedHealthState, action: EnhancedHealthAction)
         },
         optimisticUpdates: {
           ...state.optimisticUpdates,
-          waterIntakes: state.optimisticUpdates.waterIntakes.filter(item => item.id !== action.payload.id),
+          waterIntakes: state.optimisticUpdates.waterIntakes.filter(
+            item => item.id !== action.payload.id
+          ),
         },
       };
 
     case 'REMOVE_WATER_INTAKE':
-      const filteredWaterIntakes = state.waterIntakes.filter(item => item.id !== action.payload);
+      const filteredWaterIntakes = state.waterIntakes.filter(
+        item => item.id !== action.payload
+      );
       return {
         ...state,
         waterIntakes: filteredWaterIntakes,
@@ -178,7 +202,9 @@ function healthReducer(state: EnhancedHealthState, action: EnhancedHealthAction)
         },
         optimisticUpdates: {
           ...state.optimisticUpdates,
-          foodIntakes: state.optimisticUpdates.foodIntakes.filter(item => item.id !== action.payload.id),
+          foodIntakes: state.optimisticUpdates.foodIntakes.filter(
+            item => item.id !== action.payload.id
+          ),
         },
       };
 
@@ -195,12 +221,16 @@ function healthReducer(state: EnhancedHealthState, action: EnhancedHealthAction)
         },
         optimisticUpdates: {
           ...state.optimisticUpdates,
-          foodIntakes: state.optimisticUpdates.foodIntakes.filter(item => item.id !== action.payload.id),
+          foodIntakes: state.optimisticUpdates.foodIntakes.filter(
+            item => item.id !== action.payload.id
+          ),
         },
       };
 
     case 'REMOVE_FOOD_INTAKE':
-      const filteredFoodIntakes = state.foodIntakes.filter(item => item.id !== action.payload);
+      const filteredFoodIntakes = state.foodIntakes.filter(
+        item => item.id !== action.payload
+      );
       return {
         ...state,
         foodIntakes: filteredFoodIntakes,
@@ -231,7 +261,9 @@ function healthReducer(state: EnhancedHealthState, action: EnhancedHealthAction)
         },
         optimisticUpdates: {
           ...state.optimisticUpdates,
-          workouts: state.optimisticUpdates.workouts.filter(item => item.id !== action.payload.id),
+          workouts: state.optimisticUpdates.workouts.filter(
+            item => item.id !== action.payload.id
+          ),
         },
       };
 
@@ -248,12 +280,16 @@ function healthReducer(state: EnhancedHealthState, action: EnhancedHealthAction)
         },
         optimisticUpdates: {
           ...state.optimisticUpdates,
-          workouts: state.optimisticUpdates.workouts.filter(item => item.id !== action.payload.id),
+          workouts: state.optimisticUpdates.workouts.filter(
+            item => item.id !== action.payload.id
+          ),
         },
       };
 
     case 'REMOVE_WORKOUT':
-      const filteredWorkouts = state.workouts.filter(item => item.id !== action.payload);
+      const filteredWorkouts = state.workouts.filter(
+        item => item.id !== action.payload
+      );
       return {
         ...state,
         workouts: filteredWorkouts,
@@ -288,8 +324,9 @@ function healthReducer(state: EnhancedHealthState, action: EnhancedHealthAction)
           ...state,
           cache: {
             ...state.cache,
-            [action.payload]: state.cache[action.payload] ? 
-              { ...state.cache[action.payload]!, isStale: true } : null,
+            [action.payload]: state.cache[action.payload]
+              ? { ...state.cache[action.payload]!, isStale: true }
+              : null,
           },
         };
       } else {
@@ -297,10 +334,18 @@ function healthReducer(state: EnhancedHealthState, action: EnhancedHealthAction)
         return {
           ...state,
           cache: {
-            waterIntakes: state.cache.waterIntakes ? { ...state.cache.waterIntakes, isStale: true } : null,
-            foodIntakes: state.cache.foodIntakes ? { ...state.cache.foodIntakes, isStale: true } : null,
-            workouts: state.cache.workouts ? { ...state.cache.workouts, isStale: true } : null,
-            healthScore: state.cache.healthScore ? { ...state.cache.healthScore, isStale: true } : null,
+            waterIntakes: state.cache.waterIntakes
+              ? { ...state.cache.waterIntakes, isStale: true }
+              : null,
+            foodIntakes: state.cache.foodIntakes
+              ? { ...state.cache.foodIntakes, isStale: true }
+              : null,
+            workouts: state.cache.workouts
+              ? { ...state.cache.workouts, isStale: true }
+              : null,
+            healthScore: state.cache.healthScore
+              ? { ...state.cache.healthScore, isStale: true }
+              : null,
           },
         };
       }
@@ -323,16 +368,31 @@ function healthReducer(state: EnhancedHealthState, action: EnhancedHealthAction)
         ...state,
         optimisticUpdates: {
           ...state.optimisticUpdates,
-          [type === 'water' ? 'waterIntakes' : type === 'food' ? 'foodIntakes' : 'workouts']: [
-            ...state.optimisticUpdates[type === 'water' ? 'waterIntakes' : type === 'food' ? 'foodIntakes' : 'workouts'],
-            data
+          [type === 'water'
+            ? 'waterIntakes'
+            : type === 'food'
+              ? 'foodIntakes'
+              : 'workouts']: [
+            ...state.optimisticUpdates[
+              type === 'water'
+                ? 'waterIntakes'
+                : type === 'food'
+                  ? 'foodIntakes'
+                  : 'workouts'
+            ],
+            data,
           ],
         },
       };
 
     case 'REMOVE_OPTIMISTIC_UPDATE':
       const { type: removeType, id } = action.payload;
-      const key = removeType === 'water' ? 'waterIntakes' : removeType === 'food' ? 'foodIntakes' : 'workouts';
+      const key =
+        removeType === 'water'
+          ? 'waterIntakes'
+          : removeType === 'food'
+            ? 'foodIntakes'
+            : 'workouts';
       return {
         ...state,
         optimisticUpdates: {
@@ -359,35 +419,49 @@ function healthReducer(state: EnhancedHealthState, action: EnhancedHealthAction)
 // Health context type
 interface HealthContextType {
   state: EnhancedHealthState;
-  
+
   // Water intake methods
-  addWaterIntake: (data: WaterIntakeRequest, optimistic?: boolean) => Promise<void>;
+  addWaterIntake: (
+    data: WaterIntakeRequest,
+    optimistic?: boolean
+  ) => Promise<void>;
   deleteWaterIntake: (id: number, optimistic?: boolean) => Promise<void>;
   loadWaterIntakes: (forceRefresh?: boolean) => Promise<void>;
-  
+
   // Food intake methods
-  addFoodIntake: (data: FoodIntakeRequest, optimistic?: boolean) => Promise<void>;
-  updateFoodIntake: (id: number, data: FoodIntakeRequest, optimistic?: boolean) => Promise<void>;
+  addFoodIntake: (
+    data: FoodIntakeRequest,
+    optimistic?: boolean
+  ) => Promise<void>;
+  updateFoodIntake: (
+    id: number,
+    data: FoodIntakeRequest,
+    optimistic?: boolean
+  ) => Promise<void>;
   deleteFoodIntake: (id: number, optimistic?: boolean) => Promise<void>;
   loadFoodIntakes: (forceRefresh?: boolean) => Promise<void>;
-  
+
   // Workout methods
   addWorkout: (data: WorkoutRequest, optimistic?: boolean) => Promise<void>;
-  updateWorkout: (id: number, data: WorkoutRequest, optimistic?: boolean) => Promise<void>;
+  updateWorkout: (
+    id: number,
+    data: WorkoutRequest,
+    optimistic?: boolean
+  ) => Promise<void>;
   deleteWorkout: (id: number, optimistic?: boolean) => Promise<void>;
   loadWorkouts: (forceRefresh?: boolean) => Promise<void>;
-  
+
   // Health score methods
   refreshHealthScore: () => Promise<void>;
   loadHealthScore: (date?: string, forceRefresh?: boolean) => Promise<void>;
-  
+
   // General methods
   loadAllHealthData: (forceRefresh?: boolean) => Promise<void>;
   syncAllData: () => Promise<void>;
   invalidateCache: (key?: keyof EnhancedHealthState['cache']) => void;
   clearError: () => void;
   clearAllData: () => void;
-  
+
   // Cache and sync status
   isCacheValid: (key: keyof EnhancedHealthState['cache']) => boolean;
   getLastSyncTime: () => number | null;
@@ -406,25 +480,31 @@ export function HealthProvider({ children }: { children: React.ReactNode }) {
   const maxRetries = 3;
 
   // Helper function to handle API errors with retry logic
-  const handleApiError = useCallback((error: unknown, operation: string, shouldRetry: boolean = false) => {
-    console.error(`Health API error during ${operation}:`, error);
-    const errorMessage = error instanceof Error ? error.message : `Failed to ${operation}`;
-    
-    if (shouldRetry && retryCountRef.current < maxRetries) {
-      retryCountRef.current += 1;
-      console.log(`Retrying ${operation} (attempt ${retryCountRef.current}/${maxRetries})`);
-      
-      // Retry after a delay
-      setTimeout(() => {
-        if (operation.includes('sync')) {
-          syncAllData();
-        }
-      }, 1000 * retryCountRef.current); // Exponential backoff
-    } else {
-      dispatch({ type: 'HEALTH_ERROR', payload: errorMessage });
-      retryCountRef.current = 0; // Reset retry count
-    }
-  }, []);
+  const handleApiError = useCallback(
+    (error: unknown, operation: string, shouldRetry: boolean = false) => {
+      console.error(`Health API error during ${operation}:`, error);
+      const errorMessage =
+        error instanceof Error ? error.message : `Failed to ${operation}`;
+
+      if (shouldRetry && retryCountRef.current < maxRetries) {
+        retryCountRef.current += 1;
+        console.log(
+          `Retrying ${operation} (attempt ${retryCountRef.current}/${maxRetries})`
+        );
+
+        // Retry after a delay
+        setTimeout(() => {
+          if (operation.includes('sync')) {
+            syncAllData();
+          }
+        }, 1000 * retryCountRef.current); // Exponential backoff
+      } else {
+        dispatch({ type: 'HEALTH_ERROR', payload: errorMessage });
+        retryCountRef.current = 0; // Reset retry count
+      }
+    },
+    []
+  );
 
   // Helper function to generate optimistic ID
   const generateOptimisticId = useCallback(() => {
@@ -432,22 +512,25 @@ export function HealthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   // Helper function to create optimistic update
-  const createOptimisticUpdate = useCallback((type: 'water' | 'food' | 'workout', data: any) => {
-    const optimisticId = generateOptimisticId();
-    const optimisticData = {
-      ...data,
-      id: optimisticId,
-      date: new Date().toISOString(),
-      createdAt: new Date().toISOString(),
-    };
-    
-    dispatch({ 
-      type: 'ADD_OPTIMISTIC_UPDATE', 
-      payload: { type, data: optimisticData } 
-    });
-    
-    return optimisticData;
-  }, [generateOptimisticId]);
+  const createOptimisticUpdate = useCallback(
+    (type: 'water' | 'food' | 'workout', data: any) => {
+      const optimisticId = generateOptimisticId();
+      const optimisticData = {
+        ...data,
+        id: optimisticId,
+        date: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+      };
+
+      dispatch({
+        type: 'ADD_OPTIMISTIC_UPDATE',
+        payload: { type, data: optimisticData },
+      });
+
+      return optimisticData;
+    },
+    [generateOptimisticId]
+  );
 
   // Clear error function
   const clearError = useCallback(() => {
@@ -463,7 +546,7 @@ export function HealthProvider({ children }: { children: React.ReactNode }) {
     dispatch({ type: 'HEALTH_RESET_ERROR' });
     dispatch({ type: 'CLEAR_OPTIMISTIC_UPDATES' });
     dispatch({ type: 'INVALIDATE_CACHE' });
-    
+
     // Clear any pending sync operations
     if (syncTimeoutRef.current) {
       clearTimeout(syncTimeoutRef.current);
@@ -473,14 +556,20 @@ export function HealthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   // Cache management functions
-  const invalidateCache = useCallback((key?: keyof EnhancedHealthState['cache']) => {
-    dispatch({ type: 'INVALIDATE_CACHE', payload: key });
-  }, []);
+  const invalidateCache = useCallback(
+    (key?: keyof EnhancedHealthState['cache']) => {
+      dispatch({ type: 'INVALIDATE_CACHE', payload: key });
+    },
+    []
+  );
 
-  const isCacheValidForKey = useCallback((key: keyof EnhancedHealthState['cache']) => {
-    const cacheEntry = state.cache[key];
-    return cacheEntry ? isCacheValid(cacheEntry) : false;
-  }, [state.cache]);
+  const isCacheValidForKey = useCallback(
+    (key: keyof EnhancedHealthState['cache']) => {
+      const cacheEntry = state.cache[key];
+      return cacheEntry ? isCacheValid(cacheEntry) : false;
+    },
+    [state.cache]
+  );
 
   const getLastSyncTime = useCallback(() => {
     return state.lastSyncTime;
@@ -496,24 +585,28 @@ export function HealthProvider({ children }: { children: React.ReactNode }) {
     if (syncTimeoutRef.current) {
       clearTimeout(syncTimeoutRef.current);
     }
-    
+
     syncTimeoutRef.current = setTimeout(() => {
       // refreshHealthScore will be defined later, so we'll call it via a promise
       Promise.resolve().then(async () => {
         try {
           // Invalidate cache first
           invalidateCache('healthScore');
-          
+
           // Try to recalculate health score first
           const response = await HealthScoreService.recalculateHealthScore();
-          
+
           if (response.data) {
             dispatch({ type: 'SET_HEALTH_SCORE', payload: response.data });
           } else {
             // Fallback to loading current score
-            const fallbackResponse = await HealthScoreService.getCurrentHealthScore();
+            const fallbackResponse =
+              await HealthScoreService.getCurrentHealthScore();
             if (fallbackResponse.data) {
-              dispatch({ type: 'SET_HEALTH_SCORE', payload: fallbackResponse.data });
+              dispatch({
+                type: 'SET_HEALTH_SCORE',
+                payload: fallbackResponse.data,
+              });
             } else {
               dispatch({ type: 'SET_HEALTH_SCORE', payload: null });
             }
@@ -522,14 +615,21 @@ export function HealthProvider({ children }: { children: React.ReactNode }) {
           console.warn('Failed to refresh health score:', error);
           // Fallback to loading current score
           try {
-            const fallbackResponse = await HealthScoreService.getCurrentHealthScore();
+            const fallbackResponse =
+              await HealthScoreService.getCurrentHealthScore();
             if (fallbackResponse.data) {
-              dispatch({ type: 'SET_HEALTH_SCORE', payload: fallbackResponse.data });
+              dispatch({
+                type: 'SET_HEALTH_SCORE',
+                payload: fallbackResponse.data,
+              });
             } else {
               dispatch({ type: 'SET_HEALTH_SCORE', payload: null });
             }
           } catch (fallbackError) {
-            console.warn('Failed to load fallback health score:', fallbackError);
+            console.warn(
+              'Failed to load fallback health score:',
+              fallbackError
+            );
             dispatch({ type: 'SET_HEALTH_SCORE', payload: null });
           }
         }
@@ -538,439 +638,542 @@ export function HealthProvider({ children }: { children: React.ReactNode }) {
   }, [invalidateCache]);
 
   // ==================== Water Intake Methods ====================
-  
-  const loadWaterIntakes = useCallback(async (forceRefresh: boolean = false) => {
-    try {
-      // Check cache first unless force refresh is requested
-      if (!forceRefresh && isCacheValid(state.cache.waterIntakes)) {
-        dispatch({ type: 'SET_WATER_INTAKES', payload: state.cache.waterIntakes!.data });
-        return;
-      }
 
-      dispatch({ type: 'HEALTH_LOADING', payload: true });
-      
-      const response = await HealthService.getWaterIntakes({ size: 100 });
-      
-      if (response.data) {
-        dispatch({ type: 'SET_WATER_INTAKES', payload: response.data.content });
-      } else {
-        throw new Error(response.error || 'Failed to load water intakes');
-      }
-    } catch (error) {
-      handleApiError(error, 'load water intakes', true);
-    } finally {
-      dispatch({ type: 'HEALTH_LOADING', payload: false });
-    }
-  }, [handleApiError, state.cache.waterIntakes]);
-
-  const addWaterIntake = useCallback(async (data: WaterIntakeRequest, optimistic: boolean = true) => {
-    let optimisticData: WaterIntake | null = null;
-    
-    try {
-      // Add optimistic update if enabled
-      if (optimistic) {
-        optimisticData = createOptimisticUpdate('water', data);
-        dispatch({ type: 'ADD_WATER_INTAKE', payload: optimisticData });
-      } else {
-        dispatch({ type: 'HEALTH_LOADING', payload: true });
-      }
-      
-      const response = await HealthService.createWaterIntake(data);
-      
-      if (response.data) {
-        // Remove optimistic update and add real data
-        if (optimisticData) {
-          dispatch({ type: 'REMOVE_OPTIMISTIC_UPDATE', payload: { type: 'water', id: optimisticData.id } });
+  const loadWaterIntakes = useCallback(
+    async (forceRefresh: boolean = false) => {
+      try {
+        // Check cache first unless force refresh is requested
+        if (!forceRefresh && isCacheValid(state.cache.waterIntakes)) {
+          dispatch({
+            type: 'SET_WATER_INTAKES',
+            payload: state.cache.waterIntakes!.data,
+          });
+          return;
         }
-        dispatch({ type: 'ADD_WATER_INTAKE', payload: response.data });
-        
-        // Invalidate health score cache and schedule refresh
-        invalidateCache('healthScore');
-        scheduleHealthScoreRefresh();
-      } else {
-        throw new Error(response.error || 'Failed to add water intake');
-      }
-    } catch (error) {
-      // Remove optimistic update on error
-      if (optimisticData) {
-        dispatch({ type: 'REMOVE_WATER_INTAKE', payload: optimisticData.id });
-      }
-      handleApiError(error, 'add water intake');
-      throw error; // Re-throw for form handling
-    } finally {
-      if (!optimistic) {
-        dispatch({ type: 'HEALTH_LOADING', payload: false });
-      }
-    }
-  }, [handleApiError, createOptimisticUpdate, invalidateCache, scheduleHealthScoreRefresh]);
 
-  const deleteWaterIntake = useCallback(async (id: number, optimistic: boolean = true) => {
-    let originalItem: WaterIntake | null = null;
-    
-    try {
-      // Store original item for rollback
-      originalItem = state.waterIntakes.find(item => item.id === id) || null;
-      
-      // Optimistically remove item if enabled
-      if (optimistic && originalItem) {
-        dispatch({ type: 'REMOVE_WATER_INTAKE', payload: id });
-      } else {
         dispatch({ type: 'HEALTH_LOADING', payload: true });
-      }
-      
-      const response = await HealthService.deleteWaterIntake(id);
-      
-      if (response.status === 200 || response.status === 204) {
-        // Ensure item is removed (in case optimistic update wasn't used)
-        dispatch({ type: 'REMOVE_WATER_INTAKE', payload: id });
-        
-        // Invalidate health score cache and schedule refresh
-        invalidateCache('healthScore');
-        scheduleHealthScoreRefresh();
-      } else {
-        throw new Error(response.error || 'Failed to delete water intake');
-      }
-    } catch (error) {
-      // Rollback optimistic update on error
-      if (optimistic && originalItem) {
-        dispatch({ type: 'ADD_WATER_INTAKE', payload: originalItem });
-      }
-      handleApiError(error, 'delete water intake');
-      throw error;
-    } finally {
-      if (!optimistic) {
+
+        const response = await HealthService.getWaterIntakes({ size: 100 });
+
+        if (response.data) {
+          dispatch({
+            type: 'SET_WATER_INTAKES',
+            payload: response.data.content,
+          });
+        } else {
+          throw new Error(response.error || 'Failed to load water intakes');
+        }
+      } catch (error) {
+        handleApiError(error, 'load water intakes', true);
+      } finally {
         dispatch({ type: 'HEALTH_LOADING', payload: false });
       }
-    }
-  }, [handleApiError, state.waterIntakes, invalidateCache, scheduleHealthScoreRefresh]);
+    },
+    [handleApiError, state.cache.waterIntakes]
+  );
+
+  const addWaterIntake = useCallback(
+    async (data: WaterIntakeRequest, optimistic: boolean = true) => {
+      let optimisticData: WaterIntake | null = null;
+
+      try {
+        // Add optimistic update if enabled
+        if (optimistic) {
+          optimisticData = createOptimisticUpdate('water', data);
+          dispatch({ type: 'ADD_WATER_INTAKE', payload: optimisticData });
+        } else {
+          dispatch({ type: 'HEALTH_LOADING', payload: true });
+        }
+
+        const response = await HealthService.createWaterIntake(data);
+
+        if (response.data) {
+          // Remove optimistic update and add real data
+          if (optimisticData) {
+            dispatch({
+              type: 'REMOVE_OPTIMISTIC_UPDATE',
+              payload: { type: 'water', id: optimisticData.id },
+            });
+          }
+          dispatch({ type: 'ADD_WATER_INTAKE', payload: response.data });
+
+          // Invalidate health score cache and schedule refresh
+          invalidateCache('healthScore');
+          scheduleHealthScoreRefresh();
+        } else {
+          throw new Error(response.error || 'Failed to add water intake');
+        }
+      } catch (error) {
+        // Remove optimistic update on error
+        if (optimisticData) {
+          dispatch({ type: 'REMOVE_WATER_INTAKE', payload: optimisticData.id });
+        }
+        handleApiError(error, 'add water intake');
+        throw error; // Re-throw for form handling
+      } finally {
+        if (!optimistic) {
+          dispatch({ type: 'HEALTH_LOADING', payload: false });
+        }
+      }
+    },
+    [
+      handleApiError,
+      createOptimisticUpdate,
+      invalidateCache,
+      scheduleHealthScoreRefresh,
+    ]
+  );
+
+  const deleteWaterIntake = useCallback(
+    async (id: number, optimistic: boolean = true) => {
+      let originalItem: WaterIntake | null = null;
+
+      try {
+        // Store original item for rollback
+        originalItem = state.waterIntakes.find(item => item.id === id) || null;
+
+        // Optimistically remove item if enabled
+        if (optimistic && originalItem) {
+          dispatch({ type: 'REMOVE_WATER_INTAKE', payload: id });
+        } else {
+          dispatch({ type: 'HEALTH_LOADING', payload: true });
+        }
+
+        const response = await HealthService.deleteWaterIntake(id);
+
+        if (response.status === 200 || response.status === 204) {
+          // Ensure item is removed (in case optimistic update wasn't used)
+          dispatch({ type: 'REMOVE_WATER_INTAKE', payload: id });
+
+          // Invalidate health score cache and schedule refresh
+          invalidateCache('healthScore');
+          scheduleHealthScoreRefresh();
+        } else {
+          throw new Error(response.error || 'Failed to delete water intake');
+        }
+      } catch (error) {
+        // Rollback optimistic update on error
+        if (optimistic && originalItem) {
+          dispatch({ type: 'ADD_WATER_INTAKE', payload: originalItem });
+        }
+        handleApiError(error, 'delete water intake');
+        throw error;
+      } finally {
+        if (!optimistic) {
+          dispatch({ type: 'HEALTH_LOADING', payload: false });
+        }
+      }
+    },
+    [
+      handleApiError,
+      state.waterIntakes,
+      invalidateCache,
+      scheduleHealthScoreRefresh,
+    ]
+  );
 
   // ==================== Food Intake Methods ====================
-  
-  const loadFoodIntakes = useCallback(async (forceRefresh: boolean = false) => {
-    try {
-      // Check cache first unless force refresh is requested
-      if (!forceRefresh && isCacheValid(state.cache.foodIntakes)) {
-        dispatch({ type: 'SET_FOOD_INTAKES', payload: state.cache.foodIntakes!.data });
-        return;
-      }
 
-      dispatch({ type: 'HEALTH_LOADING', payload: true });
-      
-      const response = await HealthService.getFoodIntakes({ size: 100 });
-      
-      if (response.data) {
-        dispatch({ type: 'SET_FOOD_INTAKES', payload: response.data.content });
-      } else {
-        throw new Error(response.error || 'Failed to load food intakes');
-      }
-    } catch (error) {
-      handleApiError(error, 'load food intakes', true);
-    } finally {
-      dispatch({ type: 'HEALTH_LOADING', payload: false });
-    }
-  }, [handleApiError, state.cache.foodIntakes]);
-
-  const addFoodIntake = useCallback(async (data: FoodIntakeRequest, optimistic: boolean = true) => {
-    let optimisticData: FoodIntake | null = null;
-    
-    try {
-      // Add optimistic update if enabled
-      if (optimistic) {
-        optimisticData = createOptimisticUpdate('food', data);
-        dispatch({ type: 'ADD_FOOD_INTAKE', payload: optimisticData });
-      } else {
-        dispatch({ type: 'HEALTH_LOADING', payload: true });
-      }
-      
-      const response = await HealthService.createFoodIntake(data);
-      
-      if (response.data) {
-        // Remove optimistic update and add real data
-        if (optimisticData) {
-          dispatch({ type: 'REMOVE_OPTIMISTIC_UPDATE', payload: { type: 'food', id: optimisticData.id } });
+  const loadFoodIntakes = useCallback(
+    async (forceRefresh: boolean = false) => {
+      try {
+        // Check cache first unless force refresh is requested
+        if (!forceRefresh && isCacheValid(state.cache.foodIntakes)) {
+          dispatch({
+            type: 'SET_FOOD_INTAKES',
+            payload: state.cache.foodIntakes!.data,
+          });
+          return;
         }
-        dispatch({ type: 'ADD_FOOD_INTAKE', payload: response.data });
-        
-        // Invalidate health score cache and schedule refresh
-        invalidateCache('healthScore');
-        scheduleHealthScoreRefresh();
-      } else {
-        throw new Error(response.error || 'Failed to add food intake');
-      }
-    } catch (error) {
-      // Remove optimistic update on error
-      if (optimisticData) {
-        dispatch({ type: 'REMOVE_FOOD_INTAKE', payload: optimisticData.id });
-      }
-      handleApiError(error, 'add food intake');
-      throw error;
-    } finally {
-      if (!optimistic) {
-        dispatch({ type: 'HEALTH_LOADING', payload: false });
-      }
-    }
-  }, [handleApiError, createOptimisticUpdate, invalidateCache, scheduleHealthScoreRefresh]);
 
-  const updateFoodIntake = useCallback(async (id: number, data: FoodIntakeRequest, optimistic: boolean = true) => {
-    let originalItem: FoodIntake | null = null;
-    
-    try {
-      // Store original item for rollback
-      originalItem = state.foodIntakes.find(item => item.id === id) || null;
-      
-      // Optimistically update item if enabled
-      if (optimistic && originalItem) {
-        const optimisticUpdate = { ...originalItem, ...data };
-        dispatch({ type: 'UPDATE_FOOD_INTAKE', payload: optimisticUpdate });
-      } else {
         dispatch({ type: 'HEALTH_LOADING', payload: true });
-      }
-      
-      const response = await HealthService.updateFoodIntake(id, data);
-      
-      if (response.data) {
-        dispatch({ type: 'UPDATE_FOOD_INTAKE', payload: response.data });
-        
-        // Invalidate health score cache and schedule refresh
-        invalidateCache('healthScore');
-        scheduleHealthScoreRefresh();
-      } else {
-        throw new Error(response.error || 'Failed to update food intake');
-      }
-    } catch (error) {
-      // Rollback optimistic update on error
-      if (optimistic && originalItem) {
-        dispatch({ type: 'UPDATE_FOOD_INTAKE', payload: originalItem });
-      }
-      handleApiError(error, 'update food intake');
-      throw error;
-    } finally {
-      if (!optimistic) {
-        dispatch({ type: 'HEALTH_LOADING', payload: false });
-      }
-    }
-  }, [handleApiError, state.foodIntakes, invalidateCache, scheduleHealthScoreRefresh]);
 
-  const deleteFoodIntake = useCallback(async (id: number, optimistic: boolean = true) => {
-    let originalItem: FoodIntake | null = null;
-    
-    try {
-      // Store original item for rollback
-      originalItem = state.foodIntakes.find(item => item.id === id) || null;
-      
-      // Optimistically remove item if enabled
-      if (optimistic && originalItem) {
-        dispatch({ type: 'REMOVE_FOOD_INTAKE', payload: id });
-      } else {
-        dispatch({ type: 'HEALTH_LOADING', payload: true });
-      }
-      
-      const response = await HealthService.deleteFoodIntake(id);
-      
-      if (response.status === 200 || response.status === 204) {
-        dispatch({ type: 'REMOVE_FOOD_INTAKE', payload: id });
-        
-        // Invalidate health score cache and schedule refresh
-        invalidateCache('healthScore');
-        scheduleHealthScoreRefresh();
-      } else {
-        throw new Error(response.error || 'Failed to delete food intake');
-      }
-    } catch (error) {
-      // Rollback optimistic update on error
-      if (optimistic && originalItem) {
-        dispatch({ type: 'ADD_FOOD_INTAKE', payload: originalItem });
-      }
-      handleApiError(error, 'delete food intake');
-      throw error;
-    } finally {
-      if (!optimistic) {
+        const response = await HealthService.getFoodIntakes({ size: 100 });
+
+        if (response.data) {
+          dispatch({
+            type: 'SET_FOOD_INTAKES',
+            payload: response.data.content,
+          });
+        } else {
+          throw new Error(response.error || 'Failed to load food intakes');
+        }
+      } catch (error) {
+        handleApiError(error, 'load food intakes', true);
+      } finally {
         dispatch({ type: 'HEALTH_LOADING', payload: false });
       }
-    }
-  }, [handleApiError, state.foodIntakes, invalidateCache, scheduleHealthScoreRefresh]);
+    },
+    [handleApiError, state.cache.foodIntakes]
+  );
+
+  const addFoodIntake = useCallback(
+    async (data: FoodIntakeRequest, optimistic: boolean = true) => {
+      let optimisticData: FoodIntake | null = null;
+
+      try {
+        // Add optimistic update if enabled
+        if (optimistic) {
+          optimisticData = createOptimisticUpdate('food', data);
+          dispatch({ type: 'ADD_FOOD_INTAKE', payload: optimisticData });
+        } else {
+          dispatch({ type: 'HEALTH_LOADING', payload: true });
+        }
+
+        const response = await HealthService.createFoodIntake(data);
+
+        if (response.data) {
+          // Remove optimistic update and add real data
+          if (optimisticData) {
+            dispatch({
+              type: 'REMOVE_OPTIMISTIC_UPDATE',
+              payload: { type: 'food', id: optimisticData.id },
+            });
+          }
+          dispatch({ type: 'ADD_FOOD_INTAKE', payload: response.data });
+
+          // Invalidate health score cache and schedule refresh
+          invalidateCache('healthScore');
+          scheduleHealthScoreRefresh();
+        } else {
+          throw new Error(response.error || 'Failed to add food intake');
+        }
+      } catch (error) {
+        // Remove optimistic update on error
+        if (optimisticData) {
+          dispatch({ type: 'REMOVE_FOOD_INTAKE', payload: optimisticData.id });
+        }
+        handleApiError(error, 'add food intake');
+        throw error;
+      } finally {
+        if (!optimistic) {
+          dispatch({ type: 'HEALTH_LOADING', payload: false });
+        }
+      }
+    },
+    [
+      handleApiError,
+      createOptimisticUpdate,
+      invalidateCache,
+      scheduleHealthScoreRefresh,
+    ]
+  );
+
+  const updateFoodIntake = useCallback(
+    async (id: number, data: FoodIntakeRequest, optimistic: boolean = true) => {
+      let originalItem: FoodIntake | null = null;
+
+      try {
+        // Store original item for rollback
+        originalItem = state.foodIntakes.find(item => item.id === id) || null;
+
+        // Optimistically update item if enabled
+        if (optimistic && originalItem) {
+          const optimisticUpdate = { ...originalItem, ...data };
+          dispatch({ type: 'UPDATE_FOOD_INTAKE', payload: optimisticUpdate });
+        } else {
+          dispatch({ type: 'HEALTH_LOADING', payload: true });
+        }
+
+        const response = await HealthService.updateFoodIntake(id, data);
+
+        if (response.data) {
+          dispatch({ type: 'UPDATE_FOOD_INTAKE', payload: response.data });
+
+          // Invalidate health score cache and schedule refresh
+          invalidateCache('healthScore');
+          scheduleHealthScoreRefresh();
+        } else {
+          throw new Error(response.error || 'Failed to update food intake');
+        }
+      } catch (error) {
+        // Rollback optimistic update on error
+        if (optimistic && originalItem) {
+          dispatch({ type: 'UPDATE_FOOD_INTAKE', payload: originalItem });
+        }
+        handleApiError(error, 'update food intake');
+        throw error;
+      } finally {
+        if (!optimistic) {
+          dispatch({ type: 'HEALTH_LOADING', payload: false });
+        }
+      }
+    },
+    [
+      handleApiError,
+      state.foodIntakes,
+      invalidateCache,
+      scheduleHealthScoreRefresh,
+    ]
+  );
+
+  const deleteFoodIntake = useCallback(
+    async (id: number, optimistic: boolean = true) => {
+      let originalItem: FoodIntake | null = null;
+
+      try {
+        // Store original item for rollback
+        originalItem = state.foodIntakes.find(item => item.id === id) || null;
+
+        // Optimistically remove item if enabled
+        if (optimistic && originalItem) {
+          dispatch({ type: 'REMOVE_FOOD_INTAKE', payload: id });
+        } else {
+          dispatch({ type: 'HEALTH_LOADING', payload: true });
+        }
+
+        const response = await HealthService.deleteFoodIntake(id);
+
+        if (response.status === 200 || response.status === 204) {
+          dispatch({ type: 'REMOVE_FOOD_INTAKE', payload: id });
+
+          // Invalidate health score cache and schedule refresh
+          invalidateCache('healthScore');
+          scheduleHealthScoreRefresh();
+        } else {
+          throw new Error(response.error || 'Failed to delete food intake');
+        }
+      } catch (error) {
+        // Rollback optimistic update on error
+        if (optimistic && originalItem) {
+          dispatch({ type: 'ADD_FOOD_INTAKE', payload: originalItem });
+        }
+        handleApiError(error, 'delete food intake');
+        throw error;
+      } finally {
+        if (!optimistic) {
+          dispatch({ type: 'HEALTH_LOADING', payload: false });
+        }
+      }
+    },
+    [
+      handleApiError,
+      state.foodIntakes,
+      invalidateCache,
+      scheduleHealthScoreRefresh,
+    ]
+  );
 
   // ==================== Workout Methods ====================
-  
-  const loadWorkouts = useCallback(async (forceRefresh: boolean = false) => {
-    try {
-      // Check cache first unless force refresh is requested
-      if (!forceRefresh && isCacheValid(state.cache.workouts)) {
-        dispatch({ type: 'SET_WORKOUTS', payload: state.cache.workouts!.data });
-        return;
-      }
 
-      dispatch({ type: 'HEALTH_LOADING', payload: true });
-      
-      const response = await HealthService.getWorkouts({ size: 100 });
-      
-      if (response.data) {
-        dispatch({ type: 'SET_WORKOUTS', payload: response.data.content });
-      } else {
-        throw new Error(response.error || 'Failed to load workouts');
-      }
-    } catch (error) {
-      handleApiError(error, 'load workouts', true);
-    } finally {
-      dispatch({ type: 'HEALTH_LOADING', payload: false });
-    }
-  }, [handleApiError, state.cache.workouts]);
-
-  const addWorkout = useCallback(async (data: WorkoutRequest, optimistic: boolean = true) => {
-    let optimisticData: Workout | null = null;
-    
-    try {
-      // Add optimistic update if enabled
-      if (optimistic) {
-        optimisticData = createOptimisticUpdate('workout', data);
-        dispatch({ type: 'ADD_WORKOUT', payload: optimisticData });
-      } else {
-        dispatch({ type: 'HEALTH_LOADING', payload: true });
-      }
-      
-      const response = await HealthService.createWorkout(data);
-      
-      if (response.data) {
-        // Remove optimistic update and add real data
-        if (optimisticData) {
-          dispatch({ type: 'REMOVE_OPTIMISTIC_UPDATE', payload: { type: 'workout', id: optimisticData.id } });
+  const loadWorkouts = useCallback(
+    async (forceRefresh: boolean = false) => {
+      try {
+        // Check cache first unless force refresh is requested
+        if (!forceRefresh && isCacheValid(state.cache.workouts)) {
+          dispatch({
+            type: 'SET_WORKOUTS',
+            payload: state.cache.workouts!.data,
+          });
+          return;
         }
-        dispatch({ type: 'ADD_WORKOUT', payload: response.data });
-        
-        // Invalidate health score cache and schedule refresh
-        invalidateCache('healthScore');
-        scheduleHealthScoreRefresh();
-      } else {
-        throw new Error(response.error || 'Failed to add workout');
-      }
-    } catch (error) {
-      // Remove optimistic update on error
-      if (optimisticData) {
-        dispatch({ type: 'REMOVE_WORKOUT', payload: optimisticData.id });
-      }
-      handleApiError(error, 'add workout');
-      throw error;
-    } finally {
-      if (!optimistic) {
-        dispatch({ type: 'HEALTH_LOADING', payload: false });
-      }
-    }
-  }, [handleApiError, createOptimisticUpdate, invalidateCache, scheduleHealthScoreRefresh]);
 
-  const updateWorkout = useCallback(async (id: number, data: WorkoutRequest, optimistic: boolean = true) => {
-    let originalItem: Workout | null = null;
-    
-    try {
-      // Store original item for rollback
-      originalItem = state.workouts.find(item => item.id === id) || null;
-      
-      // Optimistically update item if enabled
-      if (optimistic && originalItem) {
-        const optimisticUpdate = { ...originalItem, ...data };
-        dispatch({ type: 'UPDATE_WORKOUT', payload: optimisticUpdate });
-      } else {
         dispatch({ type: 'HEALTH_LOADING', payload: true });
-      }
-      
-      const response = await HealthService.updateWorkout(id, data);
-      
-      if (response.data) {
-        dispatch({ type: 'UPDATE_WORKOUT', payload: response.data });
-        
-        // Invalidate health score cache and schedule refresh
-        invalidateCache('healthScore');
-        scheduleHealthScoreRefresh();
-      } else {
-        throw new Error(response.error || 'Failed to update workout');
-      }
-    } catch (error) {
-      // Rollback optimistic update on error
-      if (optimistic && originalItem) {
-        dispatch({ type: 'UPDATE_WORKOUT', payload: originalItem });
-      }
-      handleApiError(error, 'update workout');
-      throw error;
-    } finally {
-      if (!optimistic) {
-        dispatch({ type: 'HEALTH_LOADING', payload: false });
-      }
-    }
-  }, [handleApiError, state.workouts, invalidateCache, scheduleHealthScoreRefresh]);
 
-  const deleteWorkout = useCallback(async (id: number, optimistic: boolean = true) => {
-    let originalItem: Workout | null = null;
-    
-    try {
-      // Store original item for rollback
-      originalItem = state.workouts.find(item => item.id === id) || null;
-      
-      // Optimistically remove item if enabled
-      if (optimistic && originalItem) {
-        dispatch({ type: 'REMOVE_WORKOUT', payload: id });
-      } else {
-        dispatch({ type: 'HEALTH_LOADING', payload: true });
-      }
-      
-      const response = await HealthService.deleteWorkout(id);
-      
-      if (response.status === 200 || response.status === 204) {
-        dispatch({ type: 'REMOVE_WORKOUT', payload: id });
-        
-        // Invalidate health score cache and schedule refresh
-        invalidateCache('healthScore');
-        scheduleHealthScoreRefresh();
-      } else {
-        throw new Error(response.error || 'Failed to delete workout');
-      }
-    } catch (error) {
-      // Rollback optimistic update on error
-      if (optimistic && originalItem) {
-        dispatch({ type: 'ADD_WORKOUT', payload: originalItem });
-      }
-      handleApiError(error, 'delete workout');
-      throw error;
-    } finally {
-      if (!optimistic) {
+        const response = await HealthService.getWorkouts({ size: 100 });
+
+        if (response.data) {
+          dispatch({ type: 'SET_WORKOUTS', payload: response.data.content });
+        } else {
+          throw new Error(response.error || 'Failed to load workouts');
+        }
+      } catch (error) {
+        handleApiError(error, 'load workouts', true);
+      } finally {
         dispatch({ type: 'HEALTH_LOADING', payload: false });
       }
-    }
-  }, [handleApiError, state.workouts, invalidateCache, scheduleHealthScoreRefresh]);
+    },
+    [handleApiError, state.cache.workouts]
+  );
+
+  const addWorkout = useCallback(
+    async (data: WorkoutRequest, optimistic: boolean = true) => {
+      let optimisticData: Workout | null = null;
+
+      try {
+        // Add optimistic update if enabled
+        if (optimistic) {
+          optimisticData = createOptimisticUpdate('workout', data);
+          dispatch({ type: 'ADD_WORKOUT', payload: optimisticData });
+        } else {
+          dispatch({ type: 'HEALTH_LOADING', payload: true });
+        }
+
+        const response = await HealthService.createWorkout(data);
+
+        if (response.data) {
+          // Remove optimistic update and add real data
+          if (optimisticData) {
+            dispatch({
+              type: 'REMOVE_OPTIMISTIC_UPDATE',
+              payload: { type: 'workout', id: optimisticData.id },
+            });
+          }
+          dispatch({ type: 'ADD_WORKOUT', payload: response.data });
+
+          // Invalidate health score cache and schedule refresh
+          invalidateCache('healthScore');
+          scheduleHealthScoreRefresh();
+        } else {
+          throw new Error(response.error || 'Failed to add workout');
+        }
+      } catch (error) {
+        // Remove optimistic update on error
+        if (optimisticData) {
+          dispatch({ type: 'REMOVE_WORKOUT', payload: optimisticData.id });
+        }
+        handleApiError(error, 'add workout');
+        throw error;
+      } finally {
+        if (!optimistic) {
+          dispatch({ type: 'HEALTH_LOADING', payload: false });
+        }
+      }
+    },
+    [
+      handleApiError,
+      createOptimisticUpdate,
+      invalidateCache,
+      scheduleHealthScoreRefresh,
+    ]
+  );
+
+  const updateWorkout = useCallback(
+    async (id: number, data: WorkoutRequest, optimistic: boolean = true) => {
+      let originalItem: Workout | null = null;
+
+      try {
+        // Store original item for rollback
+        originalItem = state.workouts.find(item => item.id === id) || null;
+
+        // Optimistically update item if enabled
+        if (optimistic && originalItem) {
+          const optimisticUpdate = { ...originalItem, ...data };
+          dispatch({ type: 'UPDATE_WORKOUT', payload: optimisticUpdate });
+        } else {
+          dispatch({ type: 'HEALTH_LOADING', payload: true });
+        }
+
+        const response = await HealthService.updateWorkout(id, data);
+
+        if (response.data) {
+          dispatch({ type: 'UPDATE_WORKOUT', payload: response.data });
+
+          // Invalidate health score cache and schedule refresh
+          invalidateCache('healthScore');
+          scheduleHealthScoreRefresh();
+        } else {
+          throw new Error(response.error || 'Failed to update workout');
+        }
+      } catch (error) {
+        // Rollback optimistic update on error
+        if (optimistic && originalItem) {
+          dispatch({ type: 'UPDATE_WORKOUT', payload: originalItem });
+        }
+        handleApiError(error, 'update workout');
+        throw error;
+      } finally {
+        if (!optimistic) {
+          dispatch({ type: 'HEALTH_LOADING', payload: false });
+        }
+      }
+    },
+    [
+      handleApiError,
+      state.workouts,
+      invalidateCache,
+      scheduleHealthScoreRefresh,
+    ]
+  );
+
+  const deleteWorkout = useCallback(
+    async (id: number, optimistic: boolean = true) => {
+      let originalItem: Workout | null = null;
+
+      try {
+        // Store original item for rollback
+        originalItem = state.workouts.find(item => item.id === id) || null;
+
+        // Optimistically remove item if enabled
+        if (optimistic && originalItem) {
+          dispatch({ type: 'REMOVE_WORKOUT', payload: id });
+        } else {
+          dispatch({ type: 'HEALTH_LOADING', payload: true });
+        }
+
+        const response = await HealthService.deleteWorkout(id);
+
+        if (response.status === 200 || response.status === 204) {
+          dispatch({ type: 'REMOVE_WORKOUT', payload: id });
+
+          // Invalidate health score cache and schedule refresh
+          invalidateCache('healthScore');
+          scheduleHealthScoreRefresh();
+        } else {
+          throw new Error(response.error || 'Failed to delete workout');
+        }
+      } catch (error) {
+        // Rollback optimistic update on error
+        if (optimistic && originalItem) {
+          dispatch({ type: 'ADD_WORKOUT', payload: originalItem });
+        }
+        handleApiError(error, 'delete workout');
+        throw error;
+      } finally {
+        if (!optimistic) {
+          dispatch({ type: 'HEALTH_LOADING', payload: false });
+        }
+      }
+    },
+    [
+      handleApiError,
+      state.workouts,
+      invalidateCache,
+      scheduleHealthScoreRefresh,
+    ]
+  );
 
   // ==================== Health Score Methods ====================
-  
-  const loadHealthScore = useCallback(async (date?: string, forceRefresh: boolean = false) => {
-    try {
-      // Check cache first unless force refresh is requested
-      if (!forceRefresh && !date && isCacheValid(state.cache.healthScore)) {
-        dispatch({ type: 'SET_HEALTH_SCORE', payload: state.cache.healthScore!.data });
-        return;
-      }
 
-      const response = date 
-        ? await HealthScoreService.getHealthScoreByDate(date)
-        : await HealthScoreService.getCurrentHealthScore();
-      
-      if (response.data) {
-        dispatch({ type: 'SET_HEALTH_SCORE', payload: response.data });
-      } else {
-        // No health score found, set to null
+  const loadHealthScore = useCallback(
+    async (date?: string, forceRefresh: boolean = false) => {
+      try {
+        // Check cache first unless force refresh is requested
+        if (!forceRefresh && !date && isCacheValid(state.cache.healthScore)) {
+          dispatch({
+            type: 'SET_HEALTH_SCORE',
+            payload: state.cache.healthScore!.data,
+          });
+          return;
+        }
+
+        const response = date
+          ? await HealthScoreService.getHealthScoreByDate(date)
+          : await HealthScoreService.getCurrentHealthScore();
+
+        if (response.data) {
+          dispatch({ type: 'SET_HEALTH_SCORE', payload: response.data });
+        } else {
+          // No health score found, set to null
+          dispatch({ type: 'SET_HEALTH_SCORE', payload: null });
+        }
+      } catch (error) {
+        console.warn('Failed to load health score:', error);
+        // Don't treat this as a critical error, just set to null
         dispatch({ type: 'SET_HEALTH_SCORE', payload: null });
       }
-    } catch (error) {
-      console.warn('Failed to load health score:', error);
-      // Don't treat this as a critical error, just set to null
-      dispatch({ type: 'SET_HEALTH_SCORE', payload: null });
-    }
-  }, [state.cache.healthScore]);
+    },
+    [state.cache.healthScore]
+  );
 
   const refreshHealthScore = useCallback(async () => {
     try {
       // Invalidate cache first
       invalidateCache('healthScore');
-      
+
       // Try to recalculate health score first
       const response = await HealthScoreService.recalculateHealthScore();
-      
+
       if (response.data) {
         dispatch({ type: 'SET_HEALTH_SCORE', payload: response.data });
       } else {
@@ -984,22 +1187,20 @@ export function HealthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [loadHealthScore, invalidateCache]);
 
-
-
   // ==================== Sync and General Methods ====================
-  
+
   const syncAllData = useCallback(async () => {
     try {
       dispatch({ type: 'SET_SYNC_STATUS', payload: true });
-      
+
       // Load all data in parallel with force refresh
       await Promise.all([
         loadWaterIntakes(true),
         loadFoodIntakes(true),
         loadWorkouts(true),
-        loadHealthScore(undefined, true)
+        loadHealthScore(undefined, true),
       ]);
-      
+
       dispatch({ type: 'SET_LAST_SYNC_TIME', payload: Date.now() });
       retryCountRef.current = 0; // Reset retry count on successful sync
     } catch (error) {
@@ -1007,43 +1208,59 @@ export function HealthProvider({ children }: { children: React.ReactNode }) {
     } finally {
       dispatch({ type: 'SET_SYNC_STATUS', payload: false });
     }
-  }, [loadWaterIntakes, loadFoodIntakes, loadWorkouts, loadHealthScore, handleApiError]);
+  }, [
+    loadWaterIntakes,
+    loadFoodIntakes,
+    loadWorkouts,
+    loadHealthScore,
+    handleApiError,
+  ]);
 
-  const loadAllHealthData = useCallback(async (forceRefresh: boolean = false) => {
-    try {
-      dispatch({ type: 'HEALTH_LOADING', payload: true });
-      
-      // Load all data in parallel
-      await Promise.all([
-        loadWaterIntakes(forceRefresh),
-        loadFoodIntakes(forceRefresh),
-        loadWorkouts(forceRefresh),
-        loadHealthScore(undefined, forceRefresh)
-      ]);
-      
-      if (forceRefresh) {
-        dispatch({ type: 'SET_LAST_SYNC_TIME', payload: Date.now() });
+  const loadAllHealthData = useCallback(
+    async (forceRefresh: boolean = false) => {
+      try {
+        dispatch({ type: 'HEALTH_LOADING', payload: true });
+
+        // Load all data in parallel
+        await Promise.all([
+          loadWaterIntakes(forceRefresh),
+          loadFoodIntakes(forceRefresh),
+          loadWorkouts(forceRefresh),
+          loadHealthScore(undefined, forceRefresh),
+        ]);
+
+        if (forceRefresh) {
+          dispatch({ type: 'SET_LAST_SYNC_TIME', payload: Date.now() });
+        }
+      } catch (error) {
+        handleApiError(error, 'load health data', true);
+      } finally {
+        dispatch({ type: 'HEALTH_LOADING', payload: false });
       }
-    } catch (error) {
-      handleApiError(error, 'load health data', true);
-    } finally {
-      dispatch({ type: 'HEALTH_LOADING', payload: false });
-    }
-  }, [loadWaterIntakes, loadFoodIntakes, loadWorkouts, loadHealthScore, handleApiError]);
+    },
+    [
+      loadWaterIntakes,
+      loadFoodIntakes,
+      loadWorkouts,
+      loadHealthScore,
+      handleApiError,
+    ]
+  );
 
   // ==================== Effects ====================
-  
+
   // Load health data when user becomes authenticated
   useEffect(() => {
     if (authState.isAuthenticated && authState.user) {
       // Load data from cache first, then sync in background
       loadAllHealthData(false).then(() => {
         // Schedule a background sync if cache is stale
-        const needsSync = !isCacheValid(state.cache.waterIntakes) ||
-                         !isCacheValid(state.cache.foodIntakes) ||
-                         !isCacheValid(state.cache.workouts) ||
-                         !isCacheValid(state.cache.healthScore);
-        
+        const needsSync =
+          !isCacheValid(state.cache.waterIntakes) ||
+          !isCacheValid(state.cache.foodIntakes) ||
+          !isCacheValid(state.cache.workouts) ||
+          !isCacheValid(state.cache.healthScore);
+
         if (needsSync) {
           syncTimeoutRef.current = setTimeout(() => {
             syncAllData();
@@ -1079,16 +1296,22 @@ export function HealthProvider({ children }: { children: React.ReactNode }) {
         // Check if data is stale and sync if needed
         const lastSync = state.lastSyncTime;
         const now = Date.now();
-        
-        if (!lastSync || (now - lastSync) > CACHE_DURATION) {
+
+        if (!lastSync || now - lastSync > CACHE_DURATION) {
           syncAllData();
         }
       }
     };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-  }, [authState.isAuthenticated, state.syncInProgress, state.lastSyncTime, syncAllData]);
+    return () =>
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [
+    authState.isAuthenticated,
+    state.syncInProgress,
+    state.lastSyncTime,
+    syncAllData,
+  ]);
 
   // Cleanup timeouts on unmount
   useEffect(() => {
@@ -1101,35 +1324,35 @@ export function HealthProvider({ children }: { children: React.ReactNode }) {
 
   const contextValue: HealthContextType = {
     state,
-    
+
     // Water intake methods
     addWaterIntake,
     deleteWaterIntake,
     loadWaterIntakes,
-    
+
     // Food intake methods
     addFoodIntake,
     updateFoodIntake,
     deleteFoodIntake,
     loadFoodIntakes,
-    
+
     // Workout methods
     addWorkout,
     updateWorkout,
     deleteWorkout,
     loadWorkouts,
-    
+
     // Health score methods
     refreshHealthScore,
     loadHealthScore,
-    
+
     // General methods
     loadAllHealthData,
     syncAllData,
     invalidateCache,
     clearError,
     clearAllData,
-    
+
     // Cache and sync status
     isCacheValid: isCacheValidForKey,
     getLastSyncTime,
@@ -1146,18 +1369,18 @@ export function HealthProvider({ children }: { children: React.ReactNode }) {
 // Custom hook to use health context
 export function useHealth(): HealthContextType {
   const context = useContext(HealthContext);
-  
+
   if (context === undefined) {
     throw new Error('useHealth must be used within a HealthProvider');
   }
-  
+
   return context;
 }
 
 // Helper hook for health data state
 export function useHealthData() {
   const { state } = useHealth();
-  
+
   return {
     waterIntakes: state.waterIntakes,
     foodIntakes: state.foodIntakes,
@@ -1172,7 +1395,7 @@ export function useHealthData() {
 
 // Helper hook for health actions
 export function useHealthActions() {
-  const { 
+  const {
     addWaterIntake,
     deleteWaterIntake,
     loadWaterIntakes,
@@ -1190,31 +1413,31 @@ export function useHealthActions() {
     syncAllData,
     invalidateCache,
     clearError,
-    clearAllData
+    clearAllData,
   } = useHealth();
-  
+
   return {
     // Water intake actions
     addWaterIntake,
     deleteWaterIntake,
     loadWaterIntakes,
-    
+
     // Food intake actions
     addFoodIntake,
     updateFoodIntake,
     deleteFoodIntake,
     loadFoodIntakes,
-    
+
     // Workout actions
     addWorkout,
     updateWorkout,
     deleteWorkout,
     loadWorkouts,
-    
+
     // Health score actions
     refreshHealthScore,
     loadHealthScore,
-    
+
     // General actions
     loadAllHealthData,
     syncAllData,
@@ -1226,8 +1449,9 @@ export function useHealthActions() {
 
 // Helper hook for cache status
 export function useHealthCache() {
-  const { state, isCacheValid, getLastSyncTime, isSyncInProgress } = useHealth();
-  
+  const { state, isCacheValid, getLastSyncTime, isSyncInProgress } =
+    useHealth();
+
   return {
     isCacheValid,
     getLastSyncTime,

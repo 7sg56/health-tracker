@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import * as React from 'react';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 interface EmptyStateProps {
   icon?: React.ComponentType<{ className?: string }>;
@@ -23,22 +23,24 @@ export function EmptyState({
   className,
 }: EmptyStateProps) {
   return (
-    <div className={cn(
-      "flex flex-col items-center justify-center text-center p-8 space-y-4",
-      className
-    )}>
+    <div
+      className={cn(
+        'flex flex-col items-center justify-center space-y-4 p-8 text-center',
+        className
+      )}
+    >
       {icon && (
-        <div className="flex items-center justify-center w-16 h-16 rounded-full bg-muted">
-          {React.createElement(icon, { 
-            className: "w-8 h-8 text-muted-foreground" 
+        <div className="bg-muted flex h-16 w-16 items-center justify-center rounded-full">
+          {React.createElement(icon, {
+            className: 'w-8 h-8 text-muted-foreground',
           })}
         </div>
       )}
-      
+
       <div className="space-y-2">
         <h3 className="text-lg font-semibold">{title}</h3>
         {description && (
-          <p className="text-sm text-muted-foreground max-w-sm">
+          <p className="text-muted-foreground max-w-sm text-sm">
             {description}
           </p>
         )}

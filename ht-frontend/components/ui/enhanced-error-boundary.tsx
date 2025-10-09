@@ -5,7 +5,13 @@
 import React, { Component, ReactNode } from 'react';
 import { AlertTriangle, RefreshCw, Home, Bug, Mail } from 'lucide-react';
 import { Button } from './button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from './card';
 import { Badge } from './badge';
 import { Separator } from './separator';
 import { GlobalErrorHandler } from '@/lib/utils/global-error-handler';
@@ -48,13 +54,15 @@ export class EnhancedErrorBoundary extends Component<
 
   constructor(props: EnhancedErrorBoundaryProps) {
     super(props);
-    this.state = { 
-      hasError: false, 
-      retryCount: 0 
+    this.state = {
+      hasError: false,
+      retryCount: 0,
     };
   }
 
-  static getDerivedStateFromError(error: Error): Partial<EnhancedErrorBoundaryState> {
+  static getDerivedStateFromError(
+    error: Error
+  ): Partial<EnhancedErrorBoundaryState> {
     return {
       hasError: true,
       error,
@@ -68,7 +76,7 @@ export class EnhancedErrorBoundary extends Component<
       showToast: false, // Don't show toast as we're showing the error boundary UI
       logError: true,
     });
-    
+
     // Update state with error info
     this.setState({ errorInfo });
 
@@ -122,15 +130,13 @@ export class EnhancedErrorBoundary extends Component<
       return;
     }
 
-    this.setState(
-      (prevState) => ({
-        hasError: false,
-        error: undefined,
-        errorInfo: undefined,
-        errorId: undefined,
-        retryCount: prevState.retryCount + 1,
-      })
-    );
+    this.setState(prevState => ({
+      hasError: false,
+      error: undefined,
+      errorInfo: undefined,
+      errorId: undefined,
+      retryCount: prevState.retryCount + 1,
+    }));
   };
 
   handleGoHome = () => {
@@ -143,20 +149,26 @@ export class EnhancedErrorBoundary extends Component<
     const body = encodeURIComponent(
       `Error ID: ${errorId}\n\nError Message: ${error?.message}\n\nStack Trace:\n${error?.stack}\n\nPlease describe what you were doing when this error occurred:`
     );
-    
-    window.open(`mailto:support@healthtracker.com?subject=${subject}&body=${body}`);
+
+    window.open(
+      `mailto:support@healthtracker.com?subject=${subject}&body=${body}`
+    );
   };
 
   renderErrorUI() {
-    const { level = 'component', showDetails = false, maxRetries = 3 } = this.props;
+    const {
+      level = 'component',
+      showDetails = false,
+      maxRetries = 3,
+    } = this.props;
     const { error, errorId, retryCount } = this.state;
 
     // Check if it's a network error
-    const isNetworkError = error && (
-      error.message?.includes('fetch') || 
-      error.message?.includes('network') ||
-      error.message?.includes('connection')
-    );
+    const isNetworkError =
+      error &&
+      (error.message?.includes('fetch') ||
+        error.message?.includes('network') ||
+        error.message?.includes('connection'));
 
     // Use specialized network error handler for network errors
     if (isNetworkError && level !== 'component') {
@@ -179,10 +191,13 @@ export class EnhancedErrorBoundary extends Component<
           <AlertTitle>Component Error</AlertTitle>
           <AlertDescription>
             <div className="space-y-3">
-              <p className="text-sm">This component encountered an error and couldn't render properly.</p>
+              <p className="text-sm">
+                This component encountered an error and couldn't render
+                properly.
+              </p>
               {showDetails && error && (
-                <div className="rounded-md bg-muted p-2">
-                  <p className="text-xs font-mono break-all">{error.message}</p>
+                <div className="bg-muted rounded-md p-2">
+                  <p className="font-mono text-xs break-all">{error.message}</p>
                 </div>
               )}
               {retryCount < maxRetries && (
@@ -212,15 +227,16 @@ export class EnhancedErrorBoundary extends Component<
 
     // Page level error - use comprehensive error display
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-background">
+      <div className="bg-background flex min-h-screen items-center justify-center p-4">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
-            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
-              <AlertTriangle className="h-6 w-6 text-destructive" />
+            <div className="bg-destructive/10 mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full">
+              <AlertTriangle className="text-destructive h-6 w-6" />
             </div>
             <CardTitle className="text-xl">Something went wrong</CardTitle>
             <CardDescription>
-              We encountered an unexpected error. This has been logged and we&apos;ll look into it.
+              We encountered an unexpected error. This has been logged and
+              we&apos;ll look into it.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -243,24 +259,24 @@ export class EnhancedErrorBoundary extends Component<
 
             {retryCount > 0 && (
               <div className="text-center">
-                <p className="text-sm text-muted-foreground">
+                <p className="text-muted-foreground text-sm">
                   Retry attempts: {retryCount}/{maxRetries}
                 </p>
               </div>
             )}
-            
+
             <div className="flex flex-col gap-2">
               <div className="flex gap-2">
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   onClick={this.handleGoHome}
                   className="flex-1"
                 >
                   <Home className="mr-2 h-4 w-4" />
                   Go Home
                 </Button>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   onClick={this.handleReportError}
                   className="flex-1"
                 >
@@ -271,9 +287,9 @@ export class EnhancedErrorBoundary extends Component<
             </div>
 
             <Separator />
-            
+
             <div className="text-center">
-              <p className="text-xs text-muted-foreground">
+              <p className="text-muted-foreground text-xs">
                 If this problem persists, please{' '}
                 <button
                   onClick={this.handleReportError}
@@ -329,33 +345,36 @@ export function withEnhancedErrorBoundary<P extends object>(
   );
 
   WrappedComponent.displayName = `withEnhancedErrorBoundary(${Component.displayName || Component.name})`;
-  
+
   return WrappedComponent;
 }
 
 /**
  * Async error boundary for handling promise rejections in components
  */
-export function AsyncErrorBoundary({ 
-  children, 
+export function AsyncErrorBoundary({
+  children,
   fallback,
-  onError 
-}: { 
-  children: ReactNode; 
+  onError,
+}: {
+  children: ReactNode;
   fallback?: (error: Error, retry: () => void) => ReactNode;
   onError?: (error: Error) => void;
 }) {
   const [error, setError] = React.useState<Error | null>(null);
   const [retryCount, setRetryCount] = React.useState(0);
 
-  const handleError = React.useCallback((error: Error) => {
-    setError(error);
-    GlobalErrorHandler.handleComponentError(error, 'AsyncErrorBoundary', {
-      showToast: false,
-      logError: true,
-    });
-    onError?.(error);
-  }, [onError]);
+  const handleError = React.useCallback(
+    (error: Error) => {
+      setError(error);
+      GlobalErrorHandler.handleComponentError(error, 'AsyncErrorBoundary', {
+        showToast: false,
+        logError: true,
+      });
+      onError?.(error);
+    },
+    [onError]
+  );
 
   const retry = React.useCallback(() => {
     setError(null);
@@ -368,9 +387,12 @@ export function AsyncErrorBoundary({
     };
 
     window.addEventListener('unhandledrejection', handleUnhandledRejection);
-    
+
     return () => {
-      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+      window.removeEventListener(
+        'unhandledrejection',
+        handleUnhandledRejection
+      );
     };
   }, [handleError]);
 
@@ -378,12 +400,12 @@ export function AsyncErrorBoundary({
     if (fallback) {
       return <>{fallback(error, retry)}</>;
     }
-    
+
     return (
-      <div className="flex flex-col items-center justify-center p-6 text-center border border-destructive/20 rounded-lg bg-destructive/5">
-        <AlertTriangle className="h-8 w-8 text-destructive mb-3" />
-        <h3 className="text-lg font-semibold mb-2">Async Operation Failed</h3>
-        <p className="text-sm text-muted-foreground mb-4 max-w-md">
+      <div className="border-destructive/20 bg-destructive/5 flex flex-col items-center justify-center rounded-lg border p-6 text-center">
+        <AlertTriangle className="text-destructive mb-3 h-8 w-8" />
+        <h3 className="mb-2 text-lg font-semibold">Async Operation Failed</h3>
+        <p className="text-muted-foreground mb-4 max-w-md text-sm">
           {error.message}
         </p>
         <Button onClick={retry} size="sm">
@@ -403,20 +425,15 @@ export function AsyncErrorBoundary({
 export function SuspenseErrorBoundary({
   children,
   fallback = <div>Loading...</div>,
-  errorFallback
+  errorFallback,
 }: {
   children: ReactNode;
   fallback?: ReactNode;
   errorFallback?: ReactNode;
 }) {
   return (
-    <EnhancedErrorBoundary 
-      level="section"
-      fallback={errorFallback}
-    >
-      <React.Suspense fallback={fallback}>
-        {children}
-      </React.Suspense>
+    <EnhancedErrorBoundary level="section" fallback={errorFallback}>
+      <React.Suspense fallback={fallback}>{children}</React.Suspense>
     </EnhancedErrorBoundary>
   );
 }

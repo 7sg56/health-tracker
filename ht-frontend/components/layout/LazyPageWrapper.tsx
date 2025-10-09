@@ -16,13 +16,13 @@ interface LazyPageWrapperProps {
 
 // Default loading skeleton for pages
 const DefaultPageSkeleton = () => (
-  <div className="container mx-auto px-4 py-8 space-y-6">
+  <div className="container mx-auto space-y-6 px-4 py-8">
     <div className="space-y-2">
       <Skeleton className="h-8 w-64" />
       <Skeleton className="h-4 w-96" />
     </div>
-    
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
       {Array.from({ length: 6 }).map((_, i) => (
         <div key={i} className="space-y-3">
           <Skeleton className="h-32 w-full" />
@@ -34,52 +34,53 @@ const DefaultPageSkeleton = () => (
   </div>
 );
 
-export function LazyPageWrapper({ 
-  children, 
+export function LazyPageWrapper({
+  children,
   fallback = <DefaultPageSkeleton />,
-  errorFallback 
+  errorFallback,
 }: LazyPageWrapperProps) {
   return (
     <ErrorBoundary fallback={errorFallback}>
-      <Suspense fallback={fallback}>
-        {children}
-      </Suspense>
+      <Suspense fallback={fallback}>{children}</Suspense>
     </ErrorBoundary>
   );
 }
 
 // Specific loading components for different page types
 export const DashboardSkeleton = () => (
-  <div className="container mx-auto px-4 py-8 space-y-6">
+  <div className="container mx-auto space-y-6 px-4 py-8">
     {/* Header */}
     <div className="space-y-2">
       <Skeleton className="h-8 w-48" />
       <Skeleton className="h-4 w-72" />
     </div>
-    
+
     {/* Stats cards */}
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
       {Array.from({ length: 3 }).map((_, i) => (
-        <div key={i} className="p-6 border rounded-lg space-y-3">
+        <div key={i} className="space-y-3 rounded-lg border p-6">
           <Skeleton className="h-6 w-32" />
           <Skeleton className="h-8 w-20" />
           <Skeleton className="h-4 w-24" />
         </div>
       ))}
     </div>
-    
+
     {/* Chart area */}
     <div className="space-y-4">
       <Skeleton className="h-6 w-40" />
       <Skeleton className="h-64 w-full" />
     </div>
-    
+
     {/* Recent activity */}
     <div className="space-y-4">
       <Skeleton className="h-6 w-36" />
       <div className="space-y-2">
         {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} className="flex items-center space-x-3 p-3 border rounded">
+          <div
+            key={i}
+            className="flex items-center space-x-3 rounded border p-3"
+          >
             <Skeleton className="h-8 w-8 rounded-full" />
             <div className="flex-1 space-y-1">
               <Skeleton className="h-4 w-48" />
@@ -94,15 +95,15 @@ export const DashboardSkeleton = () => (
 );
 
 export const FormPageSkeleton = () => (
-  <div className="container mx-auto px-4 py-8 space-y-6">
+  <div className="container mx-auto space-y-6 px-4 py-8">
     {/* Header */}
     <div className="space-y-2">
       <Skeleton className="h-8 w-48" />
       <Skeleton className="h-4 w-72" />
     </div>
-    
+
     {/* Form */}
-    <div className="max-w-md mx-auto space-y-4">
+    <div className="mx-auto max-w-md space-y-4">
       <div className="space-y-2">
         <Skeleton className="h-4 w-20" />
         <Skeleton className="h-10 w-full" />
@@ -117,13 +118,16 @@ export const FormPageSkeleton = () => (
       </div>
       <Skeleton className="h-10 w-full" />
     </div>
-    
+
     {/* List */}
     <div className="space-y-4">
       <Skeleton className="h-6 w-32" />
       <div className="space-y-2">
         {Array.from({ length: 8 }).map((_, i) => (
-          <div key={i} className="flex items-center justify-between p-3 border rounded">
+          <div
+            key={i}
+            className="flex items-center justify-between rounded border p-3"
+          >
             <div className="space-y-1">
               <Skeleton className="h-4 w-32" />
               <Skeleton className="h-3 w-20" />
@@ -140,15 +144,15 @@ export const FormPageSkeleton = () => (
 );
 
 export const AuthPageSkeleton = () => (
-  <div className="min-h-screen flex items-center justify-center px-4">
+  <div className="flex min-h-screen items-center justify-center px-4">
     <div className="w-full max-w-md space-y-6">
       {/* Logo/Header */}
-      <div className="text-center space-y-2">
-        <Skeleton className="h-12 w-12 mx-auto rounded-full" />
-        <Skeleton className="h-8 w-48 mx-auto" />
-        <Skeleton className="h-4 w-64 mx-auto" />
+      <div className="space-y-2 text-center">
+        <Skeleton className="mx-auto h-12 w-12 rounded-full" />
+        <Skeleton className="mx-auto h-8 w-48" />
+        <Skeleton className="mx-auto h-4 w-64" />
       </div>
-      
+
       {/* Form */}
       <div className="space-y-4">
         <div className="space-y-2">
@@ -161,11 +165,11 @@ export const AuthPageSkeleton = () => (
         </div>
         <Skeleton className="h-10 w-full" />
       </div>
-      
+
       {/* Footer links */}
-      <div className="text-center space-y-2">
-        <Skeleton className="h-4 w-48 mx-auto" />
-        <Skeleton className="h-4 w-32 mx-auto" />
+      <div className="space-y-2 text-center">
+        <Skeleton className="mx-auto h-4 w-48" />
+        <Skeleton className="mx-auto h-4 w-32" />
       </div>
     </div>
   </div>
@@ -176,8 +180,10 @@ export function withLazyLoading<P extends object>(
   Component: React.ComponentType<P>,
   LoadingSkeleton: React.ComponentType = DefaultPageSkeleton
 ) {
-  const LazyComponent = React.lazy(() => Promise.resolve({ default: Component }));
-  
+  const LazyComponent = React.lazy(() =>
+    Promise.resolve({ default: Component })
+  );
+
   return function WrappedComponent(props: P) {
     return (
       <LazyPageWrapper fallback={<LoadingSkeleton />}>

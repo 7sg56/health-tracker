@@ -27,8 +27,8 @@ export function getContrastRatio(color1: string, color2: string): number {
  * Check if a color combination meets WCAG accessibility standards
  */
 export function meetsAccessibilityStandards(
-  foreground: string, 
-  background: string, 
+  foreground: string,
+  background: string,
   level: 'AA' | 'AAA' = 'AA'
 ): boolean {
   const ratio = getContrastRatio(foreground, background);
@@ -38,7 +38,10 @@ export function meetsAccessibilityStandards(
 /**
  * Generate accessible color variants
  */
-export function generateAccessibleColors(baseColor: string, background: string): {
+export function generateAccessibleColors(
+  baseColor: string,
+  background: string
+): {
   light: string;
   dark: string;
   accessible: string;
@@ -71,7 +74,7 @@ export function applyThemeToDocument(config: ThemeConfig): void {
   if (typeof document === 'undefined') return;
 
   const root = document.documentElement;
-  
+
   // Apply color variables
   Object.entries(config.colors).forEach(([key, value]) => {
     root.style.setProperty(`--${key}`, value);
@@ -105,8 +108,10 @@ export function applyThemeToDocument(config: ThemeConfig): void {
  */
 export function getSystemTheme(): ThemeMode {
   if (typeof window === 'undefined') return 'light';
-  
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+
+  return window.matchMedia('(prefers-color-scheme: dark)').matches
+    ? 'dark'
+    : 'light';
 }
 
 /**
@@ -114,7 +119,7 @@ export function getSystemTheme(): ThemeMode {
  */
 export function prefersReducedMotion(): boolean {
   if (typeof window === 'undefined') return false;
-  
+
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
@@ -123,14 +128,16 @@ export function prefersReducedMotion(): boolean {
  */
 export function prefersHighContrast(): boolean {
   if (typeof window === 'undefined') return false;
-  
+
   return window.matchMedia('(prefers-contrast: high)').matches;
 }
 
 /**
  * Generate theme-aware CSS classes
  */
-export function generateThemeClasses(config: ThemeConfig): Record<string, string> {
+export function generateThemeClasses(
+  config: ThemeConfig
+): Record<string, string> {
   return {
     background: `bg-background text-foreground`,
     card: `bg-card text-card-foreground border border-border`,
@@ -163,8 +170,15 @@ export function validateThemeConfig(config: Partial<ThemeConfig>): string[] {
 
     // Check accessibility
     if (config.colors.foreground && config.colors.background) {
-      if (!meetsAccessibilityStandards(config.colors.foreground, config.colors.background)) {
-        errors.push('Foreground and background colors do not meet accessibility standards');
+      if (
+        !meetsAccessibilityStandards(
+          config.colors.foreground,
+          config.colors.background
+        )
+      ) {
+        errors.push(
+          'Foreground and background colors do not meet accessibility standards'
+        );
       }
     }
   }
@@ -198,7 +212,9 @@ ${healthColorVars}
   --animation-duration: ${config.animations.duration};
 }
 
-${config.accessibility.reducedMotion ? `
+${
+  config.accessibility.reducedMotion
+    ? `
 .reduce-motion,
 .reduce-motion *,
 .reduce-motion *::before,
@@ -207,9 +223,13 @@ ${config.accessibility.reducedMotion ? `
   animation-iteration-count: 1 !important;
   transition-duration: 0.01ms !important;
 }
-` : ''}
+`
+    : ''
+}
 
-${config.accessibility.highContrast ? `
+${
+  config.accessibility.highContrast
+    ? `
 .high-contrast {
   --border: oklch(0.3 0 0);
   --ring: oklch(0.2 0 0);
@@ -219,7 +239,9 @@ ${config.accessibility.highContrast ? `
   --border: oklch(0.7 0 0);
   --ring: oklch(0.8 0 0);
 }
-` : ''}
+`
+    : ''
+}
   `.trim();
 }
 
@@ -237,12 +259,12 @@ export function importThemeConfig(json: string): ThemeConfig | null {
   try {
     const config = JSON.parse(json);
     const errors = validateThemeConfig(config);
-    
+
     if (errors.length > 0) {
       console.warn('Theme configuration validation errors:', errors);
       return null;
     }
-    
+
     return config;
   } catch (error) {
     console.error('Failed to parse theme configuration:', error);

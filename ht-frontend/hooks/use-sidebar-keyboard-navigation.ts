@@ -55,12 +55,12 @@ export function useSidebarKeyboardNavigation({
           setFocusedIndex(prev => {
             const next = prev + 1;
             const newIndex = next >= items.length ? 0 : next;
-            
+
             // Focus the element
             if (navigationRefs.current[newIndex]) {
               navigationRefs.current[newIndex]?.focus();
             }
-            
+
             if (announceNavigation) {
               const item = items[newIndex];
               announceToScreenReader(
@@ -68,7 +68,7 @@ export function useSidebarKeyboardNavigation({
                 'polite'
               );
             }
-            
+
             return newIndex;
           });
           break;
@@ -78,12 +78,12 @@ export function useSidebarKeyboardNavigation({
           setFocusedIndex(prev => {
             const next = prev - 1;
             const newIndex = next < 0 ? items.length - 1 : next;
-            
+
             // Focus the element
             if (navigationRefs.current[newIndex]) {
               navigationRefs.current[newIndex]?.focus();
             }
-            
+
             if (announceNavigation) {
               const item = items[newIndex];
               announceToScreenReader(
@@ -91,7 +91,7 @@ export function useSidebarKeyboardNavigation({
                 'polite'
               );
             }
-            
+
             return newIndex;
           });
           break;
@@ -126,11 +126,11 @@ export function useSidebarKeyboardNavigation({
           event.preventDefault();
           if (focusedIndex >= 0 && focusedIndex < items.length) {
             const item = items[focusedIndex];
-            
+
             if (announceNavigation) {
               announceToScreenReader(`Navigating to ${item.label}`, 'polite');
             }
-            
+
             onNavigate?.(item);
             router.push(item.href);
           }
@@ -147,7 +147,15 @@ export function useSidebarKeyboardNavigation({
           break;
       }
     },
-    [isActive, items, focusedIndex, isNavigating, onNavigate, router, announceNavigation]
+    [
+      isActive,
+      items,
+      focusedIndex,
+      isNavigating,
+      onNavigate,
+      router,
+      announceNavigation,
+    ]
   );
 
   // Add keyboard event listener
@@ -182,20 +190,25 @@ export function useSidebarKeyboardNavigation({
   }, []);
 
   // Function to handle focus on navigation items
-  const handleNavigationFocus = useCallback((index: number) => {
-    setFocusedIndex(index);
-    if (!isNavigating) {
-      startKeyboardNavigation();
-    }
-  }, [isNavigating, startKeyboardNavigation]);
+  const handleNavigationFocus = useCallback(
+    (index: number) => {
+      setFocusedIndex(index);
+      if (!isNavigating) {
+        startKeyboardNavigation();
+      }
+    },
+    [isNavigating, startKeyboardNavigation]
+  );
 
   // Function to handle blur on navigation items
   const handleNavigationBlur = useCallback(() => {
     // Small delay to check if focus moved to another navigation item
     setTimeout(() => {
       const focusedElement = document.activeElement;
-      const isStillInNavigation = navigationRefs.current.some(ref => ref === focusedElement);
-      
+      const isStillInNavigation = navigationRefs.current.some(
+        ref => ref === focusedElement
+      );
+
       if (!isStillInNavigation) {
         stopKeyboardNavigation();
       }

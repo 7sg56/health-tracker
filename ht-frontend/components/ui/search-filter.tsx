@@ -1,7 +1,15 @@
 'use client';
 
 import React, { useState, useCallback, useMemo } from 'react';
-import { Search, Filter, X, Calendar, SortAsc, SortDesc, ChevronDown } from 'lucide-react';
+import {
+  Search,
+  Filter,
+  X,
+  Calendar,
+  SortAsc,
+  SortDesc,
+  ChevronDown,
+} from 'lucide-react';
 import { format, subDays, startOfDay, endOfDay } from 'date-fns';
 
 import { Button } from '@/components/ui/button';
@@ -9,12 +17,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui/select';
 import {
   Popover,
@@ -70,41 +78,41 @@ const PRESET_DATE_RANGES = [
     value: 'today',
     getRange: () => ({
       from: startOfDay(new Date()),
-      to: endOfDay(new Date())
-    })
+      to: endOfDay(new Date()),
+    }),
   },
   {
     label: 'Yesterday',
     value: 'yesterday',
     getRange: () => ({
       from: startOfDay(subDays(new Date(), 1)),
-      to: endOfDay(subDays(new Date(), 1))
-    })
+      to: endOfDay(subDays(new Date(), 1)),
+    }),
   },
   {
     label: 'Last 7 days',
     value: 'week',
     getRange: () => ({
       from: startOfDay(subDays(new Date(), 7)),
-      to: endOfDay(new Date())
-    })
+      to: endOfDay(new Date()),
+    }),
   },
   {
     label: 'Last 30 days',
     value: 'month',
     getRange: () => ({
       from: startOfDay(subDays(new Date(), 30)),
-      to: endOfDay(new Date())
-    })
+      to: endOfDay(new Date()),
+    }),
   },
   {
     label: 'Last 90 days',
     value: 'quarter',
     getRange: () => ({
       from: startOfDay(subDays(new Date(), 90)),
-      to: endOfDay(new Date())
-    })
-  }
+      to: endOfDay(new Date()),
+    }),
+  },
 ];
 
 export function SearchFilter({
@@ -114,7 +122,7 @@ export function SearchFilter({
   dateRangeEnabled = true,
   onStateChange,
   className,
-  compact = false
+  compact = false,
 }: SearchFilterProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [dateRange, setDateRange] = useState<DateRange | null>(null);
@@ -130,7 +138,7 @@ export function SearchFilter({
       searchQuery,
       dateRange,
       sortBy,
-      filters
+      filters,
     });
   }, [searchQuery, dateRange, sortBy, filters, onStateChange]);
 
@@ -147,23 +155,27 @@ export function SearchFilter({
     setSortBy(value);
   };
 
-  const handleFilterChange = (groupKey: string, value: string, multiple = false) => {
+  const handleFilterChange = (
+    groupKey: string,
+    value: string,
+    multiple = false
+  ) => {
     setFilters(prev => {
       const currentValues = prev[groupKey] || [];
-      
+
       if (multiple) {
         const newValues = currentValues.includes(value)
           ? currentValues.filter(v => v !== value)
           : [...currentValues, value];
-        
+
         return {
           ...prev,
-          [groupKey]: newValues
+          [groupKey]: newValues,
         };
       } else {
         return {
           ...prev,
-          [groupKey]: [value]
+          [groupKey]: [value],
         };
       }
     });
@@ -182,7 +194,7 @@ export function SearchFilter({
     if (customDateFrom && customDateTo) {
       setDateRange({
         from: new Date(customDateFrom),
-        to: new Date(customDateTo)
+        to: new Date(customDateTo),
       });
     }
   };
@@ -198,7 +210,7 @@ export function SearchFilter({
       if (value) {
         return {
           ...prev,
-          [groupKey]: (prev[groupKey] || []).filter(v => v !== value)
+          [groupKey]: (prev[groupKey] || []).filter(v => v !== value),
         };
       } else {
         const newFilters = { ...prev };
@@ -234,11 +246,11 @@ export function SearchFilter({
       <div className={cn('flex items-center gap-2', className)}>
         {/* Search Input */}
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
           <Input
             placeholder={searchPlaceholder}
             value={searchQuery}
-            onChange={(e) => handleSearchChange(e.target.value)}
+            onChange={e => handleSearchChange(e.target.value)}
             className="pl-9"
           />
         </div>
@@ -249,9 +261,9 @@ export function SearchFilter({
             <Button variant="outline" size="sm" className="relative">
               <Filter className="h-4 w-4" />
               {activeFilterCount > 0 && (
-                <Badge 
-                  variant="destructive" 
-                  className="absolute -right-2 -top-2 h-5 w-5 rounded-full p-0 text-xs"
+                <Badge
+                  variant="destructive"
+                  className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 text-xs"
                 >
                   {activeFilterCount}
                 </Badge>
@@ -277,7 +289,7 @@ export function SearchFilter({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {sortOptions.map((option) => (
+                    {sortOptions.map(option => (
                       <SelectItem key={option.value} value={option.value}>
                         <div className="flex items-center gap-2">
                           {option.direction === 'asc' ? (
@@ -298,7 +310,7 @@ export function SearchFilter({
                 <div className="space-y-2">
                   <Label>Date Range</Label>
                   <div className="space-y-2">
-                    {PRESET_DATE_RANGES.map((preset) => (
+                    {PRESET_DATE_RANGES.map(preset => (
                       <Button
                         key={preset.value}
                         variant="ghost"
@@ -315,13 +327,13 @@ export function SearchFilter({
                         type="date"
                         placeholder="From"
                         value={customDateFrom}
-                        onChange={(e) => setCustomDateFrom(e.target.value)}
+                        onChange={e => setCustomDateFrom(e.target.value)}
                       />
                       <Input
                         type="date"
                         placeholder="To"
                         value={customDateTo}
-                        onChange={(e) => setCustomDateTo(e.target.value)}
+                        onChange={e => setCustomDateTo(e.target.value)}
                       />
                     </div>
                     {customDateFrom && customDateTo && (
@@ -334,21 +346,27 @@ export function SearchFilter({
               )}
 
               {/* Filter Groups */}
-              {filterGroups.map((group) => (
+              {filterGroups.map(group => (
                 <div key={group.key} className="space-y-2">
                   <Label>{group.label}</Label>
                   <div className="space-y-1">
-                    {group.options.map((option) => (
+                    {group.options.map(option => (
                       <Button
                         key={option.value}
                         variant={
                           (filters[group.key] || []).includes(option.value)
-                            ? "default"
-                            : "ghost"
+                            ? 'default'
+                            : 'ghost'
                         }
                         size="sm"
                         className="w-full justify-between"
-                        onClick={() => handleFilterChange(group.key, option.value, group.multiple)}
+                        onClick={() =>
+                          handleFilterChange(
+                            group.key,
+                            option.value,
+                            group.multiple
+                          )
+                        }
                       >
                         <span>{option.label}</span>
                         {option.count !== undefined && (
@@ -380,18 +398,18 @@ export function SearchFilter({
       <CardContent className="space-y-4">
         {/* Search Input */}
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
           <Input
             placeholder={searchPlaceholder}
             value={searchQuery}
-            onChange={(e) => handleSearchChange(e.target.value)}
+            onChange={e => handleSearchChange(e.target.value)}
             className="pl-9"
           />
           {searchQuery && (
             <Button
               variant="ghost"
               size="sm"
-              className="absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2 p-0"
+              className="absolute top-1/2 right-1 h-7 w-7 -translate-y-1/2 p-0"
               onClick={() => handleSearchChange('')}
             >
               <X className="h-3 w-3" />
@@ -400,7 +418,7 @@ export function SearchFilter({
         </div>
 
         {/* Sort and Date Range */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {/* Sort */}
           <div className="space-y-2">
             <Label>Sort by</Label>
@@ -409,7 +427,7 @@ export function SearchFilter({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {sortOptions.map((option) => (
+                {sortOptions.map(option => (
                   <SelectItem key={option.value} value={option.value}>
                     <div className="flex items-center gap-2">
                       {option.direction === 'asc' ? (
@@ -433,18 +451,16 @@ export function SearchFilter({
                 <PopoverTrigger asChild>
                   <Button variant="outline" className="w-full justify-start">
                     <Calendar className="mr-2 h-4 w-4" />
-                    {dateRange ? (
-                      `${format(dateRange.from, 'MMM d')} - ${format(dateRange.to, 'MMM d')}`
-                    ) : (
-                      'Select date range'
-                    )}
+                    {dateRange
+                      ? `${format(dateRange.from, 'MMM d')} - ${format(dateRange.to, 'MMM d')}`
+                      : 'Select date range'}
                     <ChevronDown className="ml-auto h-4 w-4" />
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-80" align="start">
                   <div className="space-y-3">
                     <div className="space-y-2">
-                      {PRESET_DATE_RANGES.map((preset) => (
+                      {PRESET_DATE_RANGES.map(preset => (
                         <Button
                           key={preset.value}
                           variant="ghost"
@@ -464,13 +480,13 @@ export function SearchFilter({
                           type="date"
                           placeholder="From"
                           value={customDateFrom}
-                          onChange={(e) => setCustomDateFrom(e.target.value)}
+                          onChange={e => setCustomDateFrom(e.target.value)}
                         />
                         <Input
                           type="date"
                           placeholder="To"
                           value={customDateTo}
-                          onChange={(e) => setCustomDateTo(e.target.value)}
+                          onChange={e => setCustomDateTo(e.target.value)}
                         />
                       </div>
                       {customDateFrom && customDateTo && (
@@ -482,7 +498,11 @@ export function SearchFilter({
                     {dateRange && (
                       <>
                         <Separator />
-                        <Button variant="outline" size="sm" onClick={clearDateRange}>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={clearDateRange}
+                        >
                           Clear Date Range
                         </Button>
                       </>
@@ -497,20 +517,26 @@ export function SearchFilter({
         {/* Filter Groups */}
         {filterGroups.length > 0 && (
           <div className="space-y-4">
-            {filterGroups.map((group) => (
+            {filterGroups.map(group => (
               <div key={group.key} className="space-y-2">
                 <Label>{group.label}</Label>
                 <div className="flex flex-wrap gap-2">
-                  {group.options.map((option) => (
+                  {group.options.map(option => (
                     <Button
                       key={option.value}
                       variant={
                         (filters[group.key] || []).includes(option.value)
-                          ? "default"
-                          : "outline"
+                          ? 'default'
+                          : 'outline'
                       }
                       size="sm"
-                      onClick={() => handleFilterChange(group.key, option.value, group.multiple)}
+                      onClick={() =>
+                        handleFilterChange(
+                          group.key,
+                          option.value,
+                          group.multiple
+                        )
+                      }
                     >
                       {option.label}
                       {option.count !== undefined && (
@@ -551,7 +577,8 @@ export function SearchFilter({
               )}
               {dateRange && (
                 <Badge variant="secondary" className="gap-1">
-                  {format(dateRange.from, 'MMM d')} - {format(dateRange.to, 'MMM d')}
+                  {format(dateRange.from, 'MMM d')} -{' '}
+                  {format(dateRange.to, 'MMM d')}
                   <Button
                     variant="ghost"
                     size="sm"
@@ -563,11 +590,15 @@ export function SearchFilter({
                 </Badge>
               )}
               {Object.entries(filters).map(([groupKey, values]) =>
-                values.map((value) => {
+                values.map(value => {
                   const group = filterGroups.find(g => g.key === groupKey);
                   const option = group?.options.find(o => o.value === value);
                   return (
-                    <Badge key={`${groupKey}-${value}`} variant="secondary" className="gap-1">
+                    <Badge
+                      key={`${groupKey}-${value}`}
+                      variant="secondary"
+                      className="gap-1"
+                    >
                       {group?.label}: {option?.label || value}
                       <Button
                         variant="ghost"

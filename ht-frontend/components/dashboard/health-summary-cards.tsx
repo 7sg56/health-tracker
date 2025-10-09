@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { HealthCard } from "@/components/ui/health-card";
-import { WaterIntake, FoodIntake, Workout } from "@/lib/types/health";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Card, CardContent } from "@/components/ui/card";
+import * as React from 'react';
+import { HealthCard } from '@/components/ui/health-card';
+import { WaterIntake, FoodIntake, Workout } from '@/lib/types/health';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Card, CardContent } from '@/components/ui/card';
 
 interface HealthSummaryCardsProps {
   waterIntakes: WaterIntake[];
@@ -21,15 +21,15 @@ export function HealthSummaryCards({
 }: HealthSummaryCardsProps) {
   // Calculate today's totals
   const today = new Date().toDateString();
-  
+
   const todayWater = waterIntakes
     .filter(w => new Date(w.date).toDateString() === today)
     .reduce((sum, w) => sum + w.amountLtr, 0);
-    
+
   const todayCalories = foodIntakes
     .filter(f => new Date(f.date).toDateString() === today)
     .reduce((sum, f) => sum + f.calories, 0);
-    
+
   const todayWorkoutMinutes = workouts
     .filter(w => new Date(w.date).toDateString() === today)
     .reduce((sum, w) => sum + w.durationMin, 0);
@@ -41,12 +41,15 @@ export function HealthSummaryCards({
 
   const waterProgress = Math.min(100, (todayWater / waterTarget) * 100);
 
-  const workoutProgress = Math.min(100, (todayWorkoutMinutes / workoutTarget) * 100);
+  const workoutProgress = Math.min(
+    100,
+    (todayWorkoutMinutes / workoutTarget) * 100
+  );
 
   if (isLoading) {
     return (
-      <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-        {[1, 2, 3].map((i) => (
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
+        {[1, 2, 3].map(i => (
           <Card key={i}>
             <CardContent className="p-4 sm:p-6">
               <div className="space-y-3">
@@ -66,7 +69,7 @@ export function HealthSummaryCards({
   }
 
   return (
-    <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
       <HealthCard
         title="Water Intake"
         value={`${todayWater.toFixed(1)}L`}
@@ -75,11 +78,17 @@ export function HealthSummaryCards({
         progress={{
           value: todayWater,
           max: waterTarget,
-          label: "Daily Goal"
+          label: 'Daily Goal',
         }}
-        variant={waterProgress >= 100 ? "success" : waterProgress >= 50 ? "warning" : "default"}
+        variant={
+          waterProgress >= 100
+            ? 'success'
+            : waterProgress >= 50
+              ? 'warning'
+              : 'default'
+        }
       />
-      
+
       <HealthCard
         title="Calories"
         value={todayCalories.toLocaleString()}
@@ -88,15 +97,17 @@ export function HealthSummaryCards({
         progress={{
           value: todayCalories,
           max: calorieTarget,
-          label: "Daily Goal"
+          label: 'Daily Goal',
         }}
         variant={
-          Math.abs(todayCalories - calorieTarget) <= 200 ? "success" : 
-          Math.abs(todayCalories - calorieTarget) <= 500 ? "warning" : 
-          "default"
+          Math.abs(todayCalories - calorieTarget) <= 200
+            ? 'success'
+            : Math.abs(todayCalories - calorieTarget) <= 500
+              ? 'warning'
+              : 'default'
         }
       />
-      
+
       <HealthCard
         title="Exercise"
         value={`${todayWorkoutMinutes} min`}
@@ -105,9 +116,15 @@ export function HealthSummaryCards({
         progress={{
           value: todayWorkoutMinutes,
           max: workoutTarget,
-          label: "Daily Goal"
+          label: 'Daily Goal',
         }}
-        variant={workoutProgress >= 100 ? "success" : workoutProgress >= 50 ? "warning" : "default"}
+        variant={
+          workoutProgress >= 100
+            ? 'success'
+            : workoutProgress >= 50
+              ? 'warning'
+              : 'default'
+        }
       />
     </div>
   );

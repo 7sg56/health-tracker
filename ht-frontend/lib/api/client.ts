@@ -3,19 +3,23 @@
  * Handles authentication, CSRF tokens, session management, and error responses
  */
 
-import { 
-  ApiResponse, 
-  ErrorResponse, 
-  RequestConfig, 
-  HttpMethod
+import {
+  ApiResponse,
+  ErrorResponse,
+  RequestConfig,
+  HttpMethod,
 } from '../types/api';
 import { ApiError } from '../errors';
 
 // Request interceptor type
-type RequestInterceptor = (config: RequestConfig) => RequestConfig | Promise<RequestConfig>;
+type RequestInterceptor = (
+  config: RequestConfig
+) => RequestConfig | Promise<RequestConfig>;
 
 // Response interceptor type
-type ResponseInterceptor = <T>(response: ApiResponse<T>) => ApiResponse<T> | Promise<ApiResponse<T>>;
+type ResponseInterceptor = <T>(
+  response: ApiResponse<T>
+) => ApiResponse<T> | Promise<ApiResponse<T>>;
 
 class ApiClient {
   private baseURL: string;
@@ -44,7 +48,6 @@ class ApiClient {
     this.responseInterceptors.push(interceptor);
   }
 
-
   /**
    * Check if session is valid
    */
@@ -52,26 +55,30 @@ class ApiClient {
   /**
    * Apply request interceptors
    */
-  private async applyRequestInterceptors(config: RequestConfig): Promise<RequestConfig> {
+  private async applyRequestInterceptors(
+    config: RequestConfig
+  ): Promise<RequestConfig> {
     let finalConfig = config;
-    
+
     for (const interceptor of this.requestInterceptors) {
       finalConfig = await interceptor(finalConfig);
     }
-    
+
     return finalConfig;
   }
 
   /**
    * Apply response interceptors
    */
-  private async applyResponseInterceptors<T>(response: ApiResponse<T>): Promise<ApiResponse<T>> {
+  private async applyResponseInterceptors<T>(
+    response: ApiResponse<T>
+  ): Promise<ApiResponse<T>> {
     let finalResponse = response;
-    
+
     for (const interceptor of this.responseInterceptors) {
       finalResponse = await interceptor(finalResponse);
     }
-    
+
     return finalResponse;
   }
 
@@ -113,10 +120,10 @@ class ApiClient {
     options: RequestConfig = {}
   ): Promise<ApiResponse<T>> {
     const url = `${this.baseURL}${endpoint}`;
-    
+
     // Apply request interceptors
     const config = await this.applyRequestInterceptors(options);
-    
+
     // Prepare headers
     const headers: Record<string, string> = {
       ...this.defaultHeaders,
@@ -139,7 +146,7 @@ class ApiClient {
       if (config.timeout) {
         return Promise.race([
           fetchPromise,
-          this.createTimeoutPromise(config.timeout)
+          this.createTimeoutPromise(config.timeout),
         ]);
       }
 
@@ -148,7 +155,7 @@ class ApiClient {
 
     try {
       // Execute request with optional retries
-      const response = config.retries 
+      const response = config.retries
         ? await this.retryRequest(makeRequest, config.retries)
         : await makeRequest();
 
@@ -165,13 +172,15 @@ class ApiClient {
       if (!response.ok) {
         // Handle API error responses
         const errorResponse = responseData as ErrorResponse;
-        const apiError = ApiError.fromResponse(errorResponse || {
-          timestamp: new Date().toISOString(),
-          status: response.status,
-          error: response.statusText,
-          message: `HTTP ${response.status}: ${response.statusText}`,
-          path: endpoint,
-        });
+        const apiError = ApiError.fromResponse(
+          errorResponse || {
+            timestamp: new Date().toISOString(),
+            status: response.status,
+            error: response.statusText,
+            message: `HTTP ${response.status}: ${response.statusText}`,
+            path: endpoint,
+          }
+        );
 
         const errorResult: ApiResponse<T> = {
           error: apiError.message,
@@ -189,9 +198,10 @@ class ApiClient {
       return this.applyResponseInterceptors(successResult);
     } catch (error) {
       console.error('API request failed:', error);
-      
+
       const errorResult: ApiResponse<T> = {
-        error: error instanceof Error ? error.message : 'Network error occurred',
+        error:
+          error instanceof Error ? error.message : 'Network error occurred',
         status: 0,
       };
 
@@ -202,14 +212,21 @@ class ApiClient {
   /**
    * GET request
    */
-  async get<T>(endpoint: string, config?: RequestConfig): Promise<ApiResponse<T>> {
+  async get<T>(
+    endpoint: string,
+    config?: RequestConfig
+  ): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, { ...config, method: 'GET' });
   }
 
   /**
    * POST request
    */
-  async post<T>(endpoint: string, data?: unknown, config?: RequestConfig): Promise<ApiResponse<T>> {
+  async post<T>(
+    endpoint: string,
+    data?: unknown,
+    config?: RequestConfig
+  ): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, {
       ...config,
       method: 'POST',
@@ -220,7 +237,11 @@ class ApiClient {
   /**
    * PUT request
    */
-  async put<T>(endpoint: string, data?: unknown, config?: RequestConfig): Promise<ApiResponse<T>> {
+  async put<T>(
+    endpoint: string,
+    data?: unknown,
+    config?: RequestConfig
+  ): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, {
       ...config,
       method: 'PUT',
@@ -231,27 +252,33 @@ class ApiClient {
   /**
    * DELETE request
    */
-  async delete<T>(endpoint: string, config?: RequestConfig): Promise<ApiResponse<T>> {
+  async delete<T>(
+    endpoint: string,
+    config?: RequestConfig
+  ): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, { ...config, method: 'DELETE' });
   }
 
   /**
    * PATCH request
    */
-  async patch<T>(endpoint: string, data?: unknown, config?: RequestConfig): Promise<ApiResponse<T>> {
+  async patch<T>(
+    endpoint: string,
+    data?: unknown,
+    config?: RequestConfig
+  ): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, {
       ...config,
       method: 'PATCH',
       body: data ? JSON.stringify(data) : undefined,
     });
   }
-
 }
 
 // Create and export the default API client instance
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080';
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080';
 export const apiClient = new ApiClient(API_BASE_URL);
-
 
 export { ApiClient };
 export type { RequestInterceptor, ResponseInterceptor };

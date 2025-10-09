@@ -53,28 +53,30 @@ export const workoutSchema = z.object({
 // Date validation schema for filtering
 export const dateSchema = z
   .string()
-  .regex(
-    /^\d{4}-\d{2}-\d{2}$/,
-    'Date must be in YYYY-MM-DD format'
-  )
-  .refine((date) => {
+  .regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be in YYYY-MM-DD format')
+  .refine(date => {
     const parsedDate = new Date(date);
     const today = new Date();
     today.setHours(23, 59, 59, 999); // End of today
     return parsedDate <= today;
   }, 'Date cannot be in the future');
 
-export const dateRangeSchema = z.object({
-  startDate: dateSchema,
-  endDate: dateSchema,
-}).refine((data) => {
-  const start = new Date(data.startDate);
-  const end = new Date(data.endDate);
-  return start <= end;
-}, {
-  message: 'Start date must be before or equal to end date',
-  path: ['endDate'],
-});
+export const dateRangeSchema = z
+  .object({
+    startDate: dateSchema,
+    endDate: dateSchema,
+  })
+  .refine(
+    data => {
+      const start = new Date(data.startDate);
+      const end = new Date(data.endDate);
+      return start <= end;
+    },
+    {
+      message: 'Start date must be before or equal to end date',
+      path: ['endDate'],
+    }
+  );
 
 // Pagination schema
 export const paginationSchema = z.object({
@@ -89,30 +91,31 @@ export const paginationSchema = z.object({
     .min(1, 'Size must be at least 1')
     .max(100, 'Size must be 100 or less')
     .default(10),
-  sort: z
-    .enum(['date', 'amount', 'calories', 'duration'])
-    .optional(),
-  sortOrder: z
-    .enum(['asc', 'desc'])
-    .default('desc'),
+  sort: z.enum(['date', 'amount', 'calories', 'duration']).optional(),
+  sortOrder: z.enum(['asc', 'desc']).default('desc'),
 });
 
 // Combined filter schemas for health data
-export const healthDataFiltersSchema = z.object({
-  ...paginationSchema.shape,
-  startDate: dateSchema.optional(),
-  endDate: dateSchema.optional(),
-}).refine((data) => {
-  if (data.startDate && data.endDate) {
-    const start = new Date(data.startDate);
-    const end = new Date(data.endDate);
-    return start <= end;
-  }
-  return true;
-}, {
-  message: 'Start date must be before or equal to end date',
-  path: ['endDate'],
-});
+export const healthDataFiltersSchema = z
+  .object({
+    ...paginationSchema.shape,
+    startDate: dateSchema.optional(),
+    endDate: dateSchema.optional(),
+  })
+  .refine(
+    data => {
+      if (data.startDate && data.endDate) {
+        const start = new Date(data.startDate);
+        const end = new Date(data.endDate);
+        return start <= end;
+      }
+      return true;
+    },
+    {
+      message: 'Start date must be before or equal to end date',
+      path: ['endDate'],
+    }
+  );
 
 // Type inference from schemas
 export type WaterIntakeFormData = z.infer<typeof waterIntakeSchema>;

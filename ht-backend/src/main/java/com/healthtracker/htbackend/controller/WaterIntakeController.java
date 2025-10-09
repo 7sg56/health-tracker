@@ -105,6 +105,23 @@ public class WaterIntakeController {
     }
 
     /**
+     * Get a specific water intake entry by ID.
+     *
+     * @param id the ID of the water intake entry
+     * @param request the HTTP request for session management
+     * @return ResponseEntity with WaterIntakeResponseDto
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<WaterIntakeResponseDto> getWaterIntakeById(
+            @PathVariable Long id,
+            HttpServletRequest request) {
+
+        Long userId = getCurrentUserId(request);
+        WaterIntakeResponseDto response = waterIntakeService.getWaterIntakeById(id, userId);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
      * Delete a water intake entry with ownership validation.
      * 
      * @param id the ID of the water intake entry to delete

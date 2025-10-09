@@ -53,15 +53,10 @@ export class ApiError extends Error {
    * Creates an ApiError from a backend error response
    */
   static fromResponse(response: ApiErrorResponse): ApiError {
-    return new ApiError(
-      response.status,
-      response.message,
-      response.details,
-      {
-        timestamp: response.timestamp,
-        path: response.path,
-      }
-    );
+    return new ApiError(response.status, response.message, response.details, {
+      timestamp: response.timestamp,
+      path: response.path,
+    });
   }
 
   /**
@@ -78,7 +73,8 @@ export class ApiError extends Error {
         response.statusText || 'An error occurred',
         undefined,
         {
-          originalError: parseError instanceof Error ? parseError : new Error('Parse error'),
+          originalError:
+            parseError instanceof Error ? parseError : new Error('Parse error'),
         }
       );
     }
@@ -88,14 +84,9 @@ export class ApiError extends Error {
    * Creates an ApiError from a network or other error
    */
   static fromError(error: Error, status: number = 500): ApiError {
-    return new ApiError(
-      status,
-      error.message,
-      undefined,
-      {
-        originalError: error,
-      }
-    );
+    return new ApiError(status, error.message, undefined, {
+      originalError: error,
+    });
   }
 
   /**
@@ -110,13 +101,13 @@ export class ApiError extends Error {
    */
   getFieldErrors(): Record<string, string> {
     const fieldErrors: Record<string, string> = {};
-    
+
     if (this.details) {
-      this.details.forEach((detail) => {
+      this.details.forEach(detail => {
         fieldErrors[detail.field] = detail.message;
       });
     }
-    
+
     return fieldErrors;
   }
 

@@ -3,8 +3,8 @@
  * Provides keyboard users a way to skip to main content
  */
 
-import * as React from "react";
-import { cn } from "@/lib/utils";
+import * as React from 'react';
+import { cn } from '@/lib/utils';
 
 interface SkipLinkProps {
   href: string;
@@ -18,14 +18,14 @@ export function SkipLink({ href, children, className }: SkipLinkProps) {
       href={href}
       className={cn(
         // Hidden by default
-        "sr-only",
+        'sr-only',
         // Visible when focused
-        "focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[9999]",
+        'focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[9999]',
         // Styling
-        "focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground",
-        "focus:rounded-md focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-ring",
+        'focus:bg-primary focus:text-primary-foreground focus:px-4 focus:py-2',
+        'focus:ring-ring focus:rounded-md focus:shadow-lg focus:ring-2 focus:outline-none',
         // Smooth transition
-        "transition-all duration-200",
+        'transition-all duration-200',
         className
       )}
     >
@@ -46,7 +46,7 @@ interface SkipLinksProps {
 export function SkipLinks({ children, className }: SkipLinksProps) {
   return (
     <div
-      className={cn("sr-only focus-within:not-sr-only", className)}
+      className={cn('sr-only focus-within:not-sr-only', className)}
       role="navigation"
       aria-label="Skip links"
     >

@@ -20,7 +20,7 @@ interface UseWaterIntakeReturn {
   totalElements: number;
   totalPages: number;
   currentPage: number;
-  
+
   // Actions
   addWaterIntake: (data: WaterIntakeRequest) => Promise<void>;
   deleteWaterIntake: (id: number) => Promise<void>;
@@ -30,12 +30,14 @@ interface UseWaterIntakeReturn {
   clearError: () => void;
 }
 
-export function useWaterIntake(options: UseWaterIntakeOptions = {}): UseWaterIntakeReturn {
+export function useWaterIntake(
+  options: UseWaterIntakeOptions = {}
+): UseWaterIntakeReturn {
   const {
     pageSize = 10,
     infiniteScroll = false,
     autoRefresh = false,
-    refreshInterval = 30000
+    refreshInterval = 30000,
   } = options;
 
   // Use the paginated data hook
@@ -48,69 +50,77 @@ export function useWaterIntake(options: UseWaterIntakeOptions = {}): UseWaterInt
   const [optimisticError, setOptimisticError] = useState<string | null>(null);
 
   // Add water intake with optimistic update
-  const addWaterIntake = useCallback(async (data: WaterIntakeRequest) => {
-    try {
-      setOptimisticError(null);
+  const addWaterIntake = useCallback(
+    async (data: WaterIntakeRequest) => {
+      try {
+        setOptimisticError(null);
 
-      // Create optimistic entry
-      const optimisticEntry: WaterIntake = {
-        id: Date.now(), // Temporary ID
-        amountLtr: data.amountLtr,
-        date: new Date().toISOString().split('T')[0],
-        createdAt: new Date().toISOString()
-      };
+        // Create optimistic entry
+        const optimisticEntry: WaterIntake = {
+          id: Date.now(), // Temporary ID
+          amountLtr: data.amountLtr,
+          date: new Date().toISOString().split('T')[0],
+          createdAt: new Date().toISOString(),
+        };
 
-      // Optimistic update
-      actions.addItem(optimisticEntry);
+        // Optimistic update
+        actions.addItem(optimisticEntry);
 
-      // Make API call
-      const response = await HealthService.createWaterIntake(data);
+        // Make API call
+        const response = await HealthService.createWaterIntake(data);
 
-      if (response.error) {
-        // Revert optimistic update on error
-        actions.removeItem(optimisticEntry.id);
-        throw new Error(response.error);
+        if (response.error) {
+          // Revert optimistic update on error
+          actions.removeItem(optimisticEntry.id);
+          throw new Error(response.error);
+        }
+
+        if (response.data) {
+          // Replace optimistic entry with real data
+          actions.updateItem(optimisticEntry.id, () => response.data!);
+        }
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : 'Failed to add water intake';
+        setOptimisticError(errorMessage);
+        throw err; // Re-throw for form handling
       }
-
-      if (response.data) {
-        // Replace optimistic entry with real data
-        actions.updateItem(optimisticEntry.id, () => response.data!);
-      }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to add water intake';
-      setOptimisticError(errorMessage);
-      throw err; // Re-throw for form handling
-    }
-  }, [actions]);
+    },
+    [actions]
+  );
 
   // Delete water intake with optimistic update
-  const deleteWaterIntake = useCallback(async (id: number) => {
-    try {
-      setOptimisticError(null);
+  const deleteWaterIntake = useCallback(
+    async (id: number) => {
+      try {
+        setOptimisticError(null);
 
-      // Find the item to delete for potential rollback
-      const itemToDelete = state.items.find(item => item.id === id);
-      if (!itemToDelete) {
-        throw new Error('Water intake entry not found');
+        // Find the item to delete for potential rollback
+        const itemToDelete = state.items.find(item => item.id === id);
+        if (!itemToDelete) {
+          throw new Error('Water intake entry not found');
+        }
+
+        // Optimistic update
+        actions.removeItem(id);
+
+        // Make API call
+        const response = await HealthService.deleteWaterIntake(id);
+
+        if (response.error) {
+          // Revert optimistic update on error
+          actions.addItem(itemToDelete);
+          throw new Error(response.error);
+        }
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : 'Failed to delete water intake';
+        setOptimisticError(errorMessage);
+        throw err; // Re-throw for component handling
       }
-
-      // Optimistic update
-      actions.removeItem(id);
-
-      // Make API call
-      const response = await HealthService.deleteWaterIntake(id);
-
-      if (response.error) {
-        // Revert optimistic update on error
-        actions.addItem(itemToDelete);
-        throw new Error(response.error);
-      }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to delete water intake';
-      setOptimisticError(errorMessage);
-      throw err; // Re-throw for component handling
-    }
-  }, [state.items, actions]);
+    },
+    [state.items, actions]
+  );
 
   // Clear error (both state error and optimistic error)
   const clearError = useCallback(() => {
@@ -131,6 +141,6 @@ export function useWaterIntake(options: UseWaterIntakeOptions = {}): UseWaterInt
     refreshData: actions.refresh,
     loadMore: actions.loadMore,
     loadPage: actions.loadPage,
-    clearError
+    clearError,
   };
 }

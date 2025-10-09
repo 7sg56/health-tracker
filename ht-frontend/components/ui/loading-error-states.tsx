@@ -3,20 +3,26 @@
 // Loading error states with proper fallbacks
 
 import React, { useState, useEffect } from 'react';
-import { 
-  Loader2, 
-  AlertTriangle, 
-  RefreshCw, 
+import {
+  Loader2,
+  AlertTriangle,
+  RefreshCw,
   Clock,
   Wifi,
   Server,
   Database,
   FileX,
   Image as ImageIcon,
-  Home
+  Home,
 } from 'lucide-react';
 import { Button } from './button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from './card';
 import { Alert, AlertDescription } from './alert';
 import { Progress } from './progress';
 import { Skeleton } from './skeleton';
@@ -58,7 +64,7 @@ export function LoadingErrorState({
   variant = 'card',
   size = 'md',
   className,
-  children
+  children,
 }: LoadingErrorStateProps) {
   const [hasTimedOut, setHasTimedOut] = useState(false);
   const [timeoutProgress, setTimeoutProgress] = useState(0);
@@ -89,24 +95,24 @@ export function LoadingErrorState({
     if (error instanceof ApiError) {
       switch (error.status) {
         case 0:
-          return <Wifi className="h-5 w-5 text-destructive" />;
+          return <Wifi className="text-destructive h-5 w-5" />;
         case 404:
-          return <FileX className="h-5 w-5 text-destructive" />;
+          return <FileX className="text-destructive h-5 w-5" />;
         case 500:
         case 502:
         case 503:
         case 504:
-          return <Server className="h-5 w-5 text-destructive" />;
+          return <Server className="text-destructive h-5 w-5" />;
         default:
-          return <AlertTriangle className="h-5 w-5 text-destructive" />;
+          return <AlertTriangle className="text-destructive h-5 w-5" />;
       }
     }
-    return <AlertTriangle className="h-5 w-5 text-destructive" />;
+    return <AlertTriangle className="text-destructive h-5 w-5" />;
   };
 
   const getErrorTitle = (error: ApiError | Error | string) => {
     if (errorTitle) return errorTitle;
-    
+
     if (error instanceof ApiError) {
       switch (error.status) {
         case 0:
@@ -122,17 +128,17 @@ export function LoadingErrorState({
           return 'Error';
       }
     }
-    
+
     return 'Error';
   };
 
   const getErrorMessage = (error: ApiError | Error | string) => {
     if (errorMessage) return errorMessage;
-    
+
     if (typeof error === 'string') return error;
     if (error instanceof ApiError) return error.getUserMessage();
     if (error instanceof Error) return error.message;
-    
+
     return 'An unexpected error occurred';
   };
 
@@ -143,21 +149,21 @@ export function LoadingErrorState({
           icon: 'h-6 w-6',
           title: 'text-base',
           description: 'text-sm',
-          padding: 'p-4'
+          padding: 'p-4',
         };
       case 'lg':
         return {
           icon: 'h-8 w-8',
           title: 'text-xl',
           description: 'text-base',
-          padding: 'p-8'
+          padding: 'p-8',
         };
       default:
         return {
           icon: 'h-6 w-6',
           title: 'text-lg',
           description: 'text-sm',
-          padding: 'p-6'
+          padding: 'p-6',
         };
     }
   };
@@ -167,26 +173,38 @@ export function LoadingErrorState({
   // Loading state
   if (isLoading && !error) {
     const loadingContent = (
-      <div className={cn("flex flex-col items-center justify-center text-center", sizeClasses.padding)}>
-        <Loader2 className={cn("animate-spin text-primary mb-3", sizeClasses.icon)} />
-        <p className={cn("font-medium mb-2", sizeClasses.title)}>{loadingMessage}</p>
-        
+      <div
+        className={cn(
+          'flex flex-col items-center justify-center text-center',
+          sizeClasses.padding
+        )}
+      >
+        <Loader2
+          className={cn('text-primary mb-3 animate-spin', sizeClasses.icon)}
+        />
+        <p className={cn('mb-2 font-medium', sizeClasses.title)}>
+          {loadingMessage}
+        </p>
+
         {showProgress && progress !== undefined && (
           <div className="w-full max-w-xs space-y-2">
             <Progress value={progress} className="h-2" />
-            <p className="text-xs text-muted-foreground">{Math.round(progress)}% complete</p>
-          </div>
-        )}
-        
-        {timeout && !hasTimedOut && (
-          <div className="w-full max-w-xs space-y-2 mt-4">
-            <Progress value={timeoutProgress} className="h-1" />
-            <p className="text-xs text-muted-foreground">
-              {Math.round((timeout - (timeoutProgress / 100) * timeout) / 1000)}s remaining
+            <p className="text-muted-foreground text-xs">
+              {Math.round(progress)}% complete
             </p>
           </div>
         )}
-        
+
+        {timeout && !hasTimedOut && (
+          <div className="mt-4 w-full max-w-xs space-y-2">
+            <Progress value={timeoutProgress} className="h-1" />
+            <p className="text-muted-foreground text-xs">
+              {Math.round((timeout - (timeoutProgress / 100) * timeout) / 1000)}
+              s remaining
+            </p>
+          </div>
+        )}
+
         {hasTimedOut && (
           <div className="mt-4 space-y-2">
             <Badge variant="outline" className="text-xs">
@@ -205,14 +223,14 @@ export function LoadingErrorState({
 
     if (variant === 'overlay') {
       return (
-        <div className={cn(
-          "fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm",
-          className
-        )}>
+        <div
+          className={cn(
+            'bg-background/80 fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm',
+            className
+          )}
+        >
           <Card className="w-full max-w-sm">
-            <CardContent className="p-0">
-              {loadingContent}
-            </CardContent>
+            <CardContent className="p-0">{loadingContent}</CardContent>
           </Card>
         </div>
       );
@@ -220,14 +238,16 @@ export function LoadingErrorState({
 
     if (variant === 'inline') {
       return (
-        <div className={cn(
-          "flex items-center gap-3 p-4 rounded-lg border bg-muted/50",
-          className
-        )}>
-          <Loader2 className="h-4 w-4 animate-spin text-primary flex-shrink-0" />
+        <div
+          className={cn(
+            'bg-muted/50 flex items-center gap-3 rounded-lg border p-4',
+            className
+          )}
+        >
+          <Loader2 className="text-primary h-4 w-4 flex-shrink-0 animate-spin" />
           <span className="text-sm">{loadingMessage}</span>
           {showProgress && progress !== undefined && (
-            <div className="flex-1 max-w-xs">
+            <div className="max-w-xs flex-1">
               <Progress value={progress} className="h-1" />
             </div>
           )}
@@ -238,9 +258,7 @@ export function LoadingErrorState({
     // Card variant
     return (
       <Card className={className}>
-        <CardContent className="p-0">
-          {loadingContent}
-        </CardContent>
+        <CardContent className="p-0">{loadingContent}</CardContent>
       </Card>
     );
   }
@@ -250,21 +268,32 @@ export function LoadingErrorState({
     const errorContent = (
       <>
         <div className="text-center">
-          <div className={cn(
-            "mx-auto mb-3 flex items-center justify-center rounded-full bg-destructive/10",
-            size === 'sm' ? 'h-8 w-8' : size === 'lg' ? 'h-12 w-12' : 'h-10 w-10'
-          )}>
+          <div
+            className={cn(
+              'bg-destructive/10 mx-auto mb-3 flex items-center justify-center rounded-full',
+              size === 'sm'
+                ? 'h-8 w-8'
+                : size === 'lg'
+                  ? 'h-12 w-12'
+                  : 'h-10 w-10'
+            )}
+          >
             {getErrorIcon(error)}
           </div>
-          <h3 className={cn("font-semibold mb-2", sizeClasses.title)}>
+          <h3 className={cn('mb-2 font-semibold', sizeClasses.title)}>
             {getErrorTitle(error)}
           </h3>
-          <p className={cn("text-muted-foreground mb-4", sizeClasses.description)}>
+          <p
+            className={cn(
+              'text-muted-foreground mb-4',
+              sizeClasses.description
+            )}
+          >
             {getErrorMessage(error)}
           </p>
         </div>
-        
-        <div className="flex flex-wrap gap-2 justify-center">
+
+        <div className="flex flex-wrap justify-center gap-2">
           {onRetry && (
             <Button onClick={onRetry} size={size === 'sm' ? 'sm' : 'default'}>
               <RefreshCw className="mr-2 h-4 w-4" />
@@ -272,17 +301,17 @@ export function LoadingErrorState({
             </Button>
           )}
           {onCancel && (
-            <Button 
-              onClick={onCancel} 
-              variant="outline" 
+            <Button
+              onClick={onCancel}
+              variant="outline"
               size={size === 'sm' ? 'sm' : 'default'}
             >
               Cancel
             </Button>
           )}
-          <Button 
-            onClick={() => window.location.href = '/'} 
-            variant="outline" 
+          <Button
+            onClick={() => (window.location.href = '/')}
+            variant="outline"
             size={size === 'sm' ? 'sm' : 'default'}
           >
             <Home className="mr-2 h-4 w-4" />
@@ -294,10 +323,12 @@ export function LoadingErrorState({
 
     if (variant === 'overlay') {
       return (
-        <div className={cn(
-          "fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm",
-          className
-        )}>
+        <div
+          className={cn(
+            'bg-background/80 fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm',
+            className
+          )}
+        >
           <Card className="w-full max-w-md">
             <CardContent className={sizeClasses.padding}>
               {errorContent}
@@ -315,7 +346,7 @@ export function LoadingErrorState({
             <div className="space-y-3">
               <div>
                 <p className="font-medium">{getErrorTitle(error)}</p>
-                <p className="text-sm mt-1">{getErrorMessage(error)}</p>
+                <p className="mt-1 text-sm">{getErrorMessage(error)}</p>
               </div>
               <div className="flex gap-2">
                 {onRetry && (
@@ -371,14 +402,14 @@ export function DataLoader<T>({
   emptyComponent,
   emptyMessage = 'No data available',
   className,
-  children
+  children,
 }: DataLoaderProps<T>) {
   if (isLoading) {
     return (
       <div className={className}>
         {loadingComponent || (
-          <LoadingErrorState 
-            isLoading={true} 
+          <LoadingErrorState
+            isLoading={true}
             loadingMessage="Loading data..."
             variant="card"
           />
@@ -391,11 +422,7 @@ export function DataLoader<T>({
     return (
       <div className={className}>
         {errorComponent || (
-          <LoadingErrorState 
-            error={error}
-            onRetry={onRetry}
-            variant="card"
-          />
+          <LoadingErrorState error={error} onRetry={onRetry} variant="card" />
         )}
       </div>
     );
@@ -407,7 +434,7 @@ export function DataLoader<T>({
         {emptyComponent || (
           <Card>
             <CardContent className="p-6 text-center">
-              <Database className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
+              <Database className="text-muted-foreground mx-auto mb-3 h-8 w-8" />
               <p className="text-muted-foreground">{emptyMessage}</p>
             </CardContent>
           </Card>
@@ -422,7 +449,8 @@ export function DataLoader<T>({
 /**
  * Image loading with error fallback
  */
-interface ImageWithFallbackProps extends React.ImgHTMLAttributes<HTMLImageElement> {
+interface ImageWithFallbackProps
+  extends React.ImgHTMLAttributes<HTMLImageElement> {
   fallback?: React.ReactNode;
   showRetry?: boolean;
   onRetry?: () => void;
@@ -462,12 +490,16 @@ export function ImageWithFallback({
     }
 
     return (
-      <div className={cn(
-        "flex flex-col items-center justify-center p-4 border border-dashed border-muted-foreground/25 rounded-lg bg-muted/50",
-        className
-      )}>
-        <ImageIcon className="h-8 w-8 text-muted-foreground mb-2" />
-        <p className="text-sm text-muted-foreground mb-2">Failed to load image</p>
+      <div
+        className={cn(
+          'border-muted-foreground/25 bg-muted/50 flex flex-col items-center justify-center rounded-lg border border-dashed p-4',
+          className
+        )}
+      >
+        <ImageIcon className="text-muted-foreground mb-2 h-8 w-8" />
+        <p className="text-muted-foreground mb-2 text-sm">
+          Failed to load image
+        </p>
         {showRetry && (
           <Button onClick={handleRetry} size="sm" variant="outline">
             <RefreshCw className="mr-2 h-3 w-3" />
@@ -481,11 +513,13 @@ export function ImageWithFallback({
   return (
     <div className="relative">
       {isLoading && (
-        <div className={cn(
-          "absolute inset-0 flex items-center justify-center bg-muted/50 rounded",
-          className
-        )}>
-          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+        <div
+          className={cn(
+            'bg-muted/50 absolute inset-0 flex items-center justify-center rounded',
+            className
+          )}
+        >
+          <Loader2 className="text-muted-foreground h-6 w-6 animate-spin" />
         </div>
       )}
       <img
@@ -493,10 +527,7 @@ export function ImageWithFallback({
         alt={alt}
         onLoad={handleLoad}
         onError={handleError}
-        className={cn(
-          isLoading && "opacity-0",
-          className
-        )}
+        className={cn(isLoading && 'opacity-0', className)}
         {...props}
       />
     </div>
@@ -517,7 +548,7 @@ export function SuspenseFallback({
   message = 'Loading...',
   timeout = 10000,
   onTimeout,
-  className
+  className,
 }: SuspenseFallbackProps) {
   const [hasTimedOut, setHasTimedOut] = useState(false);
 
@@ -595,6 +626,6 @@ export function useLoadingErrorState<T>() {
     retry,
     reset,
     hasData: data !== null,
-    hasError: error !== null
+    hasError: error !== null,
   };
 }

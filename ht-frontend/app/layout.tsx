@@ -1,41 +1,46 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import { EnhancedThemeProvider } from "@/lib/theme";
-import { Toaster } from "@/components/ui/sonner";
-import { SkipLinks, MainContentSkipLink, NavigationSkipLink } from "@/components/ui/skip-link";
-import "./globals.css";
+import type { Metadata } from 'next';
+import { Geist, Geist_Mono } from 'next/font/google';
+import { EnhancedThemeProvider } from '@/lib/theme';
+import { Toaster } from '@/components/ui/sonner';
+import {
+  SkipLinks,
+  MainContentSkipLink,
+  NavigationSkipLink,
+} from '@/components/ui/skip-link';
+import './globals.css';
 
 const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+  variable: '--font-geist-sans',
+  subsets: ['latin'],
 });
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  variable: '--font-geist-mono',
+  subsets: ['latin'],
 });
 
 export const metadata: Metadata = {
   title: {
-    default: "HealthTracker - Track Your Health, Transform Your Life",
-    template: "%s | HealthTracker"
+    default: 'HealthTracker - Track Your Health, Transform Your Life',
+    template: '%s | HealthTracker',
   },
-  description: "Monitor your daily water intake, food consumption, and workouts with our comprehensive health tracking platform. Get personalized insights and achieve your wellness goals.",
+  description:
+    'Monitor your daily water intake, food consumption, and workouts with our comprehensive health tracking platform. Get personalized insights and achieve your wellness goals.',
   keywords: [
-    "health tracking",
-    "fitness tracker",
-    "nutrition monitoring", 
-    "water intake tracker",
-    "workout logging",
-    "wellness app",
-    "health dashboard",
-    "calorie counter",
-    "exercise tracker",
-    "health metrics"
+    'health tracking',
+    'fitness tracker',
+    'nutrition monitoring',
+    'water intake tracker',
+    'workout logging',
+    'wellness app',
+    'health dashboard',
+    'calorie counter',
+    'exercise tracker',
+    'health metrics',
   ],
-  authors: [{ name: "HealthTracker Team" }],
-  creator: "HealthTracker Team",
-  publisher: "HealthTracker",
+  authors: [{ name: 'HealthTracker Team' }],
+  creator: 'HealthTracker Team',
+  publisher: 'HealthTracker',
   robots: {
     index: true,
     follow: true,
@@ -53,7 +58,8 @@ export const metadata: Metadata = {
     url: 'https://healthtracker.app',
     siteName: 'HealthTracker',
     title: 'HealthTracker - Track Your Health, Transform Your Life',
-    description: 'Monitor your daily water intake, food consumption, and workouts with our comprehensive health tracking platform.',
+    description:
+      'Monitor your daily water intake, food consumption, and workouts with our comprehensive health tracking platform.',
     images: [
       {
         url: '/og-image.png',
@@ -66,7 +72,8 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'HealthTracker - Track Your Health, Transform Your Life',
-    description: 'Monitor your daily water intake, food consumption, and workouts with our comprehensive health tracking platform.',
+    description:
+      'Monitor your daily water intake, food consumption, and workouts with our comprehensive health tracking platform.',
     images: ['/twitter-image.png'],
     creator: '@healthtracker',
   },
@@ -101,7 +108,7 @@ export default function RootLayout({
           <MainContentSkipLink />
           <NavigationSkipLink />
         </SkipLinks>
-        
+
         <EnhancedThemeProvider
           attribute="class"
           defaultTheme="light"

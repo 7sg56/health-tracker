@@ -26,9 +26,9 @@ class PerformanceMonitor {
   private initializeObservers() {
     // Monitor navigation timing
     if (PerformanceObserver.supportedEntryTypes?.includes('navigation')) {
-      const navObserver = new PerformanceObserver((list) => {
+      const navObserver = new PerformanceObserver(list => {
         const entries = list.getEntries();
-        entries.forEach((entry) => {
+        entries.forEach(entry => {
           this.recordNavigationMetrics(entry as PerformanceNavigationTiming);
         });
       });
@@ -38,9 +38,9 @@ class PerformanceMonitor {
 
     // Monitor resource loading
     if (PerformanceObserver.supportedEntryTypes?.includes('resource')) {
-      const resourceObserver = new PerformanceObserver((list) => {
+      const resourceObserver = new PerformanceObserver(list => {
         const entries = list.getEntries();
-        entries.forEach((entry) => {
+        entries.forEach(entry => {
           this.recordResourceMetrics(entry as PerformanceResourceTiming);
         });
       });
@@ -50,9 +50,9 @@ class PerformanceMonitor {
 
     // Monitor paint timing
     if (PerformanceObserver.supportedEntryTypes?.includes('paint')) {
-      const paintObserver = new PerformanceObserver((list) => {
+      const paintObserver = new PerformanceObserver(list => {
         const entries = list.getEntries();
-        entries.forEach((entry) => {
+        entries.forEach(entry => {
           this.recordPaintMetrics(entry);
         });
       });
@@ -61,8 +61,12 @@ class PerformanceMonitor {
     }
 
     // Monitor largest contentful paint
-    if (PerformanceObserver.supportedEntryTypes?.includes('largest-contentful-paint')) {
-      const lcpObserver = new PerformanceObserver((list) => {
+    if (
+      PerformanceObserver.supportedEntryTypes?.includes(
+        'largest-contentful-paint'
+      )
+    ) {
+      const lcpObserver = new PerformanceObserver(list => {
         const entries = list.getEntries();
         const lastEntry = entries[entries.length - 1];
         this.recordLCPMetrics(lastEntry);
@@ -73,9 +77,9 @@ class PerformanceMonitor {
 
     // Monitor first input delay
     if (PerformanceObserver.supportedEntryTypes?.includes('first-input')) {
-      const fidObserver = new PerformanceObserver((list) => {
+      const fidObserver = new PerformanceObserver(list => {
         const entries = list.getEntries();
-        entries.forEach((entry) => {
+        entries.forEach(entry => {
           this.recordFIDMetrics(entry);
         });
       });
@@ -85,9 +89,9 @@ class PerformanceMonitor {
 
     // Monitor layout shifts
     if (PerformanceObserver.supportedEntryTypes?.includes('layout-shift')) {
-      const clsObserver = new PerformanceObserver((list) => {
+      const clsObserver = new PerformanceObserver(list => {
         const entries = list.getEntries();
-        entries.forEach((entry) => {
+        entries.forEach(entry => {
           this.recordCLSMetrics(entry);
         });
       });
@@ -100,28 +104,42 @@ class PerformanceMonitor {
     const metrics = {
       dns: entry.domainLookupEnd - entry.domainLookupStart,
       tcp: entry.connectEnd - entry.connectStart,
-      ssl: entry.secureConnectionStart > 0 ? entry.connectEnd - entry.secureConnectionStart : 0,
+      ssl:
+        entry.secureConnectionStart > 0
+          ? entry.connectEnd - entry.secureConnectionStart
+          : 0,
       ttfb: entry.responseStart - entry.requestStart,
       download: entry.responseEnd - entry.responseStart,
       domParse: entry.domContentLoadedEventStart - entry.responseEnd,
-      domReady: entry.domContentLoadedEventEnd - entry.domContentLoadedEventStart,
+      domReady:
+        entry.domContentLoadedEventEnd - entry.domContentLoadedEventStart,
       loadComplete: entry.loadEventEnd - entry.loadEventStart,
       total: entry.loadEventEnd - entry.navigationStart,
     };
 
-    this.recordMetric('navigation', performance.now(), performance.now(), metrics);
+    this.recordMetric(
+      'navigation',
+      performance.now(),
+      performance.now(),
+      metrics
+    );
   }
 
   private recordResourceMetrics(entry: PerformanceResourceTiming) {
     if (entry.name.includes('/_next/') || entry.name.includes('/api/')) {
       const resourceType = this.getResourceType(entry.name);
       const size = entry.transferSize || entry.encodedBodySize || 0;
-      
-      this.recordMetric(`resource-${resourceType}`, entry.startTime, entry.responseEnd, {
-        url: entry.name,
-        size,
-        cached: entry.transferSize === 0 && entry.encodedBodySize > 0,
-      });
+
+      this.recordMetric(
+        `resource-${resourceType}`,
+        entry.startTime,
+        entry.responseEnd,
+        {
+          url: entry.name,
+          size,
+          cached: entry.transferSize === 0 && entry.encodedBodySize > 0,
+        }
+      );
     }
   }
 
@@ -139,9 +157,14 @@ class PerformanceMonitor {
   }
 
   private recordFIDMetrics(entry: PerformanceEntry) {
-    this.recordMetric('fid', entry.startTime, entry.startTime + (entry as any).processingStart, {
-      delay: (entry as any).processingStart,
-    });
+    this.recordMetric(
+      'fid',
+      entry.startTime,
+      entry.startTime + (entry as any).processingStart,
+      {
+        delay: (entry as any).processingStart,
+      }
+    );
   }
 
   private recordCLSMetrics(entry: PerformanceEntry) {
@@ -188,7 +211,12 @@ class PerformanceMonitor {
     return duration;
   }
 
-  recordMetric(name: string, startTime: number, endTime: number, metadata?: Record<string, any>): void {
+  recordMetric(
+    name: string,
+    startTime: number,
+    endTime: number,
+    metadata?: Record<string, any>
+  ): void {
     const metric: PerformanceMetrics = {
       name,
       startTime,
@@ -203,13 +231,19 @@ class PerformanceMonitor {
 
   private reportMetric(metric: PerformanceMetrics): void {
     // Send to analytics service in production
-    if (process.env.NODE_ENV === 'production' && process.env.NEXT_PUBLIC_ENABLE_PERFORMANCE_MONITORING === 'true') {
+    if (
+      process.env.NODE_ENV === 'production' &&
+      process.env.NEXT_PUBLIC_ENABLE_PERFORMANCE_MONITORING === 'true'
+    ) {
       this.sendToAnalytics(metric);
     }
 
     // Log in development
     if (process.env.NODE_ENV === 'development') {
-      console.log(`[Performance] ${metric.name}: ${metric.duration?.toFixed(2)}ms`, metric.metadata);
+      console.log(
+        `[Performance] ${metric.name}: ${metric.duration?.toFixed(2)}ms`,
+        metric.metadata
+      );
     }
   }
 
@@ -254,10 +288,13 @@ export function getPerformanceMonitor(): PerformanceMonitor {
 }
 
 // Utility functions
-export function measureAsync<T>(name: string, fn: () => Promise<T>): Promise<T> {
+export function measureAsync<T>(
+  name: string,
+  fn: () => Promise<T>
+): Promise<T> {
   const monitor = getPerformanceMonitor();
   monitor.startTiming(name);
-  
+
   return fn().finally(() => {
     monitor.endTiming(name);
   });
@@ -266,7 +303,7 @@ export function measureAsync<T>(name: string, fn: () => Promise<T>): Promise<T> 
 export function measureSync<T>(name: string, fn: () => T): T {
   const monitor = getPerformanceMonitor();
   monitor.startTiming(name);
-  
+
   try {
     return fn();
   } finally {
@@ -277,20 +314,23 @@ export function measureSync<T>(name: string, fn: () => T): T {
 // React hook for component performance
 export function usePerformanceTracking(componentName: string) {
   const monitor = getPerformanceMonitor();
-  
+
   React.useEffect(() => {
     monitor.startTiming(`component-${componentName}-mount`);
-    
+
     return () => {
       monitor.endTiming(`component-${componentName}-mount`);
     };
   }, [componentName, monitor]);
 
-  const trackAction = React.useCallback((actionName: string, fn: () => void) => {
-    monitor.startTiming(`${componentName}-${actionName}`);
-    fn();
-    monitor.endTiming(`${componentName}-${actionName}`);
-  }, [componentName, monitor]);
+  const trackAction = React.useCallback(
+    (actionName: string, fn: () => void) => {
+      monitor.startTiming(`${componentName}-${actionName}`);
+      fn();
+      monitor.endTiming(`${componentName}-${actionName}`);
+    },
+    [componentName, monitor]
+  );
 
   return { trackAction };
 }
@@ -300,51 +340,54 @@ export function reportWebVitals(): void {
   if (typeof window === 'undefined') return;
 
   // Report Core Web Vitals
-  import('web-vitals').then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
-    const monitor = getPerformanceMonitor();
+  import('web-vitals')
+    .then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
+      const monitor = getPerformanceMonitor();
 
-    getCLS((metric) => {
-      monitor.recordMetric('web-vital-cls', 0, metric.value, {
-        rating: metric.rating,
-        entries: metric.entries,
+      getCLS(metric => {
+        monitor.recordMetric('web-vital-cls', 0, metric.value, {
+          rating: metric.rating,
+          entries: metric.entries,
+        });
       });
-    });
 
-    getFID((metric) => {
-      monitor.recordMetric('web-vital-fid', 0, metric.value, {
-        rating: metric.rating,
-        entries: metric.entries,
+      getFID(metric => {
+        monitor.recordMetric('web-vital-fid', 0, metric.value, {
+          rating: metric.rating,
+          entries: metric.entries,
+        });
       });
-    });
 
-    getFCP((metric) => {
-      monitor.recordMetric('web-vital-fcp', 0, metric.value, {
-        rating: metric.rating,
-        entries: metric.entries,
+      getFCP(metric => {
+        monitor.recordMetric('web-vital-fcp', 0, metric.value, {
+          rating: metric.rating,
+          entries: metric.entries,
+        });
       });
-    });
 
-    getLCP((metric) => {
-      monitor.recordMetric('web-vital-lcp', 0, metric.value, {
-        rating: metric.rating,
-        entries: metric.entries,
+      getLCP(metric => {
+        monitor.recordMetric('web-vital-lcp', 0, metric.value, {
+          rating: metric.rating,
+          entries: metric.entries,
+        });
       });
-    });
 
-    getTTFB((metric) => {
-      monitor.recordMetric('web-vital-ttfb', 0, metric.value, {
-        rating: metric.rating,
-        entries: metric.entries,
+      getTTFB(metric => {
+        monitor.recordMetric('web-vital-ttfb', 0, metric.value, {
+          rating: metric.rating,
+          entries: metric.entries,
+        });
       });
+    })
+    .catch(error => {
+      console.warn('Failed to load web-vitals:', error);
     });
-  }).catch(error => {
-    console.warn('Failed to load web-vitals:', error);
-  });
 }
 
 // Bundle size tracking
 export function trackBundleSize(): void {
-  if (typeof window === 'undefined' || process.env.NODE_ENV !== 'production') return;
+  if (typeof window === 'undefined' || process.env.NODE_ENV !== 'production')
+    return;
 
   // Track initial bundle size
   const scripts = document.querySelectorAll('script[src*="_next/static"]');

@@ -28,7 +28,7 @@ export function InfiniteScroll({
   loadingComponent,
   endMessage,
   errorMessage,
-  onRetry
+  onRetry,
 }: InfiniteScrollProps) {
   const sentinelRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
@@ -49,7 +49,7 @@ export function InfiniteScroll({
 
     observerRef.current = new IntersectionObserver(handleIntersection, {
       rootMargin: `${threshold}px`,
-      threshold: 0.1
+      threshold: 0.1,
     });
 
     observerRef.current.observe(sentinel);
@@ -63,13 +63,15 @@ export function InfiniteScroll({
 
   const defaultLoadingComponent = (
     <div className="flex items-center justify-center py-4">
-      <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-      <span className="ml-2 text-sm text-muted-foreground">Loading more...</span>
+      <Loader2 className="text-muted-foreground h-6 w-6 animate-spin" />
+      <span className="text-muted-foreground ml-2 text-sm">
+        Loading more...
+      </span>
     </div>
   );
 
   const defaultEndMessage = (
-    <div className="text-center py-4 text-sm text-muted-foreground">
+    <div className="text-muted-foreground py-4 text-center text-sm">
       No more items to load
     </div>
   );
@@ -77,17 +79,17 @@ export function InfiniteScroll({
   return (
     <div className={cn('space-y-4', className)}>
       {children}
-      
+
       {/* Sentinel element for intersection observer */}
       <div ref={sentinelRef} className="h-1" />
-      
+
       {/* Loading state */}
       {isLoading && (loadingComponent || defaultLoadingComponent)}
-      
+
       {/* Error state */}
       {errorMessage && (
-        <div className="text-center py-4">
-          <p className="text-sm text-destructive mb-2">{errorMessage}</p>
+        <div className="py-4 text-center">
+          <p className="text-destructive mb-2 text-sm">{errorMessage}</p>
           {onRetry && (
             <Button variant="outline" size="sm" onClick={onRetry}>
               Try Again
@@ -95,9 +97,12 @@ export function InfiniteScroll({
           )}
         </div>
       )}
-      
+
       {/* End message */}
-      {!hasMore && !isLoading && !errorMessage && (endMessage || defaultEndMessage)}
+      {!hasMore &&
+        !isLoading &&
+        !errorMessage &&
+        (endMessage || defaultEndMessage)}
     </div>
   );
 }
@@ -124,7 +129,7 @@ export function useInfiniteScroll(
     const handleScroll = () => {
       const { scrollTop, scrollHeight, clientHeight } = element;
       const isNearBottom = scrollTop + clientHeight >= scrollHeight - threshold;
-      
+
       if (isNearBottom) {
         callback();
       }
@@ -151,7 +156,7 @@ export function LoadMoreButton({
   isLoading,
   onLoadMore,
   className,
-  children = 'Load More'
+  children = 'Load More',
 }: LoadMoreButtonProps) {
   if (!hasMore) {
     return null;

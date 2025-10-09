@@ -3,13 +3,13 @@
 // Form error display components with shadcn Alert integration
 
 import React from 'react';
-import { 
-  AlertTriangle, 
-  AlertCircle, 
-  CheckCircle2, 
+import {
+  AlertTriangle,
+  AlertCircle,
+  CheckCircle2,
   Info,
   X,
-  RefreshCw
+  RefreshCw,
 } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from './alert';
 import { Button } from './button';
@@ -40,26 +40,26 @@ export function FormErrorDisplay({
   showRetry = false,
   onDismiss,
   onRetry,
-  className
+  className,
 }: FormErrorDisplayProps) {
   const errorList = React.useMemo(() => {
     if (!errors) return [];
-    
+
     if (typeof errors === 'string') {
       return [errors];
     }
-    
+
     if (errors instanceof ApiError) {
       if (errors.hasFieldErrors()) {
         return Object.values(errors.getFieldErrors());
       }
       return [errors.getUserMessage()];
     }
-    
+
     if (Array.isArray(errors)) {
       return errors;
     }
-    
+
     return Object.values(errors);
   }, [errors]);
 
@@ -78,12 +78,14 @@ export function FormErrorDisplay({
 
   const getTitle = () => {
     if (title) return title;
-    
+
     switch (variant) {
       case 'default':
         return 'Information';
       default:
-        return errorList.length === 1 ? 'Error' : 'Please correct the following errors:';
+        return errorList.length === 1
+          ? 'Error'
+          : 'Please correct the following errors:';
     }
   };
 
@@ -125,7 +127,7 @@ export function FormErrorDisplay({
             <ul className="mt-2 space-y-1">
               {errorList.map((error, index) => (
                 <li key={index} className="flex items-start gap-2">
-                  <span className="text-current mt-0.5">•</span>
+                  <span className="mt-0.5 text-current">•</span>
                   <span>{error}</span>
                 </li>
               ))}
@@ -147,21 +149,23 @@ interface FieldErrorProps {
   className?: string;
 }
 
-export function FieldError({ 
-  error, 
-  touched = true, 
+export function FieldError({
+  error,
+  touched = true,
   showIcon = true,
-  className 
+  className,
 }: FieldErrorProps) {
   if (!error || !touched) {
     return null;
   }
 
   return (
-    <div className={cn(
-      "flex items-center gap-2 text-sm text-destructive mt-1",
-      className
-    )}>
+    <div
+      className={cn(
+        'text-destructive mt-1 flex items-center gap-2 text-sm',
+        className
+      )}
+    >
       {showIcon && <AlertCircle className="h-3 w-3 flex-shrink-0" />}
       <span>{error}</span>
     </div>
@@ -184,10 +188,10 @@ export function FormSuccessDisplay({
   title = 'Success',
   showDismiss = false,
   onDismiss,
-  className
+  className,
 }: FormSuccessDisplayProps) {
   return (
-    <Alert className={cn("border-green-500 bg-green-50", className)}>
+    <Alert className={cn('border-green-500 bg-green-50', className)}>
       <CheckCircle2 className="h-4 w-4 text-green-600" />
       <div className="flex-1">
         <AlertTitle className="flex items-center justify-between text-green-800">
@@ -228,7 +232,7 @@ export function ValidationSummary({
   touched,
   fieldLabels = {},
   showFieldNames = true,
-  className
+  className,
 }: ValidationSummaryProps) {
   const visibleErrors = React.useMemo(() => {
     return Object.entries(errors)
@@ -236,7 +240,8 @@ export function ValidationSummary({
       .map(([field, error]) => ({
         field,
         error,
-        label: fieldLabels[field] || field.charAt(0).toUpperCase() + field.slice(1)
+        label:
+          fieldLabels[field] || field.charAt(0).toUpperCase() + field.slice(1),
       }));
   }, [errors, touched, fieldLabels]);
 
@@ -249,13 +254,14 @@ export function ValidationSummary({
       <AlertTriangle className="h-4 w-4" />
       <div className="flex-1">
         <AlertTitle>
-          Please correct the following {visibleErrors.length === 1 ? 'error' : 'errors'}:
+          Please correct the following{' '}
+          {visibleErrors.length === 1 ? 'error' : 'errors'}:
         </AlertTitle>
         <AlertDescription>
           <ul className="mt-2 space-y-1">
             {visibleErrors.map(({ field, error, label }) => (
               <li key={field} className="flex items-start gap-2">
-                <span className="text-current mt-0.5">•</span>
+                <span className="mt-0.5 text-current">•</span>
                 <span>
                   {showFieldNames && (
                     <strong className="font-medium">{label}:</strong>
@@ -289,15 +295,18 @@ export function ApiErrorDisplay({
   showRetry = false,
   onRetry,
   onDismiss,
-  className
+  className,
 }: ApiErrorDisplayProps) {
   if (error.hasFieldErrors()) {
     const fieldErrors = error.getFieldErrors();
-    const mappedErrors = Object.entries(fieldErrors).map(([field, message]) => ({
-      field,
-      message,
-      label: fieldLabels[field] || field.charAt(0).toUpperCase() + field.slice(1)
-    }));
+    const mappedErrors = Object.entries(fieldErrors).map(
+      ([field, message]) => ({
+        field,
+        message,
+        label:
+          fieldLabels[field] || field.charAt(0).toUpperCase() + field.slice(1),
+      })
+    );
 
     return (
       <Alert variant="destructive" className={className}>
@@ -334,7 +343,7 @@ export function ApiErrorDisplay({
             <ul className="mt-2 space-y-1">
               {mappedErrors.map(({ field, message, label }) => (
                 <li key={field} className="flex items-start gap-2">
-                  <span className="text-current mt-0.5">•</span>
+                  <span className="mt-0.5 text-current">•</span>
                   <span>
                     <strong className="font-medium">{label}:</strong> {message}
                   </span>
@@ -375,11 +384,16 @@ export function FieldValidationStatus({
   isValidating,
   error,
   showSuccess = true,
-  className
+  className,
 }: FieldValidationStatusProps) {
   if (isValidating) {
     return (
-      <div className={cn("flex items-center gap-2 text-sm text-muted-foreground", className)}>
+      <div
+        className={cn(
+          'text-muted-foreground flex items-center gap-2 text-sm',
+          className
+        )}
+      >
         <RefreshCw className="h-3 w-3 animate-spin" />
         <span>Validating...</span>
       </div>
@@ -388,7 +402,12 @@ export function FieldValidationStatus({
 
   if (error) {
     return (
-      <div className={cn("flex items-center gap-2 text-sm text-destructive", className)}>
+      <div
+        className={cn(
+          'text-destructive flex items-center gap-2 text-sm',
+          className
+        )}
+      >
         <AlertCircle className="h-3 w-3" />
         <span>{error}</span>
       </div>
@@ -397,7 +416,12 @@ export function FieldValidationStatus({
 
   if (isValid && showSuccess) {
     return (
-      <div className={cn("flex items-center gap-2 text-sm text-green-600", className)}>
+      <div
+        className={cn(
+          'flex items-center gap-2 text-sm text-green-600',
+          className
+        )}
+      >
         <CheckCircle2 className="h-3 w-3" />
         <span>Valid</span>
       </div>
@@ -427,11 +451,11 @@ export function FormSubmissionStatus({
   successMessage = 'Form submitted successfully',
   onRetry,
   onDismiss,
-  className
+  className,
 }: FormSubmissionStatusProps) {
   if (isSubmitting) {
     return (
-      <Alert className={cn("border-blue-200 bg-blue-50", className)}>
+      <Alert className={cn('border-blue-200 bg-blue-50', className)}>
         <RefreshCw className="h-4 w-4 animate-spin text-blue-600" />
         <AlertDescription className="text-blue-800">
           Submitting form...
@@ -484,7 +508,9 @@ export function FormSubmissionStatus({
 export function useFormErrorDisplay() {
   const [errors, setErrors] = React.useState<Record<string, string>>({});
   const [touched, setTouched] = React.useState<Record<string, boolean>>({});
-  const [submitError, setSubmitError] = React.useState<ApiError | string | null>(null);
+  const [submitError, setSubmitError] = React.useState<
+    ApiError | string | null
+  >(null);
   const [submitSuccess, setSubmitSuccess] = React.useState(false);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
@@ -500,9 +526,12 @@ export function useFormErrorDisplay() {
     });
   }, []);
 
-  const setFieldTouched = React.useCallback((field: string, isTouched = true) => {
-    setTouched(prev => ({ ...prev, [field]: isTouched }));
-  }, []);
+  const setFieldTouched = React.useCallback(
+    (field: string, isTouched = true) => {
+      setTouched(prev => ({ ...prev, [field]: isTouched }));
+    },
+    []
+  );
 
   const clearAllErrors = React.useCallback(() => {
     setErrors({});
@@ -514,7 +543,7 @@ export function useFormErrorDisplay() {
     if (error.hasFieldErrors()) {
       const fieldErrors = error.getFieldErrors();
       setErrors(prev => ({ ...prev, ...fieldErrors }));
-      
+
       // Mark all error fields as touched
       Object.keys(fieldErrors).forEach(field => {
         setTouched(prev => ({ ...prev, [field]: true }));
@@ -548,6 +577,7 @@ export function useFormErrorDisplay() {
     setIsSubmitting,
     reset,
     hasErrors: Object.keys(errors).length > 0 || !!submitError,
-    hasVisibleErrors: Object.entries(errors).some(([field]) => touched[field]) || !!submitError
+    hasVisibleErrors:
+      Object.entries(errors).some(([field]) => touched[field]) || !!submitError,
   };
 }

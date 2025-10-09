@@ -26,9 +26,9 @@ export class GlobalErrorHandler {
     }
 
     // Handle unhandled promise rejections
-    window.addEventListener('unhandledrejection', (event) => {
+    window.addEventListener('unhandledrejection', event => {
       console.error('Unhandled promise rejection:', event.reason);
-      
+
       const error = ErrorHandler.handleError(event.reason);
       this.handleError(error, {
         context: 'Unhandled Promise Rejection',
@@ -41,9 +41,9 @@ export class GlobalErrorHandler {
     });
 
     // Handle uncaught JavaScript errors
-    window.addEventListener('error', (event) => {
+    window.addEventListener('error', event => {
       console.error('Uncaught error:', event.error);
-      
+
       const error = ErrorHandler.handleError(event.error);
       this.handleError(error, {
         context: 'Uncaught Error',
@@ -53,22 +53,26 @@ export class GlobalErrorHandler {
     });
 
     // Handle resource loading errors (images, scripts, etc.)
-    window.addEventListener('error', (event) => {
-      if (event.target && event.target !== window) {
-        const target = event.target as HTMLElement;
-        const resourceType = target.tagName?.toLowerCase();
-        const resourceSrc = (target as any).src || (target as any).href;
-        
-        console.warn(`Failed to load ${resourceType}:`, resourceSrc);
-        
-        // Don't show toast for resource errors as they're usually not critical
-        // but log them for debugging
-        ErrorHandler.logError(
-          new ApiError(0, `Failed to load ${resourceType}: ${resourceSrc}`),
-          'Resource Loading Error'
-        );
-      }
-    }, true);
+    window.addEventListener(
+      'error',
+      event => {
+        if (event.target && event.target !== window) {
+          const target = event.target as HTMLElement;
+          const resourceType = target.tagName?.toLowerCase();
+          const resourceSrc = (target as any).src || (target as any).href;
+
+          console.warn(`Failed to load ${resourceType}:`, resourceSrc);
+
+          // Don't show toast for resource errors as they're usually not critical
+          // but log them for debugging
+          ErrorHandler.logError(
+            new ApiError(0, `Failed to load ${resourceType}: ${resourceSrc}`),
+            'Resource Loading Error'
+          );
+        }
+      },
+      true
+    );
 
     this.isInitialized = true;
   }
@@ -112,9 +116,7 @@ export class GlobalErrorHandler {
     resource?: string,
     options: Omit<GlobalErrorHandlerOptions, 'context'> = {}
   ): ApiError {
-    const context = resource 
-      ? `${operation} ${resource}`
-      : operation;
+    const context = resource ? `${operation} ${resource}` : operation;
 
     return this.handleError(error, {
       ...options,
@@ -139,7 +141,10 @@ export class GlobalErrorHandler {
 
     // For validation errors, don't show toast as forms will display field errors
     if (apiError.status !== 400) {
-      ToastService.handleApiError(apiError, `Failed to submit ${formName.toLowerCase()}`);
+      ToastService.handleApiError(
+        apiError,
+        `Failed to submit ${formName.toLowerCase()}`
+      );
     }
 
     return apiError;
@@ -162,7 +167,10 @@ export class GlobalErrorHandler {
     // For 401 errors, redirect to login after a delay
     if (apiError.status === 401) {
       setTimeout(() => {
-        if (typeof window !== 'undefined' && !window.location.pathname.includes('/auth/')) {
+        if (
+          typeof window !== 'undefined' &&
+          !window.location.pathname.includes('/auth/')
+        ) {
           window.location.href = '/auth/login';
         }
       }, 2000);
@@ -180,7 +188,7 @@ export class GlobalErrorHandler {
     options: Omit<GlobalErrorHandlerOptions, 'context'> = {}
   ): ApiError {
     const context = operation ? `Network Error: ${operation}` : 'Network Error';
-    
+
     const apiError = this.handleError(error, {
       ...options,
       context,
@@ -189,7 +197,7 @@ export class GlobalErrorHandler {
 
     // Show network-specific error message
     ToastService.networkError(
-      operation 
+      operation
         ? `Network error during ${operation.toLowerCase()}. Please check your connection.`
         : undefined
     );
@@ -272,7 +280,10 @@ export class GlobalErrorHandler {
   /**
    * Get user-friendly error message for display
    */
-  static getUserMessage(error: unknown, fallback: string = 'Something went wrong'): string {
+  static getUserMessage(
+    error: unknown,
+    fallback: string = 'Something went wrong'
+  ): string {
     const apiError = ErrorHandler.handleError(error);
     return apiError.getUserMessage() || fallback;
   }
@@ -294,13 +305,19 @@ export class GlobalErrorHandler {
 }
 
 // Convenience functions for common error handling patterns
-export const handleError = GlobalErrorHandler.handleError.bind(GlobalErrorHandler);
-export const handleApiError = GlobalErrorHandler.handleApiOperation.bind(GlobalErrorHandler);
-export const handleFormError = GlobalErrorHandler.handleFormError.bind(GlobalErrorHandler);
-export const handleAuthError = GlobalErrorHandler.handleAuthError.bind(GlobalErrorHandler);
-export const handleNetworkError = GlobalErrorHandler.handleNetworkError.bind(GlobalErrorHandler);
+export const handleError =
+  GlobalErrorHandler.handleError.bind(GlobalErrorHandler);
+export const handleApiError =
+  GlobalErrorHandler.handleApiOperation.bind(GlobalErrorHandler);
+export const handleFormError =
+  GlobalErrorHandler.handleFormError.bind(GlobalErrorHandler);
+export const handleAuthError =
+  GlobalErrorHandler.handleAuthError.bind(GlobalErrorHandler);
+export const handleNetworkError =
+  GlobalErrorHandler.handleNetworkError.bind(GlobalErrorHandler);
 export const wrapAsync = GlobalErrorHandler.wrapAsync.bind(GlobalErrorHandler);
-export const getUserMessage = GlobalErrorHandler.getUserMessage.bind(GlobalErrorHandler);
+export const getUserMessage =
+  GlobalErrorHandler.getUserMessage.bind(GlobalErrorHandler);
 
 // Initialize global error handlers when this module is imported
 if (typeof window !== 'undefined') {

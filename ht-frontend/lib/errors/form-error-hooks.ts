@@ -42,13 +42,19 @@ export function useFormErrors() {
     return touchedFields.current.has(field);
   }, []);
 
-  const getFieldError = useCallback((field: string): string | undefined => {
-    return errors[field];
-  }, [errors]);
+  const getFieldError = useCallback(
+    (field: string): string | undefined => {
+      return errors[field];
+    },
+    [errors]
+  );
 
-  const hasFieldError = useCallback((field: string): boolean => {
-    return Boolean(errors[field]);
-  }, [errors]);
+  const hasFieldError = useCallback(
+    (field: string): boolean => {
+      return Boolean(errors[field]);
+    },
+    [errors]
+  );
 
   const hasAnyErrors = useCallback((): boolean => {
     return hasErrors(errors);
@@ -99,7 +105,7 @@ export function useFormSubmission<TFormData, TResult = unknown>() {
 
       try {
         const result = await submitFn(formData);
-        
+
         setSubmitResult({
           success: true,
           data: result,
@@ -109,8 +115,11 @@ export function useFormSubmission<TFormData, TResult = unknown>() {
         formErrors.setIsSubmitting(false);
         return { success: true, data: result };
       } catch (error) {
-        const apiError = error instanceof ApiError ? error : new ApiError(500, 'An error occurred');
-        
+        const apiError =
+          error instanceof ApiError
+            ? error
+            : new ApiError(500, 'An error occurred');
+
         formErrors.setApiErrors(apiError);
         setSubmitResult({
           success: false,
@@ -199,7 +208,7 @@ export function useValidatedForm<T extends Record<string, unknown>>(
     (field: keyof T, value: unknown) => {
       setFormData(prev => ({ ...prev, [field]: value }));
       formErrors.markFieldTouched(field as string);
-      
+
       // Clear field error when user starts typing
       if (formErrors.hasFieldError(field as string)) {
         formErrors.clearError(field as string);
@@ -212,7 +221,7 @@ export function useValidatedForm<T extends Record<string, unknown>>(
     if (!validator) return true;
 
     const result = validator(formData);
-    
+
     if (!result.isValid) {
       Object.entries(result.errors).forEach(([field, error]) => {
         formErrors.setFieldError(field, error);
@@ -258,25 +267,28 @@ export function useOptimisticUpdate<T>() {
     ): Promise<{ success: boolean; data?: T; error?: ApiError }> => {
       // Store previous data for rollback
       previousDataRef.current = optimisticData;
-      
+
       // Apply optimistic update
       setOptimisticData(newData);
       setIsOptimistic(true);
 
       try {
         const result = await updateFn();
-        
+
         // Update with actual result
         setOptimisticData(result);
         setIsOptimistic(false);
-        
+
         return { success: true, data: result };
       } catch (error) {
         // Rollback on error
         setOptimisticData(previousDataRef.current);
         setIsOptimistic(false);
-        
-        const apiError = error instanceof ApiError ? error : new ApiError(500, 'Update failed');
+
+        const apiError =
+          error instanceof ApiError
+            ? error
+            : new ApiError(500, 'Update failed');
         return { success: false, error: apiError };
       }
     },

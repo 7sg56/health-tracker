@@ -21,18 +21,14 @@ export function useSearchFilter<T extends Record<string, any>>(
   data: T[],
   options: UseSearchFilterOptions<T> = {}
 ): UseSearchFilterReturn<T> {
-  const {
-    searchFields = [],
-    dateField,
-    initialState = {}
-  } = options;
+  const { searchFields = [], dateField, initialState = {} } = options;
 
   const [searchState, setSearchState] = useState<SearchFilterState>({
     searchQuery: '',
     dateRange: null,
     sortBy: '',
     filters: {},
-    ...initialState
+    ...initialState,
   });
 
   // Filter and search data
@@ -104,7 +100,7 @@ export function useSearchFilter<T extends Record<string, any>>(
       searchQuery: '',
       dateRange: null,
       sortBy: searchState.sortBy, // Keep sort
-      filters: {}
+      filters: {},
     });
   }, [searchState.sortBy]);
 
@@ -124,7 +120,7 @@ export function useSearchFilter<T extends Record<string, any>>(
     searchState,
     updateSearchState,
     clearFilters,
-    activeFilterCount
+    activeFilterCount,
   };
 }
 
@@ -155,7 +151,7 @@ export function useHealthDataFilter<T extends Record<string, any>>(
 
   const filterResult = useSearchFilter(data, {
     searchFields,
-    dateField: 'createdAt' as keyof T
+    dateField: 'createdAt' as keyof T,
   });
 
   // Generate filter groups based on data type
@@ -170,9 +166,9 @@ export function useHealthDataFilter<T extends Record<string, any>>(
         options: [
           { value: 'low', label: 'Low (< 200)', count: 0 },
           { value: 'medium', label: 'Medium (200-500)', count: 0 },
-          { value: 'high', label: 'High (> 500)', count: 0 }
+          { value: 'high', label: 'High (> 500)', count: 0 },
         ],
-        multiple: true
+        multiple: true,
       });
     }
 
@@ -184,9 +180,9 @@ export function useHealthDataFilter<T extends Record<string, any>>(
         options: [
           { value: 'short', label: 'Short (< 30 min)', count: 0 },
           { value: 'medium', label: 'Medium (30-60 min)', count: 0 },
-          { value: 'long', label: 'Long (> 60 min)', count: 0 }
+          { value: 'long', label: 'Long (> 60 min)', count: 0 },
         ],
-        multiple: true
+        multiple: true,
       });
     }
 
@@ -198,9 +194,9 @@ export function useHealthDataFilter<T extends Record<string, any>>(
         options: [
           { value: 'small', label: 'Small (< 0.5L)', count: 0 },
           { value: 'medium', label: 'Medium (0.5-1L)', count: 0 },
-          { value: 'large', label: 'Large (> 1L)', count: 0 }
+          { value: 'large', label: 'Large (> 1L)', count: 0 },
         ],
-        multiple: true
+        multiple: true,
       });
     }
 
@@ -209,7 +205,7 @@ export function useHealthDataFilter<T extends Record<string, any>>(
 
   return {
     ...filterResult,
-    filterGroups
+    filterGroups,
   };
 }
 
@@ -217,36 +213,116 @@ export function useHealthDataFilter<T extends Record<string, any>>(
 export function useSortOptions(type: 'water' | 'food' | 'workout') {
   return useMemo(() => {
     const baseOptions = [
-      { value: 'createdAt:desc', label: 'Newest First', field: 'createdAt', direction: 'desc' as const },
-      { value: 'createdAt:asc', label: 'Oldest First', field: 'createdAt', direction: 'asc' as const },
-      { value: 'date:desc', label: 'Date (Newest)', field: 'date', direction: 'desc' as const },
-      { value: 'date:asc', label: 'Date (Oldest)', field: 'date', direction: 'asc' as const }
+      {
+        value: 'createdAt:desc',
+        label: 'Newest First',
+        field: 'createdAt',
+        direction: 'desc' as const,
+      },
+      {
+        value: 'createdAt:asc',
+        label: 'Oldest First',
+        field: 'createdAt',
+        direction: 'asc' as const,
+      },
+      {
+        value: 'date:desc',
+        label: 'Date (Newest)',
+        field: 'date',
+        direction: 'desc' as const,
+      },
+      {
+        value: 'date:asc',
+        label: 'Date (Oldest)',
+        field: 'date',
+        direction: 'asc' as const,
+      },
     ];
 
     switch (type) {
       case 'water':
         return [
           ...baseOptions,
-          { value: 'amountLtr:desc', label: 'Amount (High to Low)', field: 'amountLtr', direction: 'desc' as const },
-          { value: 'amountLtr:asc', label: 'Amount (Low to High)', field: 'amountLtr', direction: 'asc' as const }
+          {
+            value: 'amountLtr:desc',
+            label: 'Amount (High to Low)',
+            field: 'amountLtr',
+            direction: 'desc' as const,
+          },
+          {
+            value: 'amountLtr:asc',
+            label: 'Amount (Low to High)',
+            field: 'amountLtr',
+            direction: 'asc' as const,
+          },
         ];
       case 'food':
         return [
           ...baseOptions,
-          { value: 'calories:desc', label: 'Calories (High to Low)', field: 'calories', direction: 'desc' as const },
-          { value: 'calories:asc', label: 'Calories (Low to High)', field: 'calories', direction: 'asc' as const },
-          { value: 'foodItem:asc', label: 'Food Name (A-Z)', field: 'foodItem', direction: 'asc' as const },
-          { value: 'foodItem:desc', label: 'Food Name (Z-A)', field: 'foodItem', direction: 'desc' as const }
+          {
+            value: 'calories:desc',
+            label: 'Calories (High to Low)',
+            field: 'calories',
+            direction: 'desc' as const,
+          },
+          {
+            value: 'calories:asc',
+            label: 'Calories (Low to High)',
+            field: 'calories',
+            direction: 'asc' as const,
+          },
+          {
+            value: 'foodItem:asc',
+            label: 'Food Name (A-Z)',
+            field: 'foodItem',
+            direction: 'asc' as const,
+          },
+          {
+            value: 'foodItem:desc',
+            label: 'Food Name (Z-A)',
+            field: 'foodItem',
+            direction: 'desc' as const,
+          },
         ];
       case 'workout':
         return [
           ...baseOptions,
-          { value: 'durationMin:desc', label: 'Duration (Long to Short)', field: 'durationMin', direction: 'desc' as const },
-          { value: 'durationMin:asc', label: 'Duration (Short to Long)', field: 'durationMin', direction: 'asc' as const },
-          { value: 'caloriesBurned:desc', label: 'Calories Burned (High to Low)', field: 'caloriesBurned', direction: 'desc' as const },
-          { value: 'caloriesBurned:asc', label: 'Calories Burned (Low to High)', field: 'caloriesBurned', direction: 'asc' as const },
-          { value: 'activity:asc', label: 'Activity (A-Z)', field: 'activity', direction: 'asc' as const },
-          { value: 'activity:desc', label: 'Activity (Z-A)', field: 'activity', direction: 'desc' as const }
+          {
+            value: 'durationMin:desc',
+            label: 'Duration (Long to Short)',
+            field: 'durationMin',
+            direction: 'desc' as const,
+          },
+          {
+            value: 'durationMin:asc',
+            label: 'Duration (Short to Long)',
+            field: 'durationMin',
+            direction: 'asc' as const,
+          },
+          {
+            value: 'caloriesBurned:desc',
+            label: 'Calories Burned (High to Low)',
+            field: 'caloriesBurned',
+            direction: 'desc' as const,
+          },
+          {
+            value: 'caloriesBurned:asc',
+            label: 'Calories Burned (Low to High)',
+            field: 'caloriesBurned',
+            direction: 'asc' as const,
+          },
+          {
+            value: 'activity:asc',
+            label: 'Activity (A-Z)',
+            field: 'activity',
+            direction: 'asc' as const,
+          },
+          {
+            value: 'activity:desc',
+            label: 'Activity (Z-A)',
+            field: 'activity',
+            direction: 'desc' as const,
+          },
         ];
       default:
         return baseOptions;

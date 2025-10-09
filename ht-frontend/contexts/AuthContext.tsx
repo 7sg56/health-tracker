@@ -2,12 +2,12 @@
 
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import { AuthService } from '../lib/api/auth';
-import { 
-  User, 
-  AuthState, 
-  AuthAction, 
-  LoginRequest, 
-  RegisterRequest 
+import {
+  User,
+  AuthState,
+  AuthAction,
+  LoginRequest,
+  RegisterRequest,
 } from '../lib/types/auth';
 
 // Initial authentication state
@@ -24,11 +24,29 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
     case 'AUTH_START':
       return { ...state, isLoading: true, error: null };
     case 'AUTH_SUCCESS':
-      return { ...state, user: action.payload, isAuthenticated: true, isLoading: false, error: null };
+      return {
+        ...state,
+        user: action.payload,
+        isAuthenticated: true,
+        isLoading: false,
+        error: null,
+      };
     case 'AUTH_ERROR':
-      return { ...state, user: null, isAuthenticated: false, isLoading: false, error: action.payload };
+      return {
+        ...state,
+        user: null,
+        isAuthenticated: false,
+        isLoading: false,
+        error: action.payload,
+      };
     case 'AUTH_LOGOUT':
-      return { ...state, user: null, isAuthenticated: false, isLoading: false, error: null };
+      return {
+        ...state,
+        user: null,
+        isAuthenticated: false,
+        isLoading: false,
+        error: null,
+      };
     case 'AUTH_RESET_ERROR':
       return { ...state, error: null };
     case 'AUTH_SET_LOADING':
@@ -59,7 +77,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       dispatch({ type: 'AUTH_SET_LOADING', payload: true });
       const response = await AuthService.checkSession();
-      
+
       if (response.data?.valid && response.data.user) {
         dispatch({ type: 'AUTH_SUCCESS', payload: response.data.user });
       } else {
@@ -77,14 +95,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       dispatch({ type: 'AUTH_START' });
       const response = await AuthService.login(credentials);
-      
+
       if (response.data) {
         dispatch({ type: 'AUTH_SUCCESS', payload: response.data });
       } else {
         throw new Error(response.error || 'Login failed');
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Login failed';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Login failed';
       dispatch({ type: 'AUTH_ERROR', payload: errorMessage });
       throw error;
     }
@@ -95,14 +114,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       dispatch({ type: 'AUTH_START' });
       const response = await AuthService.register(data);
-      
+
       if (response.data) {
         dispatch({ type: 'AUTH_SUCCESS', payload: response.data });
       } else {
         throw new Error(response.error || 'Registration failed');
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Registration failed';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Registration failed';
       dispatch({ type: 'AUTH_ERROR', payload: errorMessage });
       throw error;
     }
@@ -124,7 +144,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       dispatch({ type: 'AUTH_SET_LOADING', payload: true });
       const response = await AuthService.getProfile();
-      
+
       if (response.data) {
         dispatch({ type: 'AUTH_SUCCESS', payload: response.data });
       } else {
@@ -159,27 +179,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={contextValue}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
 }
 
 // Custom hook to use authentication context
 export function useAuth(): AuthContextType {
   const context = useContext(AuthContext);
-  
+
   if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
-  
+
   return context;
 }
 
 // Helper hook for authentication status
 export function useAuthStatus() {
   const { state } = useAuth();
-  
+
   return {
     isAuthenticated: state.isAuthenticated,
     isLoading: state.isLoading,
@@ -190,8 +208,9 @@ export function useAuthStatus() {
 
 // Helper hook for authentication actions
 export function useAuthActions() {
-  const { login, register, logout, refreshUser, clearError, checkSession } = useAuth();
-  
+  const { login, register, logout, refreshUser, clearError, checkSession } =
+    useAuth();
+
   return {
     login,
     register,
