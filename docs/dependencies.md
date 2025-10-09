@@ -34,9 +34,7 @@ Dev & Testing
 - eslint (^9) and eslint-config-next (15.5.4): Linting and Next.js rules.
 - @eslint/eslintrc (^3): ESLint configuration utilities.
 - prettier (^3.6.2) and prettier-plugin-tailwindcss (^0.6.14): Code formatting.
-- jest (^30.2.0), jest-environment-jsdom (^30.2.0): Testing framework and DOM env.
-- @testing-library/*: DOM, React, and user-event testing helpers.
-- @types/*: Type definitions for Node, React, Recharts, and Jest.
+- @types/*: Type definitions for Node, React, and Recharts.
 
 Notes
 - Uses Turbopack for dev/build via scripts (fast HMR and builds).

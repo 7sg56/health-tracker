@@ -221,18 +221,6 @@ This navigation system meets all requirements from the frontend sidebar redesign
 - ✅ Keyboard navigation support
 - ✅ Screen reader compatibility
 
-## Testing
-
-The navigation system includes comprehensive tests:
-
-```bash
-# Run navigation tests
-npm test -- lib/navigation/__tests__/
-
-# Run specific test suites
-npm test -- lib/navigation/__tests__/navigation.test.ts
-npm test -- lib/navigation/__tests__/navigation-integration.test.ts
-```
 
 ## Examples
 

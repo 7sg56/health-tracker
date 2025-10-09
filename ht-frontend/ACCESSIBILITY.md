@@ -165,7 +165,6 @@ Navigate to `/dashboard/accessibility-test` to access comprehensive testing tool
 ## Testing Checklist
 
 ### Automated Testing
-- [ ] Run accessibility audit (`/dashboard/accessibility-test`)
 - [ ] Lighthouse accessibility score > 95
 - [ ] No ARIA validation errors
 - [ ] Color contrast ratios meet WCAG AA (4.5:1)
