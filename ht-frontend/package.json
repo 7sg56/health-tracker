@@ -28,7 +28,7 @@
     "test:ci": "jest --ci --coverage --watchAll=false",
     "precommit": "npm run lint:check && npm run type-check && npm run test:ci",
     "prebuild": "npm run clean && npm run type-check && npm run lint:check",
-    "postbuild": "echo 'Build completed successfully!'",
+    "postbuild": "echo 'Build completed successfully!'"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
