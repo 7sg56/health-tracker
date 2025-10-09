@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Utensils, Plus, Edit3, Search, Calculator, Clock } from 'lucide-react';
 
@@ -101,22 +101,24 @@ export function FoodIntakeForm({
   error,
   onCancel,
 }: FoodIntakeFormProps) {
+  const formSchema = foodIntakeSchema.extend({
+    mealType: z.string().optional(),
+  });
+
+  type FormValues = z.infer<typeof formSchema>;
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [filteredSuggestions, setFilteredSuggestions] =
     useState(FOOD_SUGGESTIONS);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
-  const form = useForm<FoodIntakeFormData & { mealType?: string }>({
+  const form = useForm<FormValues>({
     mode: 'onChange',
     reValidateMode: 'onChange',
-    resolver: zodResolver(
-      foodIntakeSchema.extend({
-        mealType: z.string().optional(),
-      })
-    ),
+    resolver: zodResolver(formSchema) as unknown as Resolver<FormValues>,
     defaultValues: {
       foodItem: initialData?.foodItem || '',
-      calories: initialData?.calories || 0,
+      calories:
+        typeof initialData?.calories === 'number' ? initialData.calories : 0,
       mealType: 'other',
     },
   });
@@ -127,7 +129,7 @@ export function FoodIntakeForm({
     setValue,
     watch,
     reset,
-    formState: { errors, isSubmitting, isValid },
+    formState: { isSubmitting },
   } = form;
   const watchedFoodItem = watch('foodItem');
   const watchedCalories = watch('calories');
@@ -158,9 +160,7 @@ export function FoodIntakeForm({
     setShowSuggestions(false);
   };
 
-  const onFormSubmit = async (
-    data: FoodIntakeFormData & { mealType?: string }
-  ) => {
+  const onFormSubmit = async (data: FormValues) => {
     try {
       // Extract only the required fields for the API
       const { foodItem, calories } = data;
@@ -359,8 +359,11 @@ export function FoodIntakeForm({
                         placeholder="Enter calories (1-5000)"
                         {...field}
                         onChange={e => {
-                          const n = Number.parseInt(e.target.value, 10);
-                          field.onChange(Number.isNaN(n) ? '' : Math.max(0, n));
+                          // Always store a valid number, fallback to 0 if invalid
+                          const value = e.target.value;
+                          let n = Number(value);
+                          if (typeof n !== 'number' || isNaN(n) || n < 0) n = 0;
+                          field.onChange(n);
                         }}
                         disabled={isFormLoading}
                         className="pr-16"
@@ -418,7 +421,7 @@ export function FoodIntakeForm({
                   isFormLoading ||
                   !watchedFoodItem?.toString().trim() ||
                   Number.isNaN(Number(watchedCalories)) ||
-                  Number(watchedCalories) <= 0
+                  Number(watchedCalories) === 0
                 }
                 className="flex-1"
                 size="lg"
