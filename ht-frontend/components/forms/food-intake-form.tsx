@@ -213,7 +213,7 @@ export function FoodIntakeForm({
                   <FormLabel>Meal Type</FormLabel>
                   <Select
                     onValueChange={field.onChange}
-                    defaultValue={field.value}
+                    value={field.value ?? 'other'}
                   >
                     <FormControl>
                       <SelectTrigger className="w-full">
@@ -354,11 +354,14 @@ export function FoodIntakeForm({
                         type="number"
                         min="1"
                         max="5000"
+                        step="1"
+                        inputMode="numeric"
                         placeholder="Enter calories (1-5000)"
                         {...field}
-                        onChange={e =>
-                          field.onChange(parseInt(e.target.value) || 0)
-                        }
+                        onChange={e => {
+                          const n = Number.parseInt(e.target.value, 10);
+                          field.onChange(Number.isNaN(n) ? '' : Math.max(0, n));
+                        }}
                         disabled={isFormLoading}
                         className="pr-16"
                       />
