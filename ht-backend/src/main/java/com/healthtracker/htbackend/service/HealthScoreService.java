@@ -26,10 +26,7 @@ import java.time.LocalDateTime;
 public class HealthScoreService {
 
     // Health score calculation constants
-    private static final float WATER_WEIGHT = 0.30f;           // 30% weight for water intake
-    private static final float CALORIE_WEIGHT = 0.40f;        // 40% weight for calorie balance
-    private static final float EXERCISE_WEIGHT = 0.30f;       // 30% weight for exercise activity
-    
+    // Targets for each metric
     private static final float TARGET_WATER_LITERS = 2.5f;    // Target daily water intake in liters
     private static final int TARGET_CALORIES = 2000;          // Target daily calorie intake
     private static final int TARGET_EXERCISE_MINUTES = 30;    // Target daily exercise in minutes
@@ -54,6 +51,17 @@ public class HealthScoreService {
     }
 
     /**
+     * Symmetric percent-completion around the target.
+     * 100 at target; decreases linearly as you deviate; 0 at 0 or 200% of target.
+     */
+    private float symmetricCompletion(float actual, float target) {
+        if (target <= 0) return 0.0f;
+        float deviationRatio = Math.abs(actual - target) / target; // 0 at target, 1 at 0% or 200%
+        float score = 100.0f - (deviationRatio * 100.0f);
+        return Math.max(0.0f, score);
+    }
+
+    /**
      * Calculate water intake score based on daily consumption.
      * Formula: min(100, (actual_liters / 2.5) * 100)
      * 
@@ -63,13 +71,11 @@ public class HealthScoreService {
      */
     public float calculateWaterScore(Long userId, LocalDate date) {
         Float totalWaterIntake = waterIntakeRepository.getTotalWaterIntakeByUserAndDate(userId, date);
-        
         if (totalWaterIntake == null || totalWaterIntake <= 0) {
             return 0.0f;
         }
-        
-        float score = (totalWaterIntake / TARGET_WATER_LITERS) * 100.0f;
-        return Math.min(100.0f, score);
+        // Symmetric completion: 100 at target liters, decreases beyond target and when under
+        return symmetricCompletion(totalWaterIntake, TARGET_WATER_LITERS);
     }
 
     /**
@@ -82,14 +88,11 @@ public class HealthScoreService {
      */
     public float calculateCalorieScore(Long userId, LocalDate date) {
         Integer totalCalories = foodIntakeRepository.getTotalCaloriesByUserAndDate(userId, date);
-        
         if (totalCalories == null || totalCalories <= 0) {
             return 0.0f;
         }
-        
-        float calorieDeviation = Math.abs(totalCalories - TARGET_CALORIES);
-        float score = 100.0f - (calorieDeviation / 20.0f);
-        return Math.max(0.0f, score);
+        // Symmetric completion around target calories: 100 at target, reduced if under or over
+        return symmetricCompletion(totalCalories.floatValue(), TARGET_CALORIES);
     }
 
     /**
@@ -102,13 +105,11 @@ public class HealthScoreService {
      */
     public float calculateExerciseScore(Long userId, LocalDate date) {
         Integer totalDuration = workoutRepository.getTotalDurationByUserAndDate(userId, date);
-        
         if (totalDuration == null || totalDuration <= 0) {
             return 0.0f;
         }
-        
-        float score = ((float) totalDuration / TARGET_EXERCISE_MINUTES) * 100.0f;
-        return Math.min(100.0f, score);
+        // Symmetric completion: 100 at target minutes, decreases if under or beyond
+        return symmetricCompletion(totalDuration.floatValue(), TARGET_EXERCISE_MINUTES);
     }
 
     /**
@@ -123,9 +124,8 @@ public class HealthScoreService {
         float calorieScore = calculateCalorieScore(userId, date);
         float exerciseScore = calculateExerciseScore(userId, date);
         
-        return (waterScore * WATER_WEIGHT) + 
-               (calorieScore * CALORIE_WEIGHT) + 
-               (exerciseScore * EXERCISE_WEIGHT);
+        // Simple average of the three component scores
+        return (waterScore + calorieScore + exerciseScore) / 3.0f;
     }
 
     /**
@@ -142,10 +142,23 @@ public class HealthScoreService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        // Check if health index already exists for this date
-        return dailyHealthIndexRepository.findByUserIdAndDate(userId, date)
-                .map(this::mapToDailyHealthIndexResponseDto)
-                .orElseGet(() -> calculateAndStoreHealthScore(user, date));
+        // Always compute the latest score to avoid stale cached values
+        float overallScore = calculateOverallHealthScore(userId, date);
+
+        // Upsert: update existing or create new record for the date
+        DailyHealthIndex healthIndex = dailyHealthIndexRepository
+                .findByUserIdAndDate(userId, date)
+                .orElse(new DailyHealthIndex());
+
+        healthIndex.setUser(user);
+        healthIndex.setDate(date);
+        healthIndex.setHealthScore(overallScore);
+        if (healthIndex.getId() == null) {
+            healthIndex.setCreatedAt(java.time.LocalDateTime.now());
+        }
+
+        DailyHealthIndex saved = dailyHealthIndexRepository.save(healthIndex);
+        return mapToDailyHealthIndexResponseDto(saved);
     }
 
     /**
