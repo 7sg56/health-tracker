@@ -10,7 +10,6 @@ import {
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Skeleton } from '@/components/ui/skeleton';
 import { FormSkeleton, ListSkeleton } from '@/components/ui/skeleton-loaders';
 import { WaterIntakeForm, WaterIntakeList } from '@/components/forms';
 import { useWaterIntake } from '@/hooks/use-water-intake';
@@ -20,7 +19,6 @@ import {
   Target,
   TrendingUp,
   Calendar,
-  Activity,
   AlertCircle,
 } from 'lucide-react';
 
@@ -31,7 +29,6 @@ export default function WaterPage() {
     error,
     addWaterIntake,
     deleteWaterIntake,
-    refreshData,
     clearError,
   } = useWaterIntake({
     pageSize: 50,

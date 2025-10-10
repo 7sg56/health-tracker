@@ -1,16 +1,8 @@
 'use client';
 
 import React from 'react';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Skeleton } from '@/components/ui/skeleton';
 import { FormSkeleton, ListSkeleton } from '@/components/ui/skeleton-loaders';
 import { FoodIntakeForm, FoodIntakeList } from '@/components/forms';
 import { useFoodIntake } from '@/hooks/use-food-intake';
@@ -20,7 +12,6 @@ import {
   Target,
   TrendingUp,
   Calendar,
-  Activity,
   AlertCircle,
 } from 'lucide-react';
 
@@ -37,7 +28,7 @@ export default function FoodPage() {
     (sum: number, intake: FoodIntake) => sum + intake.calories,
     0
   );
-  const dailyGoal = 2000; // Default 2000 calorie goal
+  const dailyGoal = 2000;
   const progress = Math.min((totalCalories / dailyGoal) * 100, 100);
 
   return (

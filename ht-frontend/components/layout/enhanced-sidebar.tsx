@@ -67,12 +67,7 @@ const mockUserProfile: UserProfile = {
   healthGoal: 'Stay Fit & Healthy',
 };
 
-const mockHealthSummary: HealthSummary = {
-  healthScore: 85,
-  waterIntake: { current: 1.2, goal: 2.5 },
-  calories: { current: 1450, goal: 2000 },
-  exercise: { current: 25, goal: 60 },
-};
+
 
 function SidebarHeader({
   isCollapsed = false,
@@ -233,9 +228,7 @@ function HealthSummaryWidget({
     <section className="px-6 pb-4" aria-label="Today's health progress summary">
       <div className="from-primary/5 to-secondary/5 border-border rounded-xl border bg-gradient-to-br p-4 transition-all duration-200 hover:shadow-sm">
         <div className="mb-3 flex items-center justify-between">
-          <h3 className="text-foreground text-sm font-semibold">
-            Today's Progress
-          </h3>
+          
           <div className="flex items-center space-x-1">
             <TrendingUp className="text-primary h-4 w-4" aria-hidden="true" />
             <Badge
@@ -554,10 +547,6 @@ function SidebarContent({
         onToggleCollapse={onToggleCollapse}
       />
       <UserProfileSection user={mockUserProfile} isCollapsed={isCollapsed} />
-      <HealthSummaryWidget
-        healthSummary={mockHealthSummary}
-        isCollapsed={isCollapsed}
-      />
       <Separator className="mx-6" role="separator" aria-hidden="true" />
       <NavigationSection onNavigate={onNavigate} isCollapsed={isCollapsed} />
       <SidebarFooter isCollapsed={isCollapsed} />

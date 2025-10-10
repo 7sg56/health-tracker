@@ -352,35 +352,19 @@ export function FoodIntakeForm({
                     <div className="relative">
                       <Input
                         type="number"
-                        min="0"
+                        min="1"
                         max="5000"
                         step="1"
                         inputMode="numeric"
-                        pattern="[0-9]*"
                         placeholder="Enter calories (1-5000)"
-                        value={field.value ?? 0}
+                        {...field}
                         onChange={e => {
-                          const raw = e.target.value;
-                          const n = Number.parseInt(raw, 10);
-                          if (Number.isNaN(n)) {
-                            field.onChange(0);
-                          } else {
-                            field.onChange(Math.max(0, Math.min(5000, n)));
-                          }
+                          // Always store a valid number, fallback to 0 if invalid
+                          const value = e.target.value;
+                          let n = Number(value);
+                          if (typeof n !== 'number' || isNaN(n) || n < 0) n = 0;
+                          field.onChange(n);
                         }}
-                        onWheel={e => e.currentTarget.blur()}
-                        onKeyDown={e => {
-                          if (['e', 'E', '+', '-'].includes(e.key)) {
-                            e.preventDefault();
-                          }
-                        }}
-                        onBlur={e => {
-                          const n = Number.parseInt(e.target.value, 10);
-                          field.onChange(
-                            Number.isNaN(n) ? 0 : Math.max(0, Math.min(5000, n))
-                          );
-                        }}
-                        aria-invalid={!!errors.calories}
                         disabled={isFormLoading}
                         className="pr-16"
                       />
@@ -395,11 +379,6 @@ export function FoodIntakeForm({
                     Enter the total calories for this food item
                   </FormDescription>
                   <FormMessage />
-                  {Number(watchedCalories) === 0 && (
-                    <p className="text-muted-foreground text-xs">
-                      Set calories greater than 0 to enable the Add button
-                    </p>
-                  )}
                 </FormItem>
               )}
             />
