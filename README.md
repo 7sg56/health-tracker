@@ -93,30 +93,10 @@ Frontend (examples):
 
 ## Authors
 
-## Contributors
-## Contributors
-
-<p align="center">
-  <a href="https://github.com/7sg56" style="text-align: center; margin: 10px;">
-    <img src="https://avatars.githubusercontent.com/7sg56" width="80px" style="border-radius:50%;" alt="Sourish"/><br/>
-    <sub><b>SourishGhosh</b><br/>@7sg56</sub>
-  </a>
-
-  <a href="https://github.com/shagun123" style="text-align: center; margin: 10px;">
-    <img src="https://avatars.githubusercontent.com/<username>" width="80px" style="border-radius:50%;" alt="<yourname>"/><br/>
-    <sub><b><yourname></b><br/><username></sub>
-  </a>
-
-  <a href="https://github.com/shagun123" style="text-align: center; margin: 10px;">
-    <img src="https://avatars.githubusercontent.com/<username>" width="80px" style="border-radius:50%;" alt="<yourname>"/><br/>
-    <sub><b><yourname></b><br/><username></sub>
-  </a>
-
-  <a href="https://github.com/shagun123" style="text-align: center; margin: 10px;">
-    <img src="https://avatars.githubusercontent.com/<username>" width="80px" style="border-radius:50%;" alt="<yourname>"/><br/>
-    <sub><b><yourname></b><br/><username></sub>
-  </a>
-</p>
+- Sourish Ghosh [@7sg56]
+- Ayush Kumar []
+- Ishaan Verma []
+- Adhikshit Kumar []
 
 
 
