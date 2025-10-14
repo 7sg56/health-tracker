@@ -94,26 +94,30 @@ Frontend (examples):
 ## Authors
 
 ## Contributors
+## Contributors
 
-<a href="https://github.com/sourish-ghosh" style="text-align: center; margin: 10px;">
-  <img src="https://avatars.githubusercontent.com/7sg56" width="80px" style="border-radius:50%;" alt="Sourish"/><br/>
-  <sub><b>Sourish</b><br/>@s7sg56</sub>
-</a>
+<p align="center">
+  <a href="https://github.com/7sg56" style="text-align: center; margin: 10px;">
+    <img src="https://avatars.githubusercontent.com/7sg56" width="80px" style="border-radius:50%;" alt="Sourish"/><br/>
+    <sub><b>SourishGhosh</b><br/>@7sg56</sub>
+  </a>
 
-<a href="https://github.com/shagun123" style="text-align: center; margin: 10px;">
-  <img src="https://avatars.githubusercontent.com/<username>" width="80px" style="border-radius:50%;" alt="<username>"/><br/>
-  <sub><b><YourName></b><br/>@<username></sub>
-</a>
+  <a href="https://github.com/shagun123" style="text-align: center; margin: 10px;">
+    <img src="https://avatars.githubusercontent.com/<username>" width="80px" style="border-radius:50%;" alt="<yourname>"/><br/>
+    <sub><b><yourname></b><br/><username></sub>
+  </a>
 
-<a href="https://github.com/shagun123" style="text-align: center; margin: 10px;">
-  <img src="https://avatars.githubusercontent.com/<username>" width="80px" style="border-radius:50%;" alt="<username>"/><br/>
-  <sub><b><YourName></b><br/>@<username></sub>
-</a>
+  <a href="https://github.com/shagun123" style="text-align: center; margin: 10px;">
+    <img src="https://avatars.githubusercontent.com/<username>" width="80px" style="border-radius:50%;" alt="<yourname>"/><br/>
+    <sub><b><yourname></b><br/><username></sub>
+  </a>
 
-<a href="https://github.com/shagun123" style="text-align: center; margin: 10px;">
-  <img src="https://avatars.githubusercontent.com/<username>" width="80px" style="border-radius:50%;" alt="<username>"/><br/>
-  <sub><b><YourName></b><br/>@<username></sub>
-</a>
+  <a href="https://github.com/shagun123" style="text-align: center; margin: 10px;">
+    <img src="https://avatars.githubusercontent.com/<username>" width="80px" style="border-radius:50%;" alt="<yourname>"/><br/>
+    <sub><b><yourname></b><br/><username></sub>
+  </a>
+</p>
+
 
 
 ## Contributing
