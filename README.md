@@ -95,7 +95,7 @@ Frontend (examples):
 
 - Sourish Ghosh [@7sg56]
 - Ayush Kumar []
-- Ishaan Verma []
+- Ishaan Verma [16ishaan]
 - Adhikshit Kumar []
 
 
