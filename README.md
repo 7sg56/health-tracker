@@ -91,6 +91,31 @@ Frontend (examples):
 - Features overview: docs/features-overview.md
 - Dependencies and rationale: docs/dependencies.md
 
+## Authors
+
+## Contributors
+
+<a href="https://github.com/sourish-ghosh" style="text-align: center; margin: 10px;">
+  <img src="https://avatars.githubusercontent.com/7sg56" width="80px" style="border-radius:50%;" alt="Sourish"/><br/>
+  <sub><b>Sourish</b><br/>@s7sg56</sub>
+</a>
+
+<a href="https://github.com/shagun123" style="text-align: center; margin: 10px;">
+  <img src="https://avatars.githubusercontent.com/<username>" width="80px" style="border-radius:50%;" alt="<username>"/><br/>
+  <sub><b><YourName></b><br/>@<username></sub>
+</a>
+
+<a href="https://github.com/shagun123" style="text-align: center; margin: 10px;">
+  <img src="https://avatars.githubusercontent.com/<username>" width="80px" style="border-radius:50%;" alt="<username>"/><br/>
+  <sub><b><YourName></b><br/>@<username></sub>
+</a>
+
+<a href="https://github.com/shagun123" style="text-align: center; margin: 10px;">
+  <img src="https://avatars.githubusercontent.com/<username>" width="80px" style="border-radius:50%;" alt="<username>"/><br/>
+  <sub><b><YourName></b><br/>@<username></sub>
+</a>
+
+
 ## Contributing
 
 Issues and pull requests are welcome. If you plan significant changes, please open an issue first to discuss what you would like to change.
