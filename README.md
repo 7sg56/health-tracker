@@ -94,9 +94,9 @@ Frontend (examples):
 ## Authors
 
 - Sourish Ghosh [@7sg56]
-- Ayush Kumar []
-- Ishaan Verma []
-- Adhikshit Kumar []
+- Ayush Kumar [@AyushOg18]
+- Ishaan Verma [@16Ishaan]
+- Adhikshit Kumar [@Adhikshit775]
 
 
 
