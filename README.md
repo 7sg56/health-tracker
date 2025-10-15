@@ -94,16 +94,7 @@ Frontend (examples):
 ## Authors
 
 - Sourish Ghosh [@7sg56]
-- Ayush Kumar []
-- Ishaan Verma []
-- Adhikshit Kumar [@adhikshit775]
+- Ayush Kumar [@AyushOg18]
+- Ishaan Verma [@16Ishaan]
+- Adhikshit Kumar [@Adhikshit775]
 
-
-
-## Contributing
-
-Issues and pull requests are welcome. If you plan significant changes, please open an issue first to discuss what you would like to change.
-
-## License
-
-TBD
