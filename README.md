@@ -30,6 +30,11 @@ Start both backend and frontend for development:
 npm run dev
 ```
 
+Or use the convenience script:
+```bash path=null start=null
+./start-dev.sh
+```
+
 Run only the frontend:
 ```bash path=null start=null
 cd ht-frontend && npm run dev
@@ -48,6 +53,13 @@ cd ht-backend && ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
 - dev:frontend: Starts Next.js dev server.
 - install:all: Builds backend, installs frontend deps.
 - build:all: Packages backend and builds frontend.
+
+## Development Scripts
+
+- `start-dev.sh`: Convenience script to start both backend and frontend services
+  - Backend: http://localhost:8080 (Spring Boot with dev profile)
+  - Frontend: http://localhost:3002 (Next.js dev server)
+  - Press Ctrl+C to stop all services
 
 ## Frontend (ht-frontend)
 
