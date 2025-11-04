@@ -39,7 +39,6 @@ import {
   Activity,
 } from 'lucide-react';
 import { useDashboardData } from '@/hooks/use-dashboard-data';
-import { HealthGoalGuidance } from '@/components/dashboard/health-goal-guidance';
 
 export default function DashboardPage() {
   const {
@@ -258,11 +257,6 @@ export default function DashboardPage() {
           </div>
         </div>
       </FadeIn>
-
-      {/* Health Goal Guidance Section - Minimal */}
-      <SlideIn direction="down" delay={150}>
-        <HealthGoalGuidance />
-      </SlideIn>
 
       {/* Enhanced Health Score Overview */}
       <SlideIn direction="up" delay={200}>
@@ -706,6 +700,136 @@ export default function DashboardPage() {
         </SlideIn>
       </div>
 
+      {/* Weekly Trends and Recommendations (merged) */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        <SlideIn direction="left" delay={820}>
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <TrendingUp className="h-5 w-5 text-blue-500" />
+                <span>Weekly Trends</span>
+              </CardTitle>
+              <CardDescription>
+                Your average scores over the past week
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">
+                    Overall Health Score
+                  </span>
+                  <span className="text-muted-foreground text-sm">
+                    {weeklyData.healthScore}%
+                  </span>
+                </div>
+                <Progress value={weeklyData.healthScore} className="h-2" />
+              </div>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">Hydration</span>
+                  <span className="text-muted-foreground text-sm">
+                    {weeklyData.water}%
+                  </span>
+                </div>
+                <Progress value={weeklyData.water} className="h-2" />
+              </div>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">Nutrition</span>
+                  <span className="text-muted-foreground text-sm">
+                    {weeklyData.food}%
+                  </span>
+                </div>
+                <Progress value={weeklyData.food} className="h-2" />
+              </div>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">Exercise</span>
+                  <span className="text-muted-foreground text-sm">
+                    {weeklyData.exercise}%
+                  </span>
+                </div>
+                <Progress value={weeklyData.exercise} className="h-2" />
+              </div>
+            </CardContent>
+          </Card>
+        </SlideIn>
+        <SlideIn direction="right" delay={860}>
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Award className="h-5 w-5 text-purple-500" />
+                <span>Recommendations</span>
+              </CardTitle>
+              <CardDescription>
+                Personalized tips to improve your health score
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-3">
+                {breakdown?.water && breakdown.water < 80 && (
+                  <div className="flex items-start space-x-3 rounded-lg bg-blue-50 p-3">
+                    <Droplets className="mt-0.5 h-4 w-4 text-blue-500" />
+                    <div>
+                      <p className="text-sm font-medium">
+                        Increase Water Intake
+                      </p>
+                      <p className="text-muted-foreground text-xs">
+                        Try to drink more water throughout the day to reach your
+                        hydration goals.
+                      </p>
+                    </div>
+                  </div>
+                )}
+                {breakdown?.food && breakdown.food < 80 && (
+                  <div className="flex items-start space-x-3 rounded-lg bg-orange-50 p-3">
+                    <Utensils className="mt-0.5 h-4 w-4 text-orange-500" />
+                    <div>
+                      <p className="text-sm font-medium">
+                        Balance Your Nutrition
+                      </p>
+                      <p className="text-muted-foreground text-xs">
+                        Focus on balanced meals with proper calorie
+                        distribution.
+                      </p>
+                    </div>
+                  </div>
+                )}
+                {breakdown?.exercise && breakdown.exercise < 80 && (
+                  <div className="flex items-start space-x-3 rounded-lg bg-green-50 p-3">
+                    <Dumbbell className="mt-0.5 h-4 w-4 text-green-500" />
+                    <div>
+                      <p className="text-sm font-medium">
+                        Increase Physical Activity
+                      </p>
+                      <p className="text-muted-foreground text-xs">
+                        Add more exercise sessions to meet your daily activity
+                        goals.
+                      </p>
+                    </div>
+                  </div>
+                )}
+                {(!breakdown ||
+                  (breakdown.water >= 80 &&
+                    breakdown.food >= 80 &&
+                    breakdown.exercise >= 80)) && (
+                  <div className="flex items-start space-x-3 rounded-lg bg-green-50 p-3">
+                    <Award className="mt-0.5 h-4 w-4 text-green-500" />
+                    <div>
+                      <p className="text-sm font-medium">Great Job!</p>
+                      <p className="text-muted-foreground text-xs">
+                        You&apos;re doing excellent across all health metrics.
+                        Keep it up!
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </SlideIn>
+      </div>
     </PageTransition>
   );
 }

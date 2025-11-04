@@ -1,81 +1,54 @@
 import { z } from 'zod';
-import { getCurrentHealthGoalLimits, type HealthGoalLimits } from '@/lib/config/health-goal-limits';
 
 // Health tracking validation schemas matching backend constraints
 
-/**
- * Create water intake schema based on health goal limits
- */
-export function createWaterIntakeSchema(limits?: HealthGoalLimits) {
-  const goalLimits = limits || getCurrentHealthGoalLimits();
-  
-  return z.object({
-    amountLtr: z
-      .number({
-        message: 'Water amount must be a number',
-      })
-      .min(goalLimits.water.min, `Amount must be at least ${goalLimits.water.min} liters`)
-      .max(goalLimits.water.max, `Amount must be less than ${goalLimits.water.max} liters`)
-      .multipleOf(0.01, 'Amount can have at most 2 decimal places'),
-  });
-}
+export const waterIntakeSchema = z.object({
+  amountLtr: z
+    .number({
+      message: 'Water amount must be a number',
+    })
+    .min(0.1, 'Amount must be at least 0.1 liters')
+    .max(10.0, 'Amount must be less than 10.0 liters')
+    .multipleOf(0.01, 'Amount can have at most 2 decimal places'),
+});
 
-/**
- * Create food intake schema based on health goal limits
- */
-export function createFoodIntakeSchema(limits?: HealthGoalLimits) {
-  const goalLimits = limits || getCurrentHealthGoalLimits();
-  
-  return z.object({
-    foodItem: z
-      .string()
-      .min(1, 'Food item is required')
-      .max(100, 'Food item must be less than 100 characters')
-      .trim(),
-    calories: z.coerce
-      .number({
-        message: 'Calories must be a number',
-      })
-      .int('Calories must be a whole number')
-      .min(goalLimits.food.calories.min, `Calories must be at least ${goalLimits.food.calories.min}`)
-      .max(goalLimits.food.calories.max, `Calories must be less than ${goalLimits.food.calories.max}`),
-  });
-}
+export const foodIntakeSchema = z.object({
+  foodItem: z
+    .string()
+    .min(1, 'Food item is required')
+    .max(100, 'Food item must be less than 100 characters')
+    .trim(),
+  calories: z.coerce
+    .number({
+      message: 'Calories must be a number',
+    })
+    .int('Calories must be a whole number')
+    .min(1, 'Calories must be at least 1')
+    .max(5000, 'Calories must be less than 5000'),
+});
 
-/**
- * Create workout schema based on health goal limits
- */
-export function createWorkoutSchema(limits?: HealthGoalLimits) {
-  const goalLimits = limits || getCurrentHealthGoalLimits();
-  
-  return z.object({
-    activity: z
-      .string()
-      .min(1, 'Activity is required')
-      .max(100, 'Activity must be less than 100 characters')
-      .trim(),
-    durationMin: z
-      .number({
-        message: 'Duration must be a number',
-      })
-      .int('Duration must be a whole number')
-      .min(goalLimits.workout.duration.min, `Duration must be at least ${goalLimits.workout.duration.min} minute${goalLimits.workout.duration.min > 1 ? 's' : ''}`)
-      .max(goalLimits.workout.duration.max, `Duration must be less than ${goalLimits.workout.duration.max} minutes`),
-    caloriesBurned: z
-      .number({
-        message: 'Calories burned must be a number',
-      })
-      .int('Calories burned must be a whole number')
-      .min(goalLimits.workout.calories.min, `Calories burned must be at least ${goalLimits.workout.calories.min}`)
-      .max(goalLimits.workout.calories.max, `Calories burned must be less than ${goalLimits.workout.calories.max}`)
-      .optional(),
-  });
-}
-
-// Default schemas using Stay Healthy limits (for backwards compatibility)
-export const waterIntakeSchema = createWaterIntakeSchema();
-export const foodIntakeSchema = createFoodIntakeSchema();
-export const workoutSchema = createWorkoutSchema();
+export const workoutSchema = z.object({
+  activity: z
+    .string()
+    .min(1, 'Activity is required')
+    .max(100, 'Activity must be less than 100 characters')
+    .trim(),
+  durationMin: z
+    .number({
+      message: 'Duration must be a number',
+    })
+    .int('Duration must be a whole number')
+    .min(1, 'Duration must be at least 1 minute')
+    .max(600, 'Duration must be less than 600 minutes'),
+  caloriesBurned: z
+    .number({
+      message: 'Calories burned must be a number',
+    })
+    .int('Calories burned must be a whole number')
+    .min(0, 'Calories burned cannot be negative')
+    .max(2000, 'Calories burned must be less than 2000')
+    .optional(),
+});
 
 // Date validation schema for filtering
 export const dateSchema = z

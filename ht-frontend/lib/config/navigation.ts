@@ -197,11 +197,11 @@ export function createNavigationConfig(
  */
 export const DEFAULT_USER_PROFILE: UserProfile = {
   id: '1',
-  name: 'Test User',
-  email: 'test@example.com',
+  name: 'Sourish Ghosh',
+  email: 'sourish@example.com',
   avatar: '/avatar-placeholder.png',
   healthGoal: 'Stay Fit & Healthy',
-  initials: 'TU',
+  initials: 'SG',
 };
 
 /**

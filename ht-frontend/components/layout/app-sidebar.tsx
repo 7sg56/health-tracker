@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -37,44 +37,7 @@ export function AppSidebar({
   basePath = '/dashboard',
 }: SidebarProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [userName, setUserName] = useState('Test User');
-  const [userGoal, setUserGoal] = useState('Stay Fit');
   const pathname = usePathname();
-
-  // Load user data from localStorage
-  useEffect(() => {
-    const storedName = localStorage.getItem('ht_name');
-    const storedGoal = localStorage.getItem('ht_goal');
-    if (storedName) setUserName(storedName);
-    if (storedGoal) setUserGoal(storedGoal);
-
-    // Listen for storage changes to update in real-time
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'ht_name' && e.newValue) {
-        setUserName(e.newValue);
-      }
-      if (e.key === 'ht_goal' && e.newValue) {
-        setUserGoal(e.newValue);
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    
-    // Also listen for custom events from the same window
-    const handleCustomStorageChange = () => {
-      const name = localStorage.getItem('ht_name');
-      const goal = localStorage.getItem('ht_goal');
-      if (name) setUserName(name);
-      if (goal) setUserGoal(goal);
-    };
-
-    window.addEventListener('profileUpdated', handleCustomStorageChange);
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('profileUpdated', handleCustomStorageChange);
-    };
-  }, []);
 
   // Build navigation based on basePath
   const navigation: NavigationItem[] = useMemo(() => {
@@ -151,15 +114,15 @@ export function AppSidebar({
             <Avatar className="h-10 w-10">
               <AvatarImage src="/avatar-placeholder.png" />
               <AvatarFallback className="bg-blue-100 text-blue-600">
-                {userName.split(' ').map(n => n[0]).join('').toUpperCase() || 'TU'}
+                JD
               </AvatarFallback>
             </Avatar>
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-medium text-gray-900 dark:text-white">
-                {userName}
-                </p>
+                Sourish Ghosh
+              </p>
               <p className="truncate text-xs text-gray-500 dark:text-gray-400">
-                Health Goal: {userGoal}
+                Health Goal: Stay Fit
               </p>
             </div>
           </div>

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Dumbbell, Plus, Edit3, Clock, Flame, Target, Info } from 'lucide-react';
+import { Dumbbell, Plus, Edit3, Clock, Flame } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,9 +18,8 @@ import {
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 
-import { createWorkoutSchema, type WorkoutFormData } from '@/lib/validations/health';
+import { workoutSchema, type WorkoutFormData } from '@/lib/validations/health';
 import { WorkoutRequest, Workout } from '@/lib/types/health';
-import { getCurrentHealthGoal, getCurrentHealthGoalLimits } from '@/lib/config/health-goal-limits';
 
 interface WorkoutFormProps {
   onSubmit: (data: WorkoutRequest) => Promise<void>;
@@ -61,32 +60,12 @@ export function WorkoutForm({
   error,
   onCancel,
 }: WorkoutFormProps) {
-  const [healthGoal, setHealthGoal] = useState<string>('Stay Healthy');
-  const [goalLimits, setGoalLimits] = useState(getCurrentHealthGoalLimits());
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [filteredSuggestions, setFilteredSuggestions] =
     useState(WORKOUT_SUGGESTIONS);
   const [estimatedCalories, setEstimatedCalories] = useState<number | null>(
     null
   );
-  
-  // Update limits when health goal changes
-  useEffect(() => {
-    const updateLimits = () => {
-      const goal = getCurrentHealthGoal();
-      const limits = getCurrentHealthGoalLimits();
-      setHealthGoal(goal);
-      setGoalLimits(limits);
-    };
-    
-    updateLimits();
-    
-    // Listen for profile updates
-    window.addEventListener('profileUpdated', updateLimits);
-    return () => window.removeEventListener('profileUpdated', updateLimits);
-  }, []);
-  
-  const workoutSchema = createWorkoutSchema(goalLimits);
 
   const {
     register,
@@ -201,29 +180,6 @@ export function WorkoutForm({
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Health Goal Info */}
-        <div className="rounded-lg border border-purple-200 bg-purple-50 p-3 dark:border-purple-800 dark:bg-purple-950/20">
-          <div className="flex items-start gap-2">
-            <Info className="mt-0.5 h-4 w-4 text-purple-600 dark:text-purple-400" />
-            <div className="flex-1 space-y-1">
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-purple-900 dark:text-purple-100">
-                  Goal: {healthGoal}
-                </span>
-                {goalLimits.workout.weeklyMinutes && (
-                  <Badge variant="secondary" className="text-xs">
-                    <Target className="mr-1 h-3 w-3" />
-                    {goalLimits.workout.weeklyMinutes} min/week
-                  </Badge>
-                )}
-              </div>
-              <p className="text-xs text-purple-700 dark:text-purple-300">
-                Duration: {goalLimits.workout.duration.min}-{goalLimits.workout.duration.max} min • Calories: {goalLimits.workout.calories.min}-{goalLimits.workout.calories.max} cal
-              </p>
-            </div>
-          </div>
-        </div>
-        
         <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6">
           {error && (
             <Alert variant="destructive">
@@ -307,9 +263,9 @@ export function WorkoutForm({
               <Input
                 id="durationMin"
                 type="number"
-                min={goalLimits.workout.duration.min}
-                max={goalLimits.workout.duration.max}
-                placeholder={`Enter duration (${goalLimits.workout.duration.min}-${goalLimits.workout.duration.max} min)`}
+                min="1"
+                max="600"
+                placeholder="Enter duration in minutes"
                 {...register('durationMin', { valueAsNumber: true })}
                 disabled={isFormLoading}
                 className="pr-16"
@@ -342,8 +298,8 @@ export function WorkoutForm({
               <Input
                 id="caloriesBurned"
                 type="number"
-                min={goalLimits.workout.calories.min}
-                max={goalLimits.workout.calories.max}
+                min="0"
+                max="2000"
                 placeholder="Enter calories burned (optional)"
                 {...register('caloriesBurned', { valueAsNumber: true })}
                 disabled={isFormLoading}
