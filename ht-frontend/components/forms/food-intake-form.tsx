@@ -3,11 +3,11 @@
 import React, { useState, useEffect } from 'react';
 import { useForm, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Utensils, Plus, Edit3, Search, Calculator, Clock } from 'lucide-react';
+import { Utensils, Plus, Edit3, Search, Calculator, Clock, Target, Info } from 'lucide-react';
 
 import { LoadingButton } from '@/components/ui/loading-button';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -30,10 +30,11 @@ import {
 import { Separator } from '@/components/ui/separator';
 
 import {
-  foodIntakeSchema,
+  createFoodIntakeSchema,
   type FoodIntakeFormData,
 } from '@/lib/validations/health';
 import { FoodIntakeRequest, FoodIntake } from '@/lib/types/health';
+import { getCurrentHealthGoal, getCurrentHealthGoalLimits } from '@/lib/config/health-goal-limits';
 import { z } from 'zod';
 
 interface FoodIntakeFormProps {
@@ -101,6 +102,26 @@ export function FoodIntakeForm({
   error,
   onCancel,
 }: FoodIntakeFormProps) {
+  const [healthGoal, setHealthGoal] = useState<string>('Stay Healthy');
+  const [goalLimits, setGoalLimits] = useState(getCurrentHealthGoalLimits());
+  
+  // Update limits when health goal changes
+  useEffect(() => {
+    const updateLimits = () => {
+      const goal = getCurrentHealthGoal();
+      const limits = getCurrentHealthGoalLimits();
+      setHealthGoal(goal);
+      setGoalLimits(limits);
+    };
+    
+    updateLimits();
+    
+    // Listen for profile updates
+    window.addEventListener('profileUpdated', updateLimits);
+    return () => window.removeEventListener('profileUpdated', updateLimits);
+  }, []);
+  
+  const foodIntakeSchema = createFoodIntakeSchema(goalLimits);
   const formSchema = foodIntakeSchema.extend({
     mealType: z.string().optional(),
   });
@@ -194,8 +215,34 @@ export function FoodIntakeForm({
           <Utensils className="h-5 w-5 text-orange-500" />
           {isEditMode ? 'Edit Food Intake' : 'Log Food Intake'}
         </CardTitle>
+        <CardDescription>
+          Track your meals based on your health goal
+        </CardDescription>
       </CardHeader>
       <CardContent>
+        {/* Health Goal Info */}
+        <div className="mb-6 rounded-lg border border-orange-200 bg-orange-50 p-3 dark:border-orange-800 dark:bg-orange-950/20">
+          <div className="flex items-start gap-2">
+            <Info className="mt-0.5 h-4 w-4 text-orange-600 dark:text-orange-400" />
+            <div className="flex-1 space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-orange-900 dark:text-orange-100">
+                  Goal: {healthGoal}
+                </span>
+                {goalLimits.food.dailyTarget && (
+                  <Badge variant="secondary" className="text-xs">
+                    <Target className="mr-1 h-3 w-3" />
+                    {goalLimits.food.dailyTarget} cal/day
+                  </Badge>
+                )}
+              </div>
+              <p className="text-xs text-orange-700 dark:text-orange-300">
+                Range: {goalLimits.food.calories.min} - {goalLimits.food.calories.max} calories per meal
+              </p>
+            </div>
+          </div>
+        </div>
+        
         {error && (
           <Alert variant="destructive" className="mb-6">
             <AlertDescription>{error}</AlertDescription>
@@ -352,11 +399,11 @@ export function FoodIntakeForm({
                     <div className="relative">
                       <Input
                         type="number"
-                        min="1"
-                        max="5000"
+                        min={goalLimits.food.calories.min}
+                        max={goalLimits.food.calories.max}
                         step="1"
                         inputMode="numeric"
-                        placeholder="Enter calories (1-5000)"
+                        placeholder={`Enter calories (${goalLimits.food.calories.min}-${goalLimits.food.calories.max})`}
                         {...field}
                         onChange={e => {
                           // Always store a valid number, fallback to 0 if invalid
