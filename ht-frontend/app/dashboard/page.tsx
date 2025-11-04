@@ -39,6 +39,7 @@ import {
   Activity,
 } from 'lucide-react';
 import { useDashboardData } from '@/hooks/use-dashboard-data';
+import { HealthGoalGuidance } from '@/components/dashboard/health-goal-guidance';
 
 export default function DashboardPage() {
   const {
@@ -830,6 +831,11 @@ export default function DashboardPage() {
           </Card>
         </SlideIn>
       </div>
+
+      {/* Health Goal Guidance Section */}
+      <SlideIn direction="up" delay={900}>
+        <HealthGoalGuidance />
+      </SlideIn>
     </PageTransition>
   );
 }
