@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Menu, User, Settings, Activity } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -26,10 +27,39 @@ export function Header({
   showMenuButton = true,
   className,
 }: HeaderProps) {
-  // Mock user data - this will be replaced with actual auth context
+  const [userName, setUserName] = useState('Test User');
+
+  // Load user data from localStorage
+  useEffect(() => {
+    const storedName = localStorage.getItem('ht_name');
+    if (storedName) setUserName(storedName);
+
+    // Listen for storage changes to update in real-time
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'ht_name' && e.newValue) {
+        setUserName(e.newValue);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Also listen for custom events from the same window
+    const handleCustomStorageChange = () => {
+      const name = localStorage.getItem('ht_name');
+      if (name) setUserName(name);
+    };
+
+    window.addEventListener('profileUpdated', handleCustomStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('profileUpdated', handleCustomStorageChange);
+    };
+  }, []);
+
   const user = {
-    name: 'Sourish Ghosh',
-    email: 'sourish@example.com',
+    name: userName,
+    email: 'test@example.com',
     avatar: null,
   };
 

@@ -22,7 +22,7 @@ import {
 import { CheckCircle2 } from 'lucide-react';
 
 export default function ProfilePage() {
-  const [name, setName] = useState('Sourish Ghosh');
+  const [name, setName] = useState('Test User');
   const [goal, setGoal] = useState('Stay Healthy');
   const [saved, setSaved] = useState<'idle' | 'success'>('idle');
 
@@ -36,6 +36,8 @@ export default function ProfilePage() {
   const save = () => {
     localStorage.setItem('ht_name', name);
     localStorage.setItem('ht_goal', goal);
+    // Dispatch custom event to notify other components
+    window.dispatchEvent(new Event('profileUpdated'));
     setSaved('success');
     setTimeout(() => setSaved('idle'), 2500);
   };

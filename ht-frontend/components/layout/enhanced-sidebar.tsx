@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -58,14 +58,29 @@ interface UserProfile {
   healthGoal: string;
 }
 
-// Mock data - in real app this would come from context/API
-const mockUserProfile: UserProfile = {
-  id: '1',
-  name: 'Sourish Ghosh',
-  email: 'john.doe@example.com',
-  avatar: '/avatar-placeholder.png',
-  healthGoal: 'Stay Fit & Healthy',
-};
+// Helper function to get user profile from localStorage
+function getUserProfile(): UserProfile {
+  if (typeof window === 'undefined') {
+    return {
+      id: '1',
+      name: 'Test User',
+      email: 'test@example.com',
+      avatar: '/avatar-placeholder.png',
+      healthGoal: 'Stay Fit & Healthy',
+    };
+  }
+  
+  const storedName = localStorage.getItem('ht_name') || 'Test User';
+  const storedGoal = localStorage.getItem('ht_goal') || 'Stay Fit & Healthy';
+  
+  return {
+    id: '1',
+    name: storedName,
+    email: 'test@example.com',
+    avatar: '/avatar-placeholder.png',
+    healthGoal: storedGoal,
+  };
+}
 
 
 
@@ -531,6 +546,31 @@ function SidebarContent({
   onToggleCollapse?: () => void;
 }) {
   const pathname = usePathname();
+  const [userProfile, setUserProfile] = useState<UserProfile>(getUserProfile());
+
+  // Load and listen for profile updates
+  useEffect(() => {
+    setUserProfile(getUserProfile());
+
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'ht_name' || e.key === 'ht_goal') {
+        setUserProfile(getUserProfile());
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    
+    const handleCustomStorageChange = () => {
+      setUserProfile(getUserProfile());
+    };
+
+    window.addEventListener('profileUpdated', handleCustomStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('profileUpdated', handleCustomStorageChange);
+    };
+  }, []);
 
   // Navigation is now handled by the hook
 
@@ -546,7 +586,7 @@ function SidebarContent({
         isCollapsed={isCollapsed}
         onToggleCollapse={onToggleCollapse}
       />
-      <UserProfileSection user={mockUserProfile} isCollapsed={isCollapsed} />
+      <UserProfileSection user={userProfile} isCollapsed={isCollapsed} />
       <Separator className="mx-6" role="separator" aria-hidden="true" />
       <NavigationSection onNavigate={onNavigate} isCollapsed={isCollapsed} />
       <SidebarFooter isCollapsed={isCollapsed} />
