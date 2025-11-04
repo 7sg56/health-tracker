@@ -1,15 +1,16 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Droplets, Plus } from 'lucide-react';
+import { Droplets, Plus, Target, Info } from 'lucide-react';
 
 import { LoadingButton } from '@/components/ui/loading-button';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
 import {
   Form,
   FormControl,
@@ -21,10 +22,11 @@ import {
 } from '@/components/ui/form';
 
 import {
-  waterIntakeSchema,
+  createWaterIntakeSchema,
   type WaterIntakeFormData,
 } from '@/lib/validations/health';
 import { WaterIntakeRequest } from '@/lib/types/health';
+import { getCurrentHealthGoal, getCurrentHealthGoalLimits } from '@/lib/config/health-goal-limits';
 
 interface WaterIntakeFormProps {
   onSubmit: (data: WaterIntakeRequest) => Promise<void>;
@@ -40,6 +42,27 @@ export function WaterIntakeForm({
   isLoading = false,
   error,
 }: WaterIntakeFormProps) {
+  const [healthGoal, setHealthGoal] = useState<string>('Stay Healthy');
+  const [goalLimits, setGoalLimits] = useState(getCurrentHealthGoalLimits());
+  
+  // Update limits when health goal changes
+  useEffect(() => {
+    const updateLimits = () => {
+      const goal = getCurrentHealthGoal();
+      const limits = getCurrentHealthGoalLimits();
+      setHealthGoal(goal);
+      setGoalLimits(limits);
+    };
+    
+    updateLimits();
+    
+    // Listen for profile updates
+    window.addEventListener('profileUpdated', updateLimits);
+    return () => window.removeEventListener('profileUpdated', updateLimits);
+  }, []);
+  
+  const waterIntakeSchema = createWaterIntakeSchema(goalLimits);
+  
   const form = useForm<WaterIntakeFormData>({
     resolver: zodResolver(waterIntakeSchema),
     defaultValues: {
@@ -72,8 +95,32 @@ export function WaterIntakeForm({
           <Droplets className="h-5 w-5 text-blue-500" aria-hidden="true" />
           Add Water Intake
         </CardTitle>
+        <CardDescription>
+          Track your daily hydration based on your health goal
+        </CardDescription>
       </CardHeader>
       <CardContent>
+        {/* Health Goal Info */}
+        <div className="mb-4 rounded-lg border border-blue-200 bg-blue-50 p-3 dark:border-blue-800 dark:bg-blue-950/20">
+          <div className="flex items-start gap-2">
+            <Info className="mt-0.5 h-4 w-4 text-blue-600 dark:text-blue-400" />
+            <div className="flex-1 space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                  Goal: {healthGoal}
+                </span>
+                <Badge variant="secondary" className="text-xs">
+                  <Target className="mr-1 h-3 w-3" />
+                  {goalLimits.water.recommended}L daily
+                </Badge>
+              </div>
+              <p className="text-xs text-blue-700 dark:text-blue-300">
+                Range: {goalLimits.water.min}L - {goalLimits.water.max}L per entry
+              </p>
+            </div>
+          </div>
+        </div>
+        
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onFormSubmit)}
@@ -125,8 +172,8 @@ export function WaterIntakeForm({
                       <Input
                         type="number"
                         step="0.01"
-                        min="0.1"
-                        max="10.0"
+                        min={goalLimits.water.min}
+                        max={goalLimits.water.max}
                         placeholder="Enter amount in liters"
                         disabled={isFormLoading}
                         className="pr-12"
@@ -146,7 +193,7 @@ export function WaterIntakeForm({
                     </div>
                   </FormControl>
                   <FormDescription>
-                    Enter a value between 0.1 and 10.0 liters
+                    Enter a value between {goalLimits.water.min} and {goalLimits.water.max} liters
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
